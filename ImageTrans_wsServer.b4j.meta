@@ -10,6 +10,6 @@ ModuleClosedNodes0=1
 ModuleClosedNodes1=
 ModuleClosedNodes2=
 ModuleClosedNodes3=
-NavigationStack=TranslateHandler,Class_Globals,3,0,Main,AppStart,18,1,TranslateHandler,Handle,14,6,TranslateHandler,WaitForTheTranslationToBeDone,39,6,ImageTransShared,Init,10,0,Main,Process_Globals,12,3,ImageTrans,WebSocket_Connected,11,0,ImageTrans,Translate,22,6,ImageTrans,set_translated,31,5,ImageTrans,close_server,32,5
+NavigationStack=Main,Process_Globals,12,3,ImageTrans,Translate,22,6,ImageTrans,close_server,32,5,TranslateHandler,WaitForTheTranslationToBeDone,39,6,ImageTrans,set_translated,29,5,ImageTransShared,Init,10,0,ImageTransShared,Disconnect,33,0,ImageTrans,Class_Globals,3,4,ImageTrans,WebSocket_Connected,14,3,ImageTrans,WebSocket_Disconnected,18,0
 SelectedBuild=0
 VisibleModules=1,2,3

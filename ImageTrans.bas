@@ -7,6 +7,7 @@ Version=7.8
 'WebSocket class
 Sub Class_Globals
 	Private ws As WebSocket
+	Private name As String
 End Sub
 
 Public Sub Initialize
@@ -16,11 +17,12 @@ End Sub
 Private Sub WebSocket_Connected (WebSocket1 As WebSocket)
 	ws = WebSocket1
 	Log("new connection")
-	CallSubDelayed3(ImageTransShared, "NewConnection", Me, "name")
+	name=DateTime.Now
+	CallSubDelayed3(ImageTransShared, "NewConnection", Me, name)
 End Sub
 
 Private Sub WebSocket_Disconnected
-
+	CallSubDelayed3(ImageTransShared, "Disconnect", Me, name)
 End Sub
 
 Public Sub Translate(src As String)
