@@ -1,0 +1,42 @@
+﻿AppType=StandardJava
+Build1=Default,b4j.example
+Group=Default Group
+Library1=jcore
+Library2=jserver
+Library3=jstringutils
+Library4=json
+Module1=ImageTrans
+Module2=ImageTransShared
+Module3=TranslateHandler
+NumberOfFiles=0
+NumberOfLibraries=4
+NumberOfModules=3
+Version=7.8
+@EndOfDesignText@
+'Non-UI application (console / server application)
+#Region Project Attributes 
+	#CommandLineArgs:
+	#MergeLibraries: True 
+#End Region
+
+Sub Process_Globals
+	Public srvr As Server
+	Public translated As Boolean=False
+	Public success As Boolean
+	Public outputPath As String
+End Sub
+
+Sub AppStart (Args() As String)
+	srvr.Initialize("srvr")
+	ImageTransShared.Init
+	srvr.Port = 51042
+	srvr.AddWebSocket("/imagetrans", "ImageTrans")
+	srvr.AddHandler("/translate","TranslateHandler",False)
+	srvr.Start
+	StartMessageLoop
+End Sub
+
+'Return true to allow the default exceptions handler to handle the uncaught exception.
+Sub Application_Error (Error As Exception, StackTrace As String) As Boolean
+	Return True
+End Sub
