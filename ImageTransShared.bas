@@ -42,3 +42,11 @@ Public Sub Disconnect(it As ImageTrans, name As String)
 	connections.Remove(name)
 	AvoidDuplicates.Remove(name.ToLowerCase)
 End Sub
+
+Public Sub HasConnection As Boolean
+	If connections.Size=0 Then
+		Return False
+	Else
+		return True
+	End If
+End Sub

@@ -19,6 +19,10 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 	resp.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PUT")
 	resp.setHeader("Access-Control-Max-Age", "3600")
 	resp.setHeader("Access-Control-Allow-Headers", "Content-Type,Access-Token,Authorization,ybg")
+	If ImageTransShared.HasConnection=False Then
+		resp.Write($"no imagetrans is connected"$)
+		return
+	End If
 	ImageTransShared.Translate(req.GetParameter("src"))
 	Dim returnType As String=req.GetParameter("type")
 	Dim callback As String=req.GetParameter("callback")
