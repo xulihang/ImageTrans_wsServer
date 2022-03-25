@@ -11,7 +11,7 @@ Module3=TranslateHandler
 NumberOfFiles=0
 NumberOfLibraries=4
 NumberOfModules=3
-Version=7.8
+Version=8.9
 @EndOfDesignText@
 'Non-UI application (console / server application)
 #Region Project Attributes 
@@ -30,6 +30,7 @@ Sub AppStart (Args() As String)
 	srvr.Initialize("srvr")
 	ImageTransShared.Init
 	srvr.Port = 51042
+	srvr.StaticFilesFolder = File.DirApp
 	srvr.AddWebSocket("/imagetrans", "ImageTrans")
 	srvr.AddHandler("/translate","TranslateHandler",False)
 	srvr.Start

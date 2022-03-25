@@ -47,6 +47,6 @@ Public Sub HasConnection As Boolean
 	If connections.Size=0 Then
 		Return False
 	Else
-		return True
+		Return True
 	End If
 End Sub

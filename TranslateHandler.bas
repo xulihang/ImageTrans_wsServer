@@ -21,7 +21,7 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 	resp.setHeader("Access-Control-Allow-Headers", "Content-Type,Access-Token,Authorization,ybg")
 	If ImageTransShared.HasConnection=False Then
 		resp.Write($"no imagetrans is connected"$)
-		return
+		Return
 	End If
 	ImageTransShared.Translate(req.GetParameter("src"))
 	Dim returnType As String=req.GetParameter("type")
