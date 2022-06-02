@@ -11,7 +11,7 @@ Module3=TranslateHandler
 NumberOfFiles=0
 NumberOfLibraries=4
 NumberOfModules=3
-Version=8.9
+Version=8.8
 @EndOfDesignText@
 'Non-UI application (console / server application)
 #Region Project Attributes 
@@ -33,8 +33,19 @@ Sub AppStart (Args() As String)
 	srvr.StaticFilesFolder = File.DirApp
 	srvr.AddWebSocket("/imagetrans", "ImageTrans")
 	srvr.AddHandler("/translate","TranslateHandler",False)
+	ConfigureSSL(51043)
 	srvr.Start
 	StartMessageLoop
+End Sub
+
+Private Sub ConfigureSSL (SslPort As Int)
+	'example of SSL connector configuration
+	Dim ssl As SslConfiguration
+	ssl.Initialize
+	ssl.SetKeyStorePath(File.DirApp, "keystore") 'path to keystore file
+	ssl.KeyStorePassword = "123456"
+	ssl.KeyManagerPassword = "123456"
+	srvr.SetSslConfiguration(ssl, SslPort)
 End Sub
 
 'Return true to allow the default exceptions handler to handle the uncaught exception.
