@@ -47,7 +47,7 @@ Private Sub ConfigureSSL (SslPort As Int)
 	ssl.KeyStorePassword = "xulihang"
 	ssl.KeyManagerPassword = "xulihang"
 	srvr.SetSslConfiguration(ssl, SslPort)
-	srvr.AddFilter("/*","HttpsFilter",False)
+	'srvr.AddFilter("/*","HttpsFilter",False)
 End Sub
 
 'Return true to allow the default exceptions handler to handle the uncaught exception.

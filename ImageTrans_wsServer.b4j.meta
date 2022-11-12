@@ -13,6 +13,6 @@ ModuleClosedNodes1=
 ModuleClosedNodes2=
 ModuleClosedNodes3=
 ModuleClosedNodes4=
-NavigationStack=ImageTransShared,Disconnect,39,0,ImageTransShared,HasConnection,43,6,TranslateHandler,WaitForTheTranslationToBeDone,57,6,ImageTransShared,Process_Globals,0,0,TranslateHandler,Handle,10,6,Main,AppStart,18,6,httpsfilter,Filter,17,0,httpsfilter,Initialize,8,0,HttpsFilter,Class_Globals,4,0,Main,ConfigureSSL,33,6
+NavigationStack=ImageTransShared,HasConnection,43,6,TranslateHandler,WaitForTheTranslationToBeDone,57,6,httpsfilter,Filter,17,0,httpsfilter,Initialize,8,0,HttpsFilter,Class_Globals,4,0,TranslateHandler,Handle,17,6,ImageTransShared,Process_Globals,0,0,Main,Application_Error,39,0,Main,AppStart,13,6,Main,ConfigureSSL,33,6
 SelectedBuild=0
 VisibleModules=2,3,4,1
