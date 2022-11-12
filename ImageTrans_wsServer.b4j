@@ -5,13 +5,14 @@ Library1=jcore
 Library2=jserver
 Library3=jstringutils
 Library4=json
-Module1=ImageTrans
-Module2=ImageTransShared
-Module3=TranslateHandler
+Module1=HttpsFilter
+Module2=ImageTrans
+Module3=ImageTransShared
+Module4=TranslateHandler
 NumberOfFiles=0
 NumberOfLibraries=4
-NumberOfModules=3
-Version=8.8
+NumberOfModules=4
+Version=8.9
 @EndOfDesignText@
 'Non-UI application (console / server application)
 #Region Project Attributes 
@@ -42,10 +43,11 @@ Private Sub ConfigureSSL (SslPort As Int)
 	'example of SSL connector configuration
 	Dim ssl As SslConfiguration
 	ssl.Initialize
-	ssl.SetKeyStorePath(File.DirApp, "keystore") 'path to keystore file
-	ssl.KeyStorePassword = "123456"
-	ssl.KeyManagerPassword = "123456"
+	ssl.SetKeyStorePath(File.DirApp, "certificate.jks") 'path to keystore file
+	ssl.KeyStorePassword = "xulihang"
+	ssl.KeyManagerPassword = "xulihang"
 	srvr.SetSslConfiguration(ssl, SslPort)
+	srvr.AddFilter("/*","HttpsFilter",False)
 End Sub
 
 'Return true to allow the default exceptions handler to handle the uncaught exception.
