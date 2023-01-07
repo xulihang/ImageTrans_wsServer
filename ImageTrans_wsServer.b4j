@@ -11,11 +11,12 @@ Library5=javaobject
 Module1=HttpsFilter
 Module2=ImageTrans
 Module3=ImageTransShared
-Module4=TranslateHandler
-Module5=TranslatorHandler
+Module4=IndexFilter
+Module5=TranslateHandler
+Module6=TranslatorHandler
 NumberOfFiles=1
 NumberOfLibraries=5
-NumberOfModules=5
+NumberOfModules=6
 Version=8.9
 @EndOfDesignText@
 'Non-UI application (console / server application)
@@ -41,6 +42,7 @@ Sub AppStart (Args() As String)
 	srvr.AddWebSocket("/imagetrans", "ImageTrans")
 	srvr.AddHandler("/translate","TranslateHandler",False)
 	srvr.AddHandler("/translator","TranslatorHandler",False)
+	srvr.AddFilter("/","IndexFilter",False)
 	ConfigureSSL(51043)
 	srvr.Start
 	StartMessageLoop
