@@ -86,7 +86,6 @@ function onFileSelected(event){
   var reader = new FileReader();    
   reader.onload = function(e){
     sourceImg.src = e.target.result;
-    document.getElementsByClassName("translatedChk")[0].checked = false;
     updateDisplayOfSourceImgAndTargetImg(false);
   };
   
@@ -99,6 +98,36 @@ function onFileSelected(event){
 
 function translate(){
   console.log("translate");
+  var src = sourceImg.src;
+  if (!src) {
+    alert("Please load an image first");
+    return;
+  }
+  var URL = "http://127.0.0.1:51042/translate"
+  var ajaxObj = new XMLHttpRequest();
+  ajaxObj.open('POST', URL);
+  ajaxObj.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+  ajaxObj.send("src="+encodeURIComponent(src)+"&saveToFile=true");  //+"&saveToFile=true"
+  ajaxObj.onreadystatechange = function () {
+    if (ajaxObj.readyState == 4 && ajaxObj.status == 200) {
+      try {
+        var response = JSON.parse(ajaxObj.responseText);
+        if (!response["img"]){
+          alert("Bad result");
+        }else{
+          targetImg.src = "data:image/jpeg;base64," + response["img"];
+          updateDisplayOfSourceImgAndTargetImg(true);
+        }
+        
+      } catch (error) {
+        console.log(error);
+        alert(ajaxObj.responseText);
+      }    
+    }
+  }
+  ajaxObj.onerror = function () {
+    alert("error connecting the server");
+  }
 }
 
 function toggleTranslated(event){
@@ -113,6 +142,7 @@ function updateDisplayOfSourceImgAndTargetImg(translated){
     sourceImg.style.display = "none";
     targetImg.style.display = "";
   }
+  document.getElementsByClassName("translatedChk")[0].checked = translated;
 }
 </script>
 </body>
