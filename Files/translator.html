@@ -68,7 +68,7 @@
   </div>
   <div class="footer">
     Select Image: <input id="imgfile" type="file" name="image" onchange="onFileSelected(event)" />	
-    <button>Translate</button>
+    <button onclick="translate();">Translate</button>
     <label>Translated
       <input class="translatedChk" value="translatedChk" name="translatedChk" type="checkbox"/>
     </label>
@@ -83,6 +83,7 @@ function onFileSelected(event){
   reader.onload = function(e){
     sourceImg.src = e.target.result;
     sourceImg.style.display = "";
+    targetImg.style.display = "none";
   };
   
   reader.onerror = function () {
@@ -90,6 +91,10 @@ function onFileSelected(event){
   };
   
   reader.readAsDataURL(file);  
+}
+
+function translate(){
+  
 }
 </script>
 </body>
