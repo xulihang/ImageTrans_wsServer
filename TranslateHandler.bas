@@ -23,7 +23,19 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 		resp.Write($"no imagetrans is connected"$)
 		Return
 	End If
-	ImageTransShared.Translate(req.GetParameter("src"))
+	Dim src As String = req.GetParameter("src")
+	Dim saveToFile As String = req.GetParameter("saveToFile")
+	If saveToFile="true" And src.StartsWith("data") Then
+		Dim base64 As String
+		base64 = Regex.Replace("data:(.*?);base64,",src,"")
+		Log(base64)
+		Dim su As StringUtils
+		Dim path As String = File.Combine(File.DirTemp,DateTime.Now)
+		File.WriteBytes(path,"",su.DecodeBase64(base64))
+		src = path
+	End If
+	
+	ImageTransShared.Translate(src)
 	Dim returnType As String=req.GetParameter("type")
 	Dim callback As String=req.GetParameter("callback")
 	Main.translated=False
