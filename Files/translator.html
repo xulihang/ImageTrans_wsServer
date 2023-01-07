@@ -40,10 +40,18 @@
   
   .translator {
     margin-top: 2em;
+    height: calc(100% - 4em);
+  }
+  
+  .imageContainer {
+    height: 100%;
+    overflow: auto;
   }
   
   img {
-    width:100%;
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
   }
   </style>
 </head>
@@ -59,13 +67,30 @@
     </div>
   </div>
   <div class="footer">
-    <button>Select</button>
+    Select Image: <input id="imgfile" type="file" name="image" onchange="onFileSelected(event)" />	
     <button>Translate</button>
     <label>Translated
       <input class="translatedChk" value="translatedChk" name="translatedChk" type="checkbox"/>
     </label>
   </div>
-  
 </div>
+<script>
+let sourceImg = document.getElementsByClassName("source")[0];
+let targetImg = document.getElementsByClassName("target")[0];
+function onFileSelected(event){
+  var file = event.target.files[0];
+  var reader = new FileReader();    
+  reader.onload = function(e){
+    sourceImg.src = e.target.result;
+    sourceImg.style.display = "";
+  };
+  
+  reader.onerror = function () {
+    alert('oops, something went wrong.');
+  };
+  
+  reader.readAsDataURL(file);  
+}
+</script>
 </body>
 </html>
