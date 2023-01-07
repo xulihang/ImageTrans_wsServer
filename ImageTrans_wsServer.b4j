@@ -1,5 +1,7 @@
 ﻿AppType=StandardJava
 Build1=Default,b4j.example
+File1=translator.html
+FileGroup1=Default Group
 Group=Default Group
 Library1=jcore
 Library2=jserver
@@ -9,9 +11,10 @@ Module1=HttpsFilter
 Module2=ImageTrans
 Module3=ImageTransShared
 Module4=TranslateHandler
-NumberOfFiles=0
+Module5=TranslatorHandler
+NumberOfFiles=1
 NumberOfLibraries=4
-NumberOfModules=4
+NumberOfModules=5
 Version=8.9
 @EndOfDesignText@
 'Non-UI application (console / server application)
@@ -34,6 +37,7 @@ Sub AppStart (Args() As String)
 	srvr.StaticFilesFolder = File.DirApp
 	srvr.AddWebSocket("/imagetrans", "ImageTrans")
 	srvr.AddHandler("/translate","TranslateHandler",False)
+	srvr.AddHandler("/translator","TranslatorHandler",False)
 	ConfigureSSL(51043)
 	srvr.Start
 	StartMessageLoop
