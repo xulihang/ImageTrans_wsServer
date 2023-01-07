@@ -50,13 +50,15 @@ End Sub
 
 Private Sub ConfigureSSL (SslPort As Int)
 	'example of SSL connector configuration
-	Dim ssl As SslConfiguration
-	ssl.Initialize
-	ssl.SetKeyStorePath(File.DirApp, "certificate.jks") 'path to keystore file
-	ssl.KeyStorePassword = "xulihang"
-	ssl.KeyManagerPassword = "xulihang"
-	srvr.SetSslConfiguration(ssl, SslPort)
-	'srvr.AddFilter("/*","HttpsFilter",False)
+	If File.Exists(File.DirApp, "certificate.jks") Then
+		Dim ssl As SslConfiguration
+		ssl.Initialize
+		ssl.SetKeyStorePath(File.DirApp, "certificate.jks") 'path to keystore file
+		ssl.KeyStorePassword = "xulihang"
+		ssl.KeyManagerPassword = "xulihang"
+		srvr.SetSslConfiguration(ssl, SslPort)
+		'srvr.AddFilter("/*","HttpsFilter",False)
+	End If
 End Sub
 
 'Return true to allow the default exceptions handler to handle the uncaught exception.
