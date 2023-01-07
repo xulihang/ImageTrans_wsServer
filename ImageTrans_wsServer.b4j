@@ -5,15 +5,16 @@ FileGroup1=Default Group
 Group=Default Group
 Library1=jcore
 Library2=jserver
-Library3=jstringutils
-Library4=json
+Library3=json
+Library4=jstringutils
+Library5=javaobject
 Module1=HttpsFilter
 Module2=ImageTrans
 Module3=ImageTransShared
 Module4=TranslateHandler
 Module5=TranslatorHandler
 NumberOfFiles=1
-NumberOfLibraries=4
+NumberOfLibraries=5
 NumberOfModules=5
 Version=8.9
 @EndOfDesignText@
@@ -32,6 +33,8 @@ End Sub
 
 Sub AppStart (Args() As String)
 	srvr.Initialize("srvr")
+	Dim jo As JavaObject = srvr
+	jo.GetFieldJO("context").RunMethod("setMaxFormContentSize", Array(10*1000*1000))'in bytes
 	ImageTransShared.Init
 	srvr.Port = 51042
 	srvr.StaticFilesFolder = File.DirApp
