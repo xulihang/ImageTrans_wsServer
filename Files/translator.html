@@ -67,23 +67,27 @@
     </div>
   </div>
   <div class="footer">
-    Select Image: <input id="imgfile" type="file" name="image" onchange="onFileSelected(event)" />	
-    <button onclick="translate();">Translate</button>
+    Select Image: <input id="imgfile" type="file" name="image" onchange="onFileSelected(event);" />	
+    <button class="translateBtn">Translate</button>
     <label>Translated
-      <input class="translatedChk" value="translatedChk" name="translatedChk" type="checkbox"/>
+      <input class="translatedChk" value="translatedChk" name="translatedChk" type="checkbox" onchange="toggleTranslated(event);"/>
     </label>
   </div>
 </div>
 <script>
 let sourceImg = document.getElementsByClassName("source")[0];
 let targetImg = document.getElementsByClassName("target")[0];
+document.getElementsByClassName("translateBtn")[0].addEventListener('click', (event) => {
+  translate();
+});
+
 function onFileSelected(event){
   var file = event.target.files[0];
   var reader = new FileReader();    
   reader.onload = function(e){
     sourceImg.src = e.target.result;
-    sourceImg.style.display = "";
-    targetImg.style.display = "none";
+    document.getElementsByClassName("translatedChk")[0].checked = false;
+    updateDisplayOfSourceImgAndTargetImg(false);
   };
   
   reader.onerror = function () {
@@ -94,7 +98,21 @@ function onFileSelected(event){
 }
 
 function translate(){
-  
+  console.log("translate");
+}
+
+function toggleTranslated(event){
+  updateDisplayOfSourceImgAndTargetImg(event.target.checked);
+}
+
+function updateDisplayOfSourceImgAndTargetImg(translated){
+  if (!translated) {
+    sourceImg.style.display = "";
+    targetImg.style.display = "none";
+  }else{
+    sourceImg.style.display = "none";
+    targetImg.style.display = "";
+  }
 }
 </script>
 </body>
