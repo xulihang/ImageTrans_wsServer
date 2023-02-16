@@ -2,7 +2,7 @@
 Group=Default Group
 ModulesStructureVersion=1
 Type=Class
-Version=8.9
+Version=9.8
 @EndOfDesignText@
 'Filter class
 Sub Class_Globals
@@ -15,9 +15,6 @@ End Sub
 
 'Return True to allow the request to proceed.
 Public Sub Filter(req As ServletRequest, resp As ServletResponse) As Boolean
-	If File.Exists(File.DirApp,"index.html") == False Then
-		resp.SendRedirect("/translator")
-		Return False
-	End If
-	Return True
+	resp.SetHeader("Access-Control-Allow-Private-Network","true")
+	Return False
 End Sub

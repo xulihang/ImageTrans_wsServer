@@ -15,10 +15,12 @@ End Sub
 
 Sub Handle(req As ServletRequest, resp As ServletResponse)
 	Log("new translation connection")
+	resp.ContentType="text/plain"
 	resp.SetHeader("Access-Control-Allow-Origin","*")
-	resp.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PUT")
+	resp.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, HEAD, DELETE, PUT")
 	resp.setHeader("Access-Control-Max-Age", "3600")
-	resp.setHeader("Access-Control-Allow-Headers", "Content-Type,Access-Token,Authorization,ybg")
+	resp.setHeader("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, Authorization, api_key")
+	resp.SetHeader("Access-Control-Allow-Private-Network","true")
 	If ImageTransShared.HasConnection=False Then
 		resp.Write($"no imagetrans is connected"$)
 		Return

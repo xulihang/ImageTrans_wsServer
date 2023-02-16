@@ -8,16 +8,18 @@ Library2=jserver
 Library3=json
 Library4=jstringutils
 Library5=javaobject
-Module1=HttpsFilter
-Module2=ImageTrans
-Module3=ImageTransShared
-Module4=IndexFilter
-Module5=TranslateHandler
-Module6=TranslatorHandler
+Module1=CorsFilter
+Module2=HttpsFilter
+Module3=ImageTrans
+Module4=ImageTransShared
+Module5=IndexFilter
+Module6=PrivateHeaderFilter
+Module7=TranslateHandler
+Module8=TranslatorHandler
 NumberOfFiles=1
 NumberOfLibraries=5
-NumberOfModules=6
-Version=8.9
+NumberOfModules=8
+Version=9.8
 @EndOfDesignText@
 'Non-UI application (console / server application)
 #Region Project Attributes 
@@ -42,8 +44,9 @@ Sub AppStart (Args() As String)
 	srvr.AddWebSocket("/imagetrans", "ImageTrans")
 	srvr.AddHandler("/translate","TranslateHandler",False)
 	srvr.AddHandler("/translator","TranslatorHandler",False)
-	srvr.AddFilter("/","IndexFilter",False)
-	ConfigureSSL(51043)
+	srvr.AddFilter("/*","PrivateHeaderFilter",False)
+	ConfigureCORS("/*", "*", "GET,POST,HEAD,OPTIONS", "X-Requested-With,Content-Type,Accept,Origin")
+	ConfigureSSL(443)
 	srvr.Start
 	StartMessageLoop
 End Sub
@@ -59,6 +62,20 @@ Private Sub ConfigureSSL (SslPort As Int)
 		srvr.SetSslConfiguration(ssl, SslPort)
 		'srvr.AddFilter("/*","HttpsFilter",False)
 	End If
+End Sub
+
+' allowedOrigins = "*" or "http://google.com"
+' allowedMethods = "*" or "GET,POST,HEAD"
+' allowedHeaders = "*" or "X-Requested-With,Content-Type,Accept,Origin"
+Private Sub ConfigureCORS (Path As String, allowedOrigins As String, allowedMethods As String, allowedHeaders As String) 'ignore
+	Dim cors As CorsFilter
+	cors.Initialize(Path, CreateMap("allowedOrigins": allowedOrigins, _
+    "allowedMethods": allowedMethods, _
+    "allowedHeaders": allowedHeaders, _
+    "allowCredentials": "true", _
+    "preflightMaxAge": 1800, _
+    "chainPreflight": "true"))
+	cors.AddToServer(srvr)
 End Sub
 
 'Return true to allow the default exceptions handler to handle the uncaught exception.
