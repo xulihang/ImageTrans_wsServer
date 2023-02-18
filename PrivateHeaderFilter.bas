@@ -16,5 +16,5 @@ End Sub
 'Return True to allow the request to proceed.
 Public Sub Filter(req As ServletRequest, resp As ServletResponse) As Boolean
 	resp.SetHeader("Access-Control-Allow-Private-Network","true")
-	Return False
+	Return True
 End Sub

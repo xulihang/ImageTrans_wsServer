@@ -15,7 +15,6 @@ End Sub
 
 Sub Handle(req As ServletRequest, resp As ServletResponse)
 	Log("new translation connection")
-	resp.ContentType="text/plain"
 	resp.SetHeader("Access-Control-Allow-Origin","*")
 	resp.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, HEAD, DELETE, PUT")
 	resp.setHeader("Access-Control-Max-Age", "3600")
@@ -26,6 +25,7 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 		Return
 	End If
 	Dim src As String = req.GetParameter("src")
+	Log(src)
 	Dim saveToFile As String = req.GetParameter("saveToFile")
 	If saveToFile="true" And src.StartsWith("data") Then
 		Dim base64 As String
