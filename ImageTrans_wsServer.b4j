@@ -46,8 +46,8 @@ Sub AppStart (Args() As String)
 	srvr.AddWebSocket("/imagetrans", "ImageTrans")
 	srvr.AddHandler("/translate","TranslateHandler",False)
 	srvr.AddHandler("/translator","TranslatorHandler",False)
-	srvr.AddFilter("/*","PrivateHeaderFilter",False)
-	ConfigureCORS("/*", "*", "GET,POST,HEAD,OPTIONS", "X-Requested-With,Content-Type,Accept,Origin")
+	srvr.AddFilter("/translate","PrivateHeaderFilter",False)
+	ConfigureCORS("/translate", "*", "GET,POST,HEAD,OPTIONS", "X-Requested-With,Content-Type,Accept,Origin")
 	ConfigureSSL(51043)
 	srvr.Start
 	StartMessageLoop
@@ -77,7 +77,7 @@ Private Sub ConfigureCORS (Path As String, allowedOrigins As String, allowedMeth
     "allowedHeaders": allowedHeaders, _
     "allowCredentials": "true", _
     "preflightMaxAge": 1800, _
-    "chainPreflight": "true"))
+    "chainPreflight": "false"))
 	cors.AddToServer(srvr)
 End Sub
 
