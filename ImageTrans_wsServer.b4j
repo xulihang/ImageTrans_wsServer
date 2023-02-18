@@ -47,6 +47,7 @@ Sub AppStart (Args() As String)
 	srvr.AddHandler("/translate","TranslateHandler",False)
 	srvr.AddHandler("/translator","TranslatorHandler",False)
 	srvr.AddFilter("/translate","PrivateHeaderFilter",False)
+	srvr.AddFilter("/","IndexFilter",False)
 	ConfigureCORS("/translate", "*", "GET,POST,HEAD,OPTIONS", "X-Requested-With,Content-Type,Accept,Origin")
 	ConfigureSSL(51043)
 	srvr.Start
