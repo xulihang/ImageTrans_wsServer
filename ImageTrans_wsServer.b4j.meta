@@ -25,6 +25,6 @@ ModuleClosedNodes5=
 ModuleClosedNodes6=
 ModuleClosedNodes7=
 ModuleClosedNodes8=
-NavigationStack=Main,Application_Error,60,0,TranslatorHandler,Initialize,8,0,ImageTransShared,Process_Globals,0,0,PrivateHeaderFilter,Initialize,9,0,TranslatorHandler,Handle,12,0,HttpsFilter,Filter,10,0,TranslateHandler,Handle,16,6,Main,AppStart,25,0,Main,ConfigureSSL,44,0,Main,ConfigureCORS,53,2
+NavigationStack=TranslatorHandler,Initialize,8,0,ImageTransShared,Process_Globals,0,0,PrivateHeaderFilter,Initialize,9,0,TranslatorHandler,Handle,12,0,HttpsFilter,Filter,10,0,TranslateHandler,Handle,16,6,Main,ConfigureCORS,53,2,Main,Process_Globals,10,0,Main,AppStart,23,0,Main,ConfigureSSL,33,6
 SelectedBuild=0
 VisibleModules=3,4,7,2,8,5,1,6

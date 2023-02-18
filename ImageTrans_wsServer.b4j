@@ -1,7 +1,9 @@
 ﻿AppType=StandardJava
 Build1=Default,b4j.example
-File1=translator.html
+File1=certificate.jks
+File2=translator.html
 FileGroup1=Default Group
+FileGroup2=Default Group
 Group=Default Group
 Library1=jcore
 Library2=jserver
@@ -16,7 +18,7 @@ Module5=IndexFilter
 Module6=PrivateHeaderFilter
 Module7=TranslateHandler
 Module8=TranslatorHandler
-NumberOfFiles=1
+NumberOfFiles=2
 NumberOfLibraries=5
 NumberOfModules=8
 Version=9.8
@@ -46,22 +48,23 @@ Sub AppStart (Args() As String)
 	srvr.AddHandler("/translator","TranslatorHandler",False)
 	srvr.AddFilter("/*","PrivateHeaderFilter",False)
 	ConfigureCORS("/*", "*", "GET,POST,HEAD,OPTIONS", "X-Requested-With,Content-Type,Accept,Origin")
-	ConfigureSSL(443)
+	ConfigureSSL(51043)
 	srvr.Start
 	StartMessageLoop
 End Sub
 
 Private Sub ConfigureSSL (SslPort As Int)
 	'example of SSL connector configuration
-	If File.Exists(File.DirApp, "certificate.jks") Then
-		Dim ssl As SslConfiguration
-		ssl.Initialize
-		ssl.SetKeyStorePath(File.DirApp, "certificate.jks") 'path to keystore file
-		ssl.KeyStorePassword = "xulihang"
-		ssl.KeyManagerPassword = "xulihang"
-		srvr.SetSslConfiguration(ssl, SslPort)
-		'srvr.AddFilter("/*","HttpsFilter",False)
+	If File.Exists(File.DirApp, "certificate.jks") = False Then
+		File.Copy(File.DirAssets,"certificate.jks",File.DirApp,"certificate.jks")
 	End If
+	Dim ssl As SslConfiguration
+	ssl.Initialize
+	ssl.SetKeyStorePath(File.DirApp, "certificate.jks") 'path to keystore file
+	ssl.KeyStorePassword = "xulihang"
+	ssl.KeyManagerPassword = "xulihang"
+	srvr.SetSslConfiguration(ssl, SslPort)
+	'srvr.AddFilter("/*","HttpsFilter",False)
 End Sub
 
 ' allowedOrigins = "*" or "http://google.com"
