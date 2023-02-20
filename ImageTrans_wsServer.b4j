@@ -78,7 +78,7 @@ Private Sub ConfigureCORS (Path As String, allowedOrigins As String, allowedMeth
     "allowedHeaders": allowedHeaders, _
     "allowCredentials": "true", _
     "preflightMaxAge": 1800, _
-    "chainPreflight": "false"))
+    "chainPreflight": "true"))
 	cors.AddToServer(srvr)
 End Sub
 
