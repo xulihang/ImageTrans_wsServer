@@ -5,11 +5,12 @@ File2=translator.html
 FileGroup1=Default Group
 FileGroup2=Default Group
 Group=Default Group
-Library1=jcore
-Library2=jserver
-Library3=json
-Library4=jstringutils
-Library5=javaobject
+Library1=javaobject
+Library2=jcore
+Library3=jserver
+Library4=json
+Library5=jstringutils
+Library6=jokhttputils2
 Module1=CorsFilter
 Module2=HttpsFilter
 Module3=ImageTrans
@@ -19,7 +20,7 @@ Module6=PrivateHeaderFilter
 Module7=TranslateHandler
 Module8=TranslatorHandler
 NumberOfFiles=2
-NumberOfLibraries=5
+NumberOfLibraries=6
 NumberOfModules=8
 Version=9.8
 @EndOfDesignText@
@@ -49,16 +50,20 @@ Sub AppStart (Args() As String)
 	srvr.AddFilter("/translate","PrivateHeaderFilter",False)
 	srvr.AddFilter("/","IndexFilter",False)
 	ConfigureCORS("/translate", "*", "GET,POST,HEAD,OPTIONS", "X-Requested-With,Content-Type,Accept,Origin")
-	ConfigureSSL(51043)
-	srvr.Start
+	ConfigureSSLAndStart(51043)
 	StartMessageLoop
 End Sub
 
-Private Sub ConfigureSSL (SslPort As Int)
+Private Sub ConfigureSSLAndStart (SslPort As Int) As ResumableSub
 	'example of SSL connector configuration
 	If File.Exists(File.DirApp, "certificate.jks") = False Then
 		File.Copy(File.DirAssets,"certificate.jks",File.DirApp,"certificate.jks")
 	End If
+	
+	If IsCertificateNotExpired(File.Combine(File.DirApp,"certificate.jks")) = False Then
+		Wait For (RedownloadCertificate) complete (result As Object)
+	End If
+	
 	Dim ssl As SslConfiguration
 	ssl.Initialize
 	ssl.SetKeyStorePath(File.DirApp, "certificate.jks") 'path to keystore file
@@ -66,6 +71,8 @@ Private Sub ConfigureSSL (SslPort As Int)
 	ssl.KeyManagerPassword = "xulihang"
 	srvr.SetSslConfiguration(ssl, SslPort)
 	'srvr.AddFilter("/*","HttpsFilter",False)
+	srvr.Start
+	Return ""
 End Sub
 
 ' allowedOrigins = "*" or "http://google.com"
@@ -85,4 +92,45 @@ End Sub
 'Return true to allow the default exceptions handler to handle the uncaught exception.
 Sub Application_Error (Error As Exception, StackTrace As String) As Boolean
 	Return True
+End Sub
+
+Private Sub IsCertificateNotExpired(path As String) As Boolean
+	Dim keyStoreStatic As JavaObject
+	keyStoreStatic.InitializeStatic("java.security.KeyStore")
+	Dim ks As JavaObject
+	ks = keyStoreStatic.RunMethod("getInstance",Array("JKS"))
+	Dim passwordArray As JavaObject
+	Dim pwd As Object = "xulihang"
+	Dim pwdJO As JavaObject = pwd
+	passwordArray = pwdJO.RunMethod("toCharArray",Null)
+	Dim f As InputStream = File.OpenInput(path,"")
+	ks.RunMethod("load",Array(f, passwordArray))
+	Dim aliases As JavaObject = ks.RunMethod("aliases",Null)
+	Do While aliases.RunMethod("hasMoreElements",Null)
+		Dim alias As String = aliases.RunMethod("nextElement",Null)
+		Dim cert As JavaObject = ks.RunMethod("getCertificate",Array(alias))
+		Dim expirationDate As JavaObject = cert.RunMethod("getNotAfter",Null)
+		Dim expirationTimestamp As Long = expirationDate.RunMethod("getTime",Null)
+		If DateTime.Now - expirationTimestamp > 0 Then
+			Return False
+		End If
+	Loop
+	Return True
+End Sub
+
+Private Sub RedownloadCertificate As ResumableSub
+	Log("redownloading")
+	Dim job As HttpJob
+	job.Initialize("job",Me)
+	job.Download("https://blog.xulihang.me/ImageTrans_wsServer/certificate.jks")
+	wait for (job) jobDone(job As HttpJob)
+	If job.Success Then
+		Dim out As OutputStream = File.OpenOutput(File.DirApp,"certificate.jks", False)
+		File.Copy2(job.GetInputStream, out)
+		out.Close '<------ very important
+	Else
+		Log(job.ErrorMessage)
+	End If
+	job.Release
+	Return ""
 End Sub
