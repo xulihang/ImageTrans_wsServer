@@ -35,6 +35,7 @@ Sub Process_Globals
 	Public translated As Boolean=False
 	Public success As Boolean
 	Public outputPath As String
+	Public imgMap As Map
 End Sub
 
 Sub AppStart (Args() As String)

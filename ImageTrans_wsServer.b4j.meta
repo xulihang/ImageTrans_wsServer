@@ -25,6 +25,6 @@ ModuleClosedNodes5=
 ModuleClosedNodes6=
 ModuleClosedNodes7=
 ModuleClosedNodes8=
-NavigationStack=IndexFilter,Class_Globals,2,0,IndexFilter,Initialize,8,0,IndexFilter,Filter,13,0,Main,Application_Error,64,0,Main,ConfigureCORS,59,3,Main,RedownloadCertificate,94,6,ImageTransShared,Process_Globals,0,0,Main,AppStart,22,6,Main,ConfigureSSLAndStart,47,6,Main,IsCertificateNotExpired,91,6
+NavigationStack=ImageTransShared,Translate,29,0,Main,Process_Globals,11,4,ImageTrans,set_translated,30,3,TranslateHandler,Handle,30,0,ImageTransShared,Translated,21,0,ImageTransShared,Disconnect,37,0,Main,AppStart,28,0,IndexFilter,Class_Globals,4,0,TranslateHandler,Initialize,5,0,TranslateHandler,WaitForTheTranslationToBeDone,54,6
 SelectedBuild=0
 VisibleModules=3,4,7,2,6,5

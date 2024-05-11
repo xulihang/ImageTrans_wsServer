@@ -34,6 +34,7 @@ Sub set_translated(map As Map)
 	Main.translated=True
 	Main.success=map.GetDefault("success",False)
 	Main.outputPath=map.GetDefault("output","")
+	Main.imgMap=map.GetDefault("imgMap",Null)
 	Log(map)
 End Sub
 

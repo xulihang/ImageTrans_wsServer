@@ -137,6 +137,7 @@ function translate(){
   ajaxObj.onreadystatechange = function () {
     toggleStatusMask("");
     if (ajaxObj.readyState == 4 && ajaxObj.status == 200) {
+      //console.log(ajaxObj.responseText);
       try {
         var response = JSON.parse(ajaxObj.responseText);
         if (!response["img"]){

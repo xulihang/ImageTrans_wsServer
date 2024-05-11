@@ -58,6 +58,9 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse,returnType As String,c
 			base64=su.EncodeBase64(File.ReadBytes(Main.outputPath,""))
 			result.Put("success",True)
 			result.Put("img",base64)
+			If Main.imgMap.IsInitialized Then
+				result.Put("imgMap",Main.imgMap)
+			End If
 		Else
 			result.Put("success",False)
 		End If
