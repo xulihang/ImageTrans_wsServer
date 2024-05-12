@@ -230,6 +230,9 @@
     document.getElementsByClassName("shutterCircle")[0].addEventListener("click",function(){
       translate();
     })
+    document.getElementsByClassName("overlay")[0].addEventListener("click",function(event){
+      adjustRegion(event);
+    })
   }
 
   async function startCamera(camera){
@@ -402,6 +405,57 @@
     ctx.drawImage(video,x,y,width,height,0,0,width,height);
     return canvas.toDataURL();
     
+  }
+
+  function adjustRegion(event){
+    console.log(event);
+    let overlay = document.getElementsByClassName("overlay")[0];
+    let coord = getMousePosition(event,overlay);
+    console.log(coord);
+    let regionRect = document.getElementsByClassName("region")[0];
+    let centerX = document.getElementById("video").videoWidth/2;
+    let centerY = document.getElementById("video").videoHeight/2;
+    let regionX = parseInt(regionRect.getAttribute("x"));
+    let regionY = parseInt(regionRect.getAttribute("y"));
+    let regionWidth = parseInt(regionRect.getAttribute("width"));
+    let regionHeight = parseInt(regionRect.getAttribute("height"));
+    let regionRight = regionX + regionWidth;
+    let regionBottom = regionY + regionHeight;
+    if (coord.x < centerX && coord.y < centerY) {
+      regionRect.setAttribute("x",coord.x);
+      regionRect.setAttribute("y",coord.y);
+      regionRect.setAttribute("width",regionRight - coord.x);
+      regionRect.setAttribute("height",regionBottom - coord.y);
+    }else if (coord.x > centerX && coord.y < centerY) {
+      regionRect.setAttribute("y",coord.y);
+      regionRect.setAttribute("width",coord.x - regionX);
+      regionRect.setAttribute("height",regionBottom - coord.y);
+    }else if (coord.x > centerX && coord.y > centerY) {
+      regionRect.setAttribute("width",coord.x - regionX);
+      regionRect.setAttribute("height",coord.y - regionY);
+    }else{
+      regionRect.setAttribute("x",coord.x);
+      regionRect.setAttribute("width",regionRight - coord.x);
+      regionRect.setAttribute("height",coord.y - regionY);
+    }
+  }
+
+  //Convert the screen coordinates to the SVG's coordinates from https://www.petercollingridge.co.uk/tutorials/svg/interactive/dragging/
+  function getMousePosition(event,svg) {
+    let CTM = svg.getScreenCTM();
+    if (event.targetTouches) { //if it is a touch event
+      let x = event.targetTouches[0].clientX;
+      let y = event.targetTouches[0].clientY;
+      return {
+        x: (x - CTM.e) / CTM.a,
+        y: (y - CTM.f) / CTM.d
+      };
+    }else{
+      return {
+        x: (event.clientX - CTM.e) / CTM.a,
+        y: (event.clientY - CTM.f) / CTM.d
+      };
+    }
   }
 </script>
 </body>
