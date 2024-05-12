@@ -415,14 +415,14 @@
     let coord = getMousePosition(event,overlay);
     console.log(coord);
     let regionRect = document.getElementsByClassName("region")[0];
-    let centerX = document.getElementById("video").videoWidth/2;
-    let centerY = document.getElementById("video").videoHeight/2;
     let regionX = parseInt(regionRect.getAttribute("x"));
     let regionY = parseInt(regionRect.getAttribute("y"));
     let regionWidth = parseInt(regionRect.getAttribute("width"));
     let regionHeight = parseInt(regionRect.getAttribute("height"));
     let regionRight = regionX + regionWidth;
     let regionBottom = regionY + regionHeight;
+    let centerX = regionX + regionWidth/2;
+    let centerY = regionY + regionHeight/2
     if (coord.x < centerX && coord.y < centerY) {
       regionRect.setAttribute("x",coord.x);
       regionRect.setAttribute("y",coord.y);
