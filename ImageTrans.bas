@@ -30,11 +30,17 @@ Public Sub Translate(src As String)
 	ws.Flush
 End Sub
 
+Public Sub TranslateRegion(path As String)
+	ws.RunFunction("TranslateRegion",Array(path))
+	ws.Flush
+End Sub
+
 Sub set_translated(map As Map)
 	Main.translated=True
 	Main.success=map.GetDefault("success",False)
 	Main.outputPath=map.GetDefault("output","")
 	Main.imgMap=map.GetDefault("imgMap",Null)
+	Main.regionMap=map.GetDefault("regionMap",Null)
 	Log(map)
 End Sub
 

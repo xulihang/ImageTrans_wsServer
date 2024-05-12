@@ -37,6 +37,14 @@ Public Sub Translate(src As String)
 	Next
 End Sub
 
+Public Sub TranslateRegion(path As String)
+	Log(connections.Size)
+	For Each it As ImageTrans In connections.Values
+		CallSubDelayed2(it, "TranslateRegion",path)
+		Exit
+	Next
+End Sub
+
 Public Sub Disconnect(it As ImageTrans, name As String)
 	If connections.ContainsKey(name) = False Or connections.Get(name) <> it Then Return
 	connections.Remove(name)

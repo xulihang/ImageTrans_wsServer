@@ -16,7 +16,8 @@ Library4=json
 Library5=jstringutils
 Library6=jokhttputils2
 Module1=CorsFilter
-Module10=TranslatorHandler
+Module10=TranslateRegionHandler
+Module11=TranslatorHandler
 Module2=HttpsFilter
 Module3=ImageTrans
 Module4=ImageTransShared
@@ -27,7 +28,7 @@ Module8=SettingsHandler
 Module9=TranslateHandler
 NumberOfFiles=4
 NumberOfLibraries=6
-NumberOfModules=10
+NumberOfModules=11
 Version=9.8
 @EndOfDesignText@
 'Non-UI application (console / server application)
@@ -42,6 +43,7 @@ Sub Process_Globals
 	Public success As Boolean
 	Public outputPath As String
 	Public imgMap As Map
+	Public regionMap As Map
 End Sub
 
 Sub AppStart (Args() As String)
@@ -54,11 +56,13 @@ Sub AppStart (Args() As String)
 	srvr.AddWebSocket("/imagetrans", "ImageTrans")
 	srvr.AddHandler("/translate","TranslateHandler",False)
 	srvr.AddHandler("/translator","TranslatorHandler",False)
+	srvr.AddHandler("/translateRegion","TranslateRegionHandler",False)
 	srvr.AddFilter("/translate","PrivateHeaderFilter",False)
 	srvr.AddFilter("/","IndexFilter",False)
 	srvr.AddHandler("/index","IndexHandler",False)
 	srvr.AddHandler("/settings","SettingsHandler",False)
 	ConfigureCORS("/translate", "*", "GET,POST,HEAD,OPTIONS", "X-Requested-With,Content-Type,Accept,Origin")
+	ConfigureCORS("/translateRegion", "*", "GET,POST,HEAD,OPTIONS", "X-Requested-With,Content-Type,Accept,Origin")
 	ConfigureSSLAndStart(51043)
 	StartMessageLoop
 End Sub
