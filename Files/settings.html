@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>ImageTrans Online</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+</head>
+<body>
+  <h2>Settings</h2>
+  <label>
+    Server URL:
+    <input id="serverURL" type="text" value=""/>
+  </label>
+  <br/>
+  Scan Region (in percent):
+  <br/>
+  <label>
+    Left:
+    <input id="regionLeft" type="number" value="35"/>
+  </label>
+  <br/>
+  <label>
+    Right:
+    <input id="regionRight" type="number" value="65"/>
+  </label>
+  <br/>
+  <label>
+    Top:
+    <input id="regionTop" type="number" value="25"/>
+  </label>
+  <br/>
+  <label>
+    Bottom:
+    <input id="regionBottom" type="number" value="45"/>
+  </label>
+  <br/>
+  <button class="saveButton">Save</button>
+  <script>
+    document.getElementsByClassName("saveButton")[0].addEventListener("click",function(){
+      let url = document.getElementById("serverURL").value;
+      if (url) {
+        localStorage.setItem("URL",url);
+      }else{
+        localStorage.removeItem("URL");
+      }
+      let region = {};
+      region.left = document.getElementById("regionLeft").value;
+      region.right = document.getElementById("regionRight").value;
+      region.top = document.getElementById("regionTop").value;
+      region.bottom = document.getElementById("regionBottom").value;
+      localStorage.setItem("region",JSON.stringify(region));
+      alert("Saved");
+    })
+    loadSettings();
+    function loadSettings(){
+      let url = localStorage.getItem("URL");
+      if (url) {
+        document.getElementById("serverURL").value = url;
+      }
+      let region = JSON.parse(localStorage.getItem("region"));
+      if (region) {
+        document.getElementById("regionLeft").value = region.left;
+        document.getElementById("regionRight").value = region.right;
+        document.getElementById("regionBottom").value = region.bottom;
+        document.getElementById("regionTop").value = region.top;
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,9 +1,13 @@
 ﻿AppType=StandardJava
 Build1=Default,b4j.example
 File1=certificate.jks
-File2=translator.html
+File2=index.html
+File3=settings.html
+File4=translator.html
 FileGroup1=Default Group
 FileGroup2=Default Group
+FileGroup3=Default Group
+FileGroup4=Default Group
 Group=Default Group
 Library1=javaobject
 Library2=jcore
@@ -12,16 +16,18 @@ Library4=json
 Library5=jstringutils
 Library6=jokhttputils2
 Module1=CorsFilter
+Module10=TranslatorHandler
 Module2=HttpsFilter
 Module3=ImageTrans
 Module4=ImageTransShared
 Module5=IndexFilter
-Module6=PrivateHeaderFilter
-Module7=TranslateHandler
-Module8=TranslatorHandler
-NumberOfFiles=2
+Module6=IndexHandler
+Module7=PrivateHeaderFilter
+Module8=SettingsHandler
+Module9=TranslateHandler
+NumberOfFiles=4
 NumberOfLibraries=6
-NumberOfModules=8
+NumberOfModules=10
 Version=9.8
 @EndOfDesignText@
 'Non-UI application (console / server application)
@@ -50,6 +56,8 @@ Sub AppStart (Args() As String)
 	srvr.AddHandler("/translator","TranslatorHandler",False)
 	srvr.AddFilter("/translate","PrivateHeaderFilter",False)
 	srvr.AddFilter("/","IndexFilter",False)
+	srvr.AddHandler("/index","IndexHandler",False)
+	srvr.AddHandler("/settings","SettingsHandler",False)
 	ConfigureCORS("/translate", "*", "GET,POST,HEAD,OPTIONS", "X-Requested-With,Content-Type,Accept,Origin")
 	ConfigureSSLAndStart(51043)
 	StartMessageLoop

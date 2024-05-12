@@ -16,7 +16,7 @@ End Sub
 'Return True to allow the request to proceed.
 Public Sub Filter(req As ServletRequest, resp As ServletResponse) As Boolean
 	If File.Exists(File.DirApp,"index.html") == False Then
-		resp.SendRedirect("/translator")
+		resp.SendRedirect("/index")
 		Return False
 	End If
 	Return True
