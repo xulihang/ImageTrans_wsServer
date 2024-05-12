@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>ImageTrans Online</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <style>
+  .app {
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+  }
+  
+  .header {
+    position:absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2em;
+    background: blue;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+  }
+
+  .results {
+    margin-top: 2em;
+    overflow: auto;
+    height: calc(100% - 2em);
+  }
+
+  .result {
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid black;
+  }
+
+  .result img{
+    max-height: 20vh;
+  }
+
+  .camera {
+    position: absolute;
+    right: 10px;
+  }
+
+  .camera:hover {
+    cursor: pointer;
+  }
+  
+  .translator {
+    margin-top: 2em;
+    height: calc(100% - 5em);
+  }
+  
+  .mask {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .status {
+    color:white;
+  }
+
+  .textModal {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    justify-content: center;
+  }
+
+  .textContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: left;
+    color: white;
+    overflow: auto;
+  }
+
+  .closeButton {
+    position: fixed;
+    right: 0;
+    top: 0;
+    height: 20px;
+  }
+
+  .closeModalButton {
+    position: fixed;
+    right: 0;
+    top: 0;
+    height: 20px;
+  }
+  
+  .switchButton {
+    position: fixed;
+    right: 0;
+    top: 20px;
+    height: 20px;
+  }
+
+  .scanner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: white;
+  }
+
+  #video {
+    left:0;
+    top:0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .shutter {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    left: 0;
+    height: 3em;
+  }
+
+  .shutterCircle:hover {
+    cursor: pointer;
+  }
+
+  .shutterCircle:active {
+    fill:gray;
+  }
+
+  .overlay {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    left: 0;
+    height: 100%;
+  }
+
+  .region {
+    fill: transparent;
+    stroke: red;
+    stroke-width: 2;
+  }
+
+  </style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    Scan and Translate
+    <svg class="camera" width="30px" height="30px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 16C13.6569 16 15 14.6569 15 13C15 11.3431 13.6569 10 12 10C10.3431 10 9 11.3431 9 13C9 14.6569 10.3431 16 12 16Z" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M3 16.8V9.2C3 8.0799 3 7.51984 3.21799 7.09202C3.40973 6.71569 3.71569 6.40973 4.09202 6.21799C4.51984 6 5.0799 6 6.2 6H7.25464C7.37758 6 7.43905 6 7.49576 5.9935C7.79166 5.95961 8.05705 5.79559 8.21969 5.54609C8.25086 5.49827 8.27836 5.44328 8.33333 5.33333C8.44329 5.11342 8.49827 5.00346 8.56062 4.90782C8.8859 4.40882 9.41668 4.08078 10.0085 4.01299C10.1219 4 10.2448 4 10.4907 4H13.5093C13.7552 4 13.8781 4 13.9915 4.01299C14.5833 4.08078 15.1141 4.40882 15.4394 4.90782C15.5017 5.00345 15.5567 5.11345 15.6667 5.33333C15.7216 5.44329 15.7491 5.49827 15.7803 5.54609C15.943 5.79559 16.2083 5.95961 16.5042 5.9935C16.561 6 16.6224 6 16.7454 6H17.8C18.9201 6 19.4802 6 19.908 6.21799C20.2843 6.40973 20.5903 6.71569 20.782 7.09202C21 7.51984 21 8.0799 21 9.2V16.8C21 17.9201 21 18.4802 20.782 18.908C20.5903 19.2843 20.2843 19.5903 19.908 19.782C19.4802 20 18.9201 20 17.8 20H6.2C5.0799 20 4.51984 20 4.09202 19.782C3.71569 19.5903 3.40973 19.2843 3.21799 18.908C3 18.4802 3 17.9201 3 16.8Z" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+  <div class="results"></div>
+  <div class="scanner" style="display:none;">
+    <video id="video" muted autoplay="autoplay" playsinline="playsinline" webkit-playsinline></video>
+    <svg class="overlay">
+      <rect class="region"></rect>
+    </svg>
+    <svg class="shutter" viewBox="0 0 100 100">
+      <circle
+        cx="50"
+        cy="50"
+        r="50"
+        fill="black"
+      ></circle>
+      <circle
+        class="shutterCircle"
+        cx="50"
+        cy="50"
+        r="25"
+        fill="white"
+      ></circle>
+    </svg>
+    <button class="closeButton">Close</button>
+    <button class="switchButton">Switch</button>
+  </div>
+</div>
+<div class="mask" style="display:none;">
+  <div class="status"></div>
+</div>
+<div class="textModal" style="display:none;">
+  <button class="closeModalButton">Close</button>
+  <div class="textContainer"></div>
+</div>
+<script>
+  let cameras = [];
+  let currentCamera;
+  init();
+  async function init(){
+    await requestCameraPermission();
+    await listCameras();
+    document.getElementsByClassName("camera")[0].addEventListener("click",function(){
+      startCamera(cameras[cameras.length - 1]);
+    })
+    document.getElementById("video").addEventListener("loadeddata",function(){
+      drawScanRegion();
+    })
+    document.getElementsByClassName("closeButton")[0].addEventListener("click",function(){
+      stopCamera();
+    })
+    document.getElementsByClassName("closeModalButton")[0].addEventListener("click",function(){
+      document.getElementsByClassName("textModal")[0].style.display = "none";
+    })
+    document.getElementsByClassName("textModal")[0].addEventListener('click', (event) => {
+      if (event.srcElement.className != "textContainer") {
+        document.getElementsByClassName("textModal")[0].style.display = "none";
+      }
+    });
+    document.getElementsByClassName("switchButton")[0].addEventListener("click",function(){
+      switchCamera();
+    })
+    document.getElementsByClassName("shutterCircle")[0].addEventListener("click",function(){
+      translate();
+    })
+  }
+
+  async function startCamera(camera){
+    document.getElementsByClassName("scanner")[0].style.display = "";
+    currentCamera = camera;
+    const videoConstraints = {video: {width:1920, height:1080, deviceId: currentCamera.deviceId}, audio: false};
+    const cameraStream = await navigator.mediaDevices.getUserMedia(videoConstraints);
+    document.getElementById("video").srcObject = cameraStream;
+  }
+
+  async function stopCamera(){
+    document.getElementsByClassName("scanner")[0].style.display = "none";
+    closeStream(document.getElementById("video").srcObject)
+    document.getElementById("video").srcObject = null;
+  }
+
+  async function switchCamera(){
+    let currentIndex = cameras.indexOf(currentCamera);
+    await stopCamera();
+    let nextCamera;
+    if (currentIndex < cameras.length - 1) {
+      nextCamera = cameras[currentIndex + 1]
+    }else{
+      nextCamera = cameras[0];
+    }
+    startCamera(nextCamera);
+  }
+
+  function drawScanRegion(){
+    let height = document.getElementById("video").videoHeight;
+    let width = document.getElementById("video").videoWidth;
+    let region = localStorage.getItem("region");
+    let overlay = document.getElementsByClassName("overlay")[0];
+    let regionRect = overlay.getElementsByClassName("region")[0];
+    if (region) {
+      region = JSON.parse(region);
+    }else{
+      region = {"left":"20","right":"80","top":"20","bottom":"60"};
+    }
+    let regionX = region["left"]/100*width;
+    let regionWidth = (region["right"] - region["left"])/100*width;
+    let regionY = region["top"]/100*height;
+    let regionHeight = (region["bottom"] - region["top"])/100*height;
+    console.log(region);
+    console.log(region["bottom"])
+    overlay.setAttribute("viewBox","0 0 "+width+" "+height);
+    regionRect.setAttribute("x",regionX); 
+    regionRect.setAttribute("width",regionWidth);
+    regionRect.setAttribute("y",regionY);
+    regionRect.setAttribute("height",regionHeight);
+  }
+
+
+
+  async function listCameras(){
+    let allDevices = await navigator.mediaDevices.enumerateDevices();
+    for (let i = 0; i < allDevices.length; i++){
+      let device = allDevices[i];
+      if (device.kind == 'videoinput'){
+        cameras.push(device);
+      }
+    }
+  }
+
+  async function requestCameraPermission() {
+    try {
+      const constraints = {video: true, audio: false};
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      closeStream(stream);
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+
+  function closeStream(stream){
+    if (stream) {
+      const tracks = stream.getTracks();
+      for (let i=0;i<tracks.length;i++) {
+        const track = tracks[i];
+        track.stop();  // stop the opened tracks
+      }
+    }
+  }
+
+  function toggleStatusMask(text){
+    if (text) {
+      document.getElementsByClassName("mask")[0].style.display = "";
+      document.getElementsByClassName("status")[0].innerHTML = text;
+    }else{
+      document.getElementsByClassName("mask")[0].style.display = "none";
+    }
+  }
+
+  function translate(){
+    toggleStatusMask("translating...");
+    let dataURL = capture();
+    var URL;
+    if (window.location.host) {
+      URL = "translateRegion";
+    }else{
+      URL = "http://127.0.0.1:51042/translateRegion";
+    }
+    var ajaxObj = new XMLHttpRequest();
+    ajaxObj.open('POST', URL);
+    ajaxObj.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    ajaxObj.send("base64="+encodeURIComponent(dataURL));
+    ajaxObj.onreadystatechange = function () {
+      toggleStatusMask("");
+      try {
+        if (ajaxObj.readyState == 4 && ajaxObj.status == 200) {
+          console.log(ajaxObj.responseText);
+          let regionMap = JSON.parse(ajaxObj.responseText)["regionMap"];
+          appendResult(dataURL,regionMap);
+          displayResult(regionMap);
+        }
+      } catch (error) {
+        alert(error);
+      }
+    }
+    ajaxObj.onerror = function () {
+      alert("error connecting the server");
+    }
+  }
+
+  function displayResult(regionMap){
+    let modal = document.getElementsByClassName("textModal")[0];
+    let container = document.getElementsByClassName("textContainer")[0];
+    modal.style.display = "flex";
+    container.innerText = getTextForDisplay(regionMap);
+  }
+
+  function appendResult(dataURL,regionMap){
+    let container = document.createElement("div");
+    container.className = "result"
+    let img = document.createElement("img");
+    img.src = dataURL;
+    container.appendChild(img);
+    let text = document.createElement("div");
+    text.innerText = getTextForDisplay(regionMap);
+    container.appendChild(text);
+    document.getElementsByClassName("results")[0].appendChild(container);
+  }
+
+  function getTextForDisplay(regionMap) {
+    let text = "";
+    text = text + regionMap["source"] + "\n";
+    let targetArray = regionMap["target"];
+    for (let index = 0; index < targetArray.length; index++) {
+      const target = targetArray[index];
+      const engine = target["engine"];
+      const translation = target["text"];
+      text = text + engine + ": \n" + translation + "\n";
+    }
+    return text;
+  }  
+
+  function capture(){
+    let video = document.getElementById("video");
+    let regionRect = document.getElementsByClassName("region")[0];
+    let x = regionRect.getAttribute("x");
+    let width = regionRect.getAttribute("width");
+    let y = regionRect.getAttribute("y");
+    let height = regionRect.getAttribute("height");
+    let canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    let ctx = canvas.getContext("2d");
+    //drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
+    ctx.drawImage(video,x,y,width,height,0,0,width,height);
+    return canvas.toDataURL();
+    
+  }
+</script>
+</body>
+</html>

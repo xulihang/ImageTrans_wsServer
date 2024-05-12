@@ -2,12 +2,14 @@
 Build1=Default,b4j.example
 File1=certificate.jks
 File2=index.html
-File3=settings.html
-File4=translator.html
+File3=scantranslator.html
+File4=settings.html
+File5=translator.html
 FileGroup1=Default Group
 FileGroup2=Default Group
 FileGroup3=Default Group
 FileGroup4=Default Group
+FileGroup5=Default Group
 Group=Default Group
 Library1=javaobject
 Library2=jcore
@@ -16,19 +18,20 @@ Library4=json
 Library5=jstringutils
 Library6=jokhttputils2
 Module1=CorsFilter
-Module10=TranslateRegionHandler
-Module11=TranslatorHandler
+Module10=TranslateHandler
+Module11=TranslateRegionHandler
+Module12=TranslatorHandler
 Module2=HttpsFilter
 Module3=ImageTrans
 Module4=ImageTransShared
 Module5=IndexFilter
 Module6=IndexHandler
 Module7=PrivateHeaderFilter
-Module8=SettingsHandler
-Module9=TranslateHandler
-NumberOfFiles=4
+Module8=ScanTranslatorHandler
+Module9=SettingsHandler
+NumberOfFiles=5
 NumberOfLibraries=6
-NumberOfModules=11
+NumberOfModules=12
 Version=9.8
 @EndOfDesignText@
 'Non-UI application (console / server application)
@@ -56,6 +59,7 @@ Sub AppStart (Args() As String)
 	srvr.AddWebSocket("/imagetrans", "ImageTrans")
 	srvr.AddHandler("/translate","TranslateHandler",False)
 	srvr.AddHandler("/translator","TranslatorHandler",False)
+	srvr.AddHandler("/scantranslator","ScanTranslatorHandler",False)
 	srvr.AddHandler("/translateRegion","TranslateRegionHandler",False)
 	srvr.AddFilter("/translate","PrivateHeaderFilter",False)
 	srvr.AddFilter("/","IndexFilter",False)
