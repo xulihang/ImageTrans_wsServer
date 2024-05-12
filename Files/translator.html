@@ -45,14 +45,33 @@
   }
   
   .imageContainer {
+    position: relative;
     height: 100%;
     overflow: auto;
   }
   
   img {
+    position: absolute;
+    top: 0;
+    left: 0;
     display: block;
     margin: 0 auto;
     max-width: 100%;
+  }
+
+  .textOverlay {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    left: 0;
+    top: 0;
+  }
+
+  .textBox {
+    position: absolute;
+  }
+  .textBox:hover {
+    border: 1px dotted blue;
   }
   
   .mask {
@@ -69,6 +88,30 @@
   .status {
     color:white;
   }
+
+  .textModal {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    justify-content: center;
+  }
+
+  .textContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color:white;
+  }
+
+  .closeButton {
+    position: fixed;
+    right: 0;
+    top: 0;
+  }
   </style>
 </head>
 <body>
@@ -79,7 +122,8 @@
   <div class="translator">
     <div class="imageContainer">
       <img class="source" alt="source image" style="display:none" />
-      <img class="target" alt="target image" <img class="source" alt="source image" style="display:none" />
+      <img class="target" alt="target image" style="display:none" />
+      <div class="textOverlay"></div>
     </div>
   </div>
   <div class="footer">
@@ -93,11 +137,23 @@
 <div class="mask" style="display:none;">
   <div class="status"></div>
 </div>
+<div class="textModal" style="display:none;">
+  <button class="closeButton">Close</button>
+  <div class="textContainer"></div>
+</div>
 <script>
 let sourceImg = document.getElementsByClassName("source")[0];
 let targetImg = document.getElementsByClassName("target")[0];
 document.getElementsByClassName("translateBtn")[0].addEventListener('click', (event) => {
   translate();
+});
+document.getElementsByClassName("closeButton")[0].addEventListener('click', (event) => {
+  document.getElementsByClassName("textModal")[0].style.display = "none";
+});
+document.getElementsByClassName("textModal")[0].addEventListener('click', (event) => {
+  if (event.srcElement.className != "textContainer") {
+    document.getElementsByClassName("textModal")[0].style.display = "none";
+  }
 });
 
 function onFileSelected(event){
@@ -143,6 +199,9 @@ function translate(){
         if (!response["img"]){
           alert("Bad result");
         }else{
+          targetImg.onload = function(){
+            overlayText(response["imgMap"]);
+          }
           targetImg.src = "data:image/jpeg;base64," + response["img"];
           updateDisplayOfSourceImgAndTargetImg(true);
         }
@@ -180,6 +239,48 @@ function toggleStatusMask(text){
   }else{
     document.getElementsByClassName("mask")[0].style.display = "none";
   }
+}
+
+function overlayText(imgMap){
+  if (imgMap) {
+    console.log(imgMap);
+    const overlay = document.getElementsByClassName("textOverlay")[0];
+    overlay.innerHTML = "";
+    let boxes = imgMap["boxes"];
+    let ratio = targetImg.clientWidth/targetImg.naturalWidth;
+    for (let index = 0; index < boxes.length; index++) {
+      const box = boxes[index];
+      let geometry;
+      if ("targetGeometry" in box) {
+        geometry = box["targetGeometry"];
+      }else{
+        geometry = box["geometry"];
+      }
+      const left = Math.ceil(ratio * geometry["X"]);
+      const top = Math.ceil(ratio * geometry["Y"]);
+      const width = Math.ceil(ratio * geometry["width"]);
+      const height = Math.ceil(ratio * geometry["height"]);
+      const boxContainer = document.createElement("div");
+      boxContainer.className = "textBox";
+      boxContainer.style.left = left  + "px";
+      boxContainer.style.top = top  + "px";
+      boxContainer.style.width = width  + "px";
+      boxContainer.style.height = height  + "px";
+      boxContainer.setAttribute("data-src",box["text"]);
+      boxContainer.setAttribute("data-tgt",box["target"]);
+      boxContainer.addEventListener("click",function(){
+        displayText(boxContainer)
+      })
+      overlay.appendChild(boxContainer);
+    }
+  }
+}
+
+function displayText(textBox){
+  let modal = document.getElementsByClassName("textModal")[0];
+  let container = document.getElementsByClassName("textContainer")[0];
+  modal.style.display = "flex";
+  container.innerText = textBox.getAttribute("data-src") + "\n" + textBox.getAttribute("data-tgt");
 }
 </script>
 </body>
