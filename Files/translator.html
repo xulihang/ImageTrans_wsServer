@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <title>ImageTrans Online</title>
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <script src="/translator.js"></script>
   <style>
   .app {
     position:fixed;
@@ -171,49 +172,64 @@ function onFileSelected(event){
   reader.readAsDataURL(file);  
 }
 
-function translate(){
+async function translate(){
   console.log("translate");
   var src = sourceImg.src;
   if (!src) {
     alert("Please load an image first");
     return;
   }
-  var URL;
-  if (window.location.host) {
-    URL = "translate";
-  }else{
-    URL = "http://127.0.0.1:51042/translate";
-  }
-  
-  var ajaxObj = new XMLHttpRequest();
-  ajaxObj.open('POST', URL);
-  ajaxObj.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
   toggleStatusMask("Translating...");
-  ajaxObj.send("src="+encodeURIComponent(src)+"&saveToFile=true");  //+"&saveToFile=true"
-  ajaxObj.onreadystatechange = function () {
-    toggleStatusMask("");
-    if (ajaxObj.readyState == 4 && ajaxObj.status == 200) {
-      //console.log(ajaxObj.responseText);
-      try {
-        var response = JSON.parse(ajaxObj.responseText);
-        if (!response["img"]){
-          alert("Bad result");
-        }else{
-          targetImg.onload = function(){
-            overlayText(response["imgMap"]);
-          }
-          targetImg.src = "data:image/jpeg;base64," + response["img"];
-          updateDisplayOfSourceImgAndTargetImg(true);
-        }
-        
-      } catch (error) {
-        console.log(error);
-        alert(ajaxObj.responseText);
-      }    
+  let engine = localStorage.getItem("engine");
+  if (!engine || engine === "imagetrans") {
+    var URL;
+    if (window.location.host) {
+      URL = "translate";
+    }else{
+      URL = "http://127.0.0.1:51042/translate";
     }
-  }
-  ajaxObj.onerror = function () {
-    alert("error connecting the server");
+    
+    var ajaxObj = new XMLHttpRequest();
+    ajaxObj.open('POST', URL);
+    ajaxObj.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    
+    ajaxObj.send("src="+encodeURIComponent(src)+"&saveToFile=true");  //+"&saveToFile=true"
+    ajaxObj.onreadystatechange = function () {
+      toggleStatusMask("");
+      if (ajaxObj.readyState == 4 && ajaxObj.status == 200) {
+        //console.log(ajaxObj.responseText);
+        try {
+          var response = JSON.parse(ajaxObj.responseText);
+          if (!response["img"]){
+            alert("Bad result");
+          }else{
+            targetImg.onload = function(){
+              overlayText(response["imgMap"]);
+            }
+            targetImg.src = "data:image/jpeg;base64," + response["img"];
+            updateDisplayOfSourceImgAndTargetImg(true);
+          }
+          
+        } catch (error) {
+          console.log(error);
+          alert(ajaxObj.responseText);
+        }    
+      }
+    }
+    ajaxObj.onerror = function () {
+      alert("error connecting the server");
+    }
+  }else if (engine === "tesseract") {
+    let tessOCRLang = localStorage.getItem("tessOCRLang") ?? "jpn_vert";
+    await initTess(tessOCRLang);
+    let imgMap = await tessOCR(sourceImg);
+    await translateBoxes(imgMap.boxes);
+    targetImg.onload = function(){
+      overlayText(imgMap);
+    }
+    targetImg.src = sourceImg.src;
+    updateDisplayOfSourceImgAndTargetImg(true);
+    toggleStatusMask("");
   }
 }
 
