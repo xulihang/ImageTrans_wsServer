@@ -188,11 +188,15 @@ async function translate(){
   toggleStatusMask("Translating...");
   let engine = localStorage.getItem("engine");
   if (!engine || engine === "imagetrans") {
-    var URL;
-    if (window.location.host) {
-      URL = "translate";
+    var URL = localStorage.getItem("URL");
+    if (!URL) {
+      if (window.location.host) {
+        URL = "translate";
+      }else{
+        URL = "http://127.0.0.1:51042/translate";
+      }
     }else{
-      URL = "http://127.0.0.1:51042/translate";
+      URL = URL + "/translate"
     }
     
     var ajaxObj = new XMLHttpRequest();

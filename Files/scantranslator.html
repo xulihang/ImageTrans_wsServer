@@ -336,12 +336,17 @@
     let dataURL = canvas.toDataURL();
     let engine = localStorage.getItem("engine");
     if (!engine || engine === "imagetrans") {
-      var URL;
-      if (window.location.host) {
-        URL = "translateRegion";
+      var URL = localStorage.getItem("URL");
+      if (!URL) {
+        if (window.location.host) {
+          URL = "translateRegion";
+        }else{
+          URL = "http://127.0.0.1:51042/translateRegion";
+        }
       }else{
-        URL = "http://127.0.0.1:51042/translateRegion";
+        URL = URL + "/translateRegion"
       }
+     
       var ajaxObj = new XMLHttpRequest();
       ajaxObj.open('POST', URL);
       ajaxObj.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
