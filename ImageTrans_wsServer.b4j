@@ -5,11 +5,13 @@ File2=index.html
 File3=scantranslator.html
 File4=settings.html
 File5=translator.html
+File6=translator.js
 FileGroup1=Default Group
 FileGroup2=Default Group
 FileGroup3=Default Group
 FileGroup4=Default Group
 FileGroup5=Default Group
+FileGroup6=Default Group
 Group=Default Group
 Library1=javaobject
 Library2=jcore
@@ -29,10 +31,10 @@ Module6=IndexHandler
 Module7=PrivateHeaderFilter
 Module8=ScanTranslatorHandler
 Module9=SettingsHandler
-NumberOfFiles=5
+NumberOfFiles=6
 NumberOfLibraries=6
 NumberOfModules=12
-Version=9.8
+Version=10
 @EndOfDesignText@
 'Non-UI application (console / server application)
 #Region Project Attributes 
@@ -67,6 +69,12 @@ Sub AppStart (Args() As String)
 	srvr.AddHandler("/settings","SettingsHandler",False)
 	ConfigureCORS("/translate", "*", "GET,POST,HEAD,OPTIONS", "X-Requested-With,Content-Type,Accept,Origin")
 	ConfigureCORS("/translateRegion", "*", "GET,POST,HEAD,OPTIONS", "X-Requested-With,Content-Type,Accept,Origin")
+
+	File.Copy(File.DirAssets,"scantranslator.html",File.DirApp,"scantranslator.html")
+	File.Copy(File.DirAssets,"translator.html",File.DirApp,"translator.html")
+	File.Copy(File.DirAssets,"settings.html",File.DirApp,"settings.html")
+	File.Copy(File.DirAssets,"translator.js",File.DirApp,"translator.js")
+
 	ConfigureSSLAndStart(51043)
 	StartMessageLoop
 End Sub
