@@ -9,7 +9,7 @@
   <h2>Settings</h2>
   <label>
     Server URL:
-    <input id="serverURL" type="text" value=""/>
+    <input id="serverURL" type="text" value="" placeholder="http://127.0.0.1:51042"/>
   </label>
   <br/>
   Scan Region (in percent):
@@ -34,6 +34,15 @@
     <input id="regionBottom" type="number" value="45"/>
   </label>
   <br/>
+  <label>
+    Engine:
+    <select id="engineSelect">
+      <option value="imagetrans" selected>ImageTrans</option>
+      <option value="paddle">PaddleOCR</option>
+      <option value="tesseract">Tesseract</option>
+    </select>
+  </label>
+  <br/>
   <button class="saveButton">Save</button>
   <script>
     document.getElementsByClassName("saveButton")[0].addEventListener("click",function(){
@@ -49,6 +58,8 @@
       region.top = document.getElementById("regionTop").value;
       region.bottom = document.getElementById("regionBottom").value;
       localStorage.setItem("region",JSON.stringify(region));
+      let engine = document.getElementById("engineSelect").selectedOptions[0].value;
+      localStorage.setItem("engine",engine);
       alert("Saved");
     })
     loadSettings();
@@ -63,6 +74,12 @@
         document.getElementById("regionRight").value = region.right;
         document.getElementById("regionBottom").value = region.bottom;
         document.getElementById("regionTop").value = region.top;
+      }
+      let engine = localStorage.getItem("engine");
+      if (engine) {
+        let engines = ["imagetrans","paddle","tesseract"];
+        let index = engines.indexOf(engine);
+        document.getElementById("engineSelect").selectedIndex = index;
       }
     }
   </script>
