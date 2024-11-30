@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <title>ImageTrans Online</title>
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <script src="translator.js"></script>
   <style>
   .app {
     position:fixed;
@@ -329,34 +330,52 @@
     }
   }
 
-  function translate(){
+  async function translate(){
     toggleStatusMask("translating...");
-    let dataURL = capture();
-    var URL;
-    if (window.location.host) {
-      URL = "translateRegion";
-    }else{
-      URL = "http://127.0.0.1:51042/translateRegion";
-    }
-    var ajaxObj = new XMLHttpRequest();
-    ajaxObj.open('POST', URL);
-    ajaxObj.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    ajaxObj.send("base64="+encodeURIComponent(dataURL));
-    ajaxObj.onreadystatechange = function () {
-      toggleStatusMask("");
-      try {
-        if (ajaxObj.readyState == 4 && ajaxObj.status == 200) {
-          console.log(ajaxObj.responseText);
-          let regionMap = JSON.parse(ajaxObj.responseText)["regionMap"];
-          appendResult(dataURL,regionMap);
-          displayResult(regionMap);
-        }
-      } catch (error) {
-        alert(error);
+    let canvas = capture();
+    let dataURL = canvas.toDataURL();
+    let engine = localStorage.getItem("engine");
+    if (!engine || engine === "imagetrans") {
+      var URL;
+      if (window.location.host) {
+        URL = "translateRegion";
+      }else{
+        URL = "http://127.0.0.1:51042/translateRegion";
       }
-    }
-    ajaxObj.onerror = function () {
-      alert("error connecting the server");
+      var ajaxObj = new XMLHttpRequest();
+      ajaxObj.open('POST', URL);
+      ajaxObj.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      ajaxObj.send("base64="+encodeURIComponent(dataURL));
+      ajaxObj.onreadystatechange = function () {
+        toggleStatusMask("");
+        try {
+          if (ajaxObj.readyState == 4 && ajaxObj.status == 200) {
+            console.log(ajaxObj.responseText);
+            let regionMap = JSON.parse(ajaxObj.responseText)["regionMap"];
+            appendResult(dataURL,regionMap);
+            displayResult(regionMap);
+          }
+        } catch (error) {
+          alert(error);
+        }
+      }
+      ajaxObj.onerror = function () {
+        alert("error connecting the server");
+      }
+    }else if (engine === "tesseract") {
+      let tessOCRLang = localStorage.getItem("tessOCRLang") ?? "jpn_vert";
+      await initTess(tessOCRLang);
+      let imgMap = await tessOCR(canvas);
+      console.log(imgMap);
+      let boxes = imgMap["boxes"];
+      if (boxes.length>0) {
+        await translateBoxes([boxes[0]]);
+        boxes[0]["source"] = boxes[0]["text"];
+        boxes[0]["target"] = [{engine:"mymemory",text:boxes[0]["target"]}];
+        appendResult(dataURL,boxes[0]);
+        displayResult(boxes[0]);
+      }
+      toggleStatusMask("");
     }
   }
 
@@ -405,8 +424,7 @@
     let ctx = canvas.getContext("2d");
     //drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
     ctx.drawImage(video,x,y,width,height,0,0,width,height);
-    return canvas.toDataURL();
-    
+    return canvas;
   }
 
   function adjustRegion(event){
