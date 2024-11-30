@@ -71,6 +71,10 @@
   .textBox {
     position: absolute;
   }
+  .textBox.nonImageTrans {
+    border: 1px dotted blue;
+  }
+
   .textBox:hover {
     border: 1px dotted blue;
   }
@@ -284,6 +288,9 @@ function overlayText(imgMap){
       boxContainer.style.height = height  + "px";
       boxContainer.setAttribute("data-src",box["text"]);
       boxContainer.setAttribute("data-tgt",box["target"]);
+      if (targetImg.src === sourceImg.src) {
+        boxContainer.classList.add("nonImageTrans");
+      }
       boxContainer.addEventListener("click",function(){
         displayText(boxContainer)
       })
