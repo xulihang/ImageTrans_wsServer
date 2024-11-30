@@ -45,7 +45,7 @@
   <br/>
   <label id="tessOCRLanguageLabel">
     OCR language for tesseract:
-    <select id="paddleLanguageSelect">
+    <select id="tessOCRLangSelect">
     </select>
   </label>
   <br/>
@@ -84,7 +84,18 @@
         {name:"Vietnamese",code:"vi"},
         {name:"Thai",code:"ti"}
     ]
+    let tessData = [
+      {name:"Japanese vertical",code:"jpn_vert"},
+      {name:"Japanese",code:"jpn"},
+      {name:"Korean",code:"kor"},
+      {name:"Chinese vertical",code:"chi_vert"},
+      {name:"Chinese",code:"chi"},
+      {name:"English",code:"eng"},
+      {name:"French",code:"fra"},
+      {name:"Italian",code:"ita"},
+    ]
     loadLanguageCodes();
+    loadTessLanguages();
     document.getElementsByClassName("saveButton")[0].addEventListener("click",function(){
       let url = document.getElementById("serverURL").value;
       if (url) {
@@ -104,6 +115,8 @@
       let targetLang = document.getElementById("targetLangSelect").selectedOptions[0].value;
       localStorage.setItem("sourceLang",sourceLang);
       localStorage.setItem("targetLang",targetLang);
+      let tessOCRLang = document.getElementById("tessOCRLangSelect").selectedOptions[0].value;
+      localStorage.setItem("tessOCRLang",tessOCRLang);
       alert("Saved");
     })
     loadSettings();
@@ -135,6 +148,11 @@
         let targetSelect = document.getElementById("targetLangSelect");
         setSelectedLang(targetSelect,targetLang);
       }
+      let tessOCRLang = localStorage.getItem("tessOCRLang");
+      if (tessOCRLang) {
+        let tessOCRLangSelect = document.getElementById("tessOCRLangSelect");
+        setSelectedLang(tessOCRLangSelect,tessOCRLang);
+      }
     }
 
     function loadLanguageCodes(){
@@ -159,6 +177,15 @@
           return;
         }
       }
+    }
+
+    function loadTessLanguages(){
+      let tessOCRLangSelect = document.getElementById("tessOCRLangSelect");
+      tessData.forEach(lang => {
+        let option = new Option(lang.name,lang.code);
+        tessOCRLangSelect.appendChild(option);
+      });
+      setSelectedLang(tessOCRLangSelect,"jpn_vert");
     }
   </script>
 </body>
