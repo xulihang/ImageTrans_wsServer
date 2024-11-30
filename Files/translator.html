@@ -166,6 +166,8 @@ function onFileSelected(event){
   var reader = new FileReader();    
   reader.onload = function(e){
     sourceImg.src = e.target.result;
+    const overlay = document.getElementsByClassName("textOverlay")[0];
+    overlay.innerHTML = "";
     updateDisplayOfSourceImgAndTargetImg(false);
   };
   
