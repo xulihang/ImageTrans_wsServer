@@ -43,8 +43,48 @@
     </select>
   </label>
   <br/>
+  <label id="tessOCRLanguageLabel">
+    OCR language for tesseract:
+    <select id="paddleLanguageSelect">
+    </select>
+  </label>
+  <br/>
+  <label id="paddleOCRLanguageLabel">
+    OCR language for PaddleOCR:
+    <select id="paddleLanguageSelect">
+    </select>
+  </label>
+  <br/>
+  <label>
+    Source lang:
+    <select id="sourceLangSelect">
+    </select>
+  </label>
+  <br/>
+  <label>
+    Target lang:
+    <select id="targetLangSelect">
+    </select>
+  </label>
+  <br/>
   <button class="saveButton">Save</button>
   <script>
+    let languageCodes = [
+        {name:"Arabic",code:"ar"},
+        {name:"English",code:"en"},
+        {name:"Chinese",code:"zh"},
+        {name:"Japanese",code:"ja"},
+        {name:"Korean",code:"ko"},
+        {name:"French",code:"fr"},
+        {name:"Italian",code:"it"},
+        {name:"Spanish",code:"es"},
+        {name:"Russian",code:"ru"},
+        {name:"Portuguese",code:"pt"},
+        {name:"Indonesian",code:"id"},
+        {name:"Vietnamese",code:"vi"},
+        {name:"Thai",code:"ti"}
+    ]
+    loadLanguageCodes();
     document.getElementsByClassName("saveButton")[0].addEventListener("click",function(){
       let url = document.getElementById("serverURL").value;
       if (url) {
@@ -60,6 +100,10 @@
       localStorage.setItem("region",JSON.stringify(region));
       let engine = document.getElementById("engineSelect").selectedOptions[0].value;
       localStorage.setItem("engine",engine);
+      let sourceLang = document.getElementById("sourceLangSelect").selectedOptions[0].value;
+      let targetLang = document.getElementById("targetLangSelect").selectedOptions[0].value;
+      localStorage.setItem("sourceLang",sourceLang);
+      localStorage.setItem("targetLang",targetLang);
       alert("Saved");
     })
     loadSettings();
@@ -80,6 +124,40 @@
         let engines = ["imagetrans","paddle","tesseract"];
         let index = engines.indexOf(engine);
         document.getElementById("engineSelect").selectedIndex = index;
+      }
+      let sourceLang = localStorage.getItem("sourceLang");
+      if (sourceLang) {
+        let sourceSelect = document.getElementById("sourceLangSelect");
+        setSelectedLang(sourceSelect,sourceLang);
+      }
+      let targetLang = localStorage.getItem("targetLang");
+      if (targetLang) {
+        let targetSelect = document.getElementById("targetLangSelect");
+        setSelectedLang(targetSelect,targetLang);
+      }
+    }
+
+    function loadLanguageCodes(){
+      let sourceSelect = document.getElementById("sourceLangSelect");
+      let targetSelect = document.getElementById("targetLangSelect");
+      languageCodes.forEach(lang => {
+        let option1 = new Option(lang.name,lang.code);
+        sourceSelect.appendChild(option1);
+        let option2 = new Option(lang.name,lang.code);
+        targetSelect.appendChild(option2);
+      });
+      setSelectedLang(sourceSelect,"ja");
+      setSelectedLang(targetSelect,"en");
+    }
+
+    function setSelectedLang(targetSelect,targetLang) {
+      for (let index = 0; index < targetSelect.options.length; index++) {
+        const option = targetSelect.options[index];
+        console.log(option);
+        if (option.value === targetLang) {
+          targetSelect.selectedIndex = index;
+          return;
+        }
       }
     }
   </script>
