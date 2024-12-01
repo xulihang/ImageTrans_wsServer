@@ -240,6 +240,16 @@ async function translate(){
     targetImg.src = sourceImg.src;
     updateDisplayOfSourceImgAndTargetImg(true);
     toggleStatusMask("");
+  }else if (engine === "paddle") {
+    await initPaddleOCR();
+    let imgMap = await ocrWithPaddle(sourceImg.src);
+    await translateBoxes(imgMap.boxes);
+    targetImg.onload = function(){
+      overlayText(imgMap);
+    }
+    targetImg.src = sourceImg.src;
+    updateDisplayOfSourceImgAndTargetImg(true);
+    toggleStatusMask("");
   }
 }
 

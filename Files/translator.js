@@ -1,5 +1,6 @@
 let tessWorker;
 let tessLang;
+let paddleOCR;
 async function initTess(lang){
     if (!tessWorker) {
         await loadLibrary("https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js","text/javascript");
@@ -36,7 +37,45 @@ async function tessOCR(image) {
         }
     });
     const imgMap = {};
-    console.log(JSON.parse(JSON.stringify(boxes)))
+    boxes = mergedBoxes(boxes);
+    imgMap["boxes"] = boxes;
+    return imgMap;
+}
+
+async function initPaddleOCR(){
+    if (!paddleOCR) {
+        window.ortWasmPaths = "https://cdn.jsdelivr.net/npm/paddleocr-browser/dist/";
+        await loadLibrary("https://cdn.jsdelivr.net/npm/paddleocr-browser/dist/paddleocr.js","text/javascript");
+        let resourcesPath = "https://cdn.jsdelivr.net/npm/@gutenye/ocr-models/assets";
+        paddleOCR = await Ocr.create({
+            models: {
+                detectionPath: resourcesPath+'/ch_PP-OCRv4_det_infer.onnx',
+                recognitionPath: resourcesPath+'/ch_PP-OCRv4_rec_infer.onnx',
+                dictionaryPath: resourcesPath+'/ppocr_keys_v1.txt'
+            }
+        })
+    }
+}
+
+async function ocrWithPaddle(image){
+    const results = await paddleOCR.detect(image);
+    console.log(results);
+    let boxes = [];
+    results.forEach(result => {
+        if (result.mean>0.5) {
+            const box = {};
+            box["text"] = result.text;
+            box["target"] = "";
+            box["geometry"] = {
+                X: result.box[0][0],
+                Y: result.box[0][1],
+                width: result.box[1][0] - result.box[0][0],
+                height: result.box[2][1] - result.box[0][1]
+            }
+            boxes.push(box);
+        }
+    });
+    const imgMap = {};
     boxes = mergedBoxes(boxes);
     imgMap["boxes"] = boxes;
     return imgMap;

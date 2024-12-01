@@ -381,6 +381,18 @@
         displayResult(boxes[0]);
       }
       toggleStatusMask("");
+    }else if (engine === "tesseract") {
+      await initPaddleOCR();
+      let imgMap = await ocrWithPaddle(dataURL);
+      let boxes = imgMap["boxes"];
+      if (boxes.length>0) {
+        await translateBoxes([boxes[0]]);
+        boxes[0]["source"] = boxes[0]["text"];
+        boxes[0]["target"] = [{engine:"mymemory",text:boxes[0]["target"]}];
+        appendResult(dataURL,boxes[0]);
+        displayResult(boxes[0]);
+      }
+      toggleStatusMask("");
     }
   }
 
