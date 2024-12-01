@@ -66,7 +66,6 @@ async function initPaddleOCR(){
 
 async function ocrWithPaddle(image){
     const results = await paddleOCR.detect(image);
-    console.log(results);
     let boxes = [];
     results.forEach(result => {
         if (result.mean>0.5) {
@@ -114,7 +113,6 @@ function loadLibrary(src,type,id,data){
 }
 
 function clusterBoxes(boxes,baseBox) {
-    console.log(JSON.stringify(baseBox))
     let clustered = [];
     let merged = false;
     boxes.reverse();
@@ -148,7 +146,6 @@ function mergedBoxes(boxes){
         grouped.push([box]); //single box as a group
       }
     }
-    console.log(grouped);
     grouped.forEach(group => {
         let mergedBox = {};
         
