@@ -381,7 +381,7 @@
         displayResult(boxes[0]);
       }
       toggleStatusMask("");
-    }else if (engine === "tesseract") {
+    }else if (engine === "paddle") {
       await initPaddleOCR();
       let imgMap = await ocrWithPaddle(dataURL);
       let boxes = imgMap["boxes"];
