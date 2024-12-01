@@ -1,7 +1,13 @@
 let tessWorker;
 let tessLang;
 let paddleOCR;
+let checkCloseByHeight = true;
 async function initTess(lang){
+    if (lang.indexOf("vert") != -1) {
+        checkCloseByHeight = false;
+    }else{
+        checkCloseByHeight = true;
+    }
     if (!tessWorker) {
         await loadLibrary("https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js","text/javascript");
     }
@@ -43,6 +49,7 @@ async function tessOCR(image) {
 }
 
 async function initPaddleOCR(){
+    checkCloseByHeight = true;
     if (!paddleOCR) {
         window.ortWasmPaths = "https://cdn.jsdelivr.net/npm/paddleocr-browser/dist/";
         await loadLibrary("https://cdn.jsdelivr.net/npm/paddleocr-browser/dist/paddleocr.js","text/javascript");
@@ -107,15 +114,20 @@ function loadLibrary(src,type,id,data){
 }
 
 function clusterBoxes(boxes,baseBox) {
+    console.log(JSON.stringify(baseBox))
     let clustered = [];
-    for (let index = boxes.length - 2; index >= 0; index--) {
+    let merged = false;
+    boxes.reverse();
+    for (let index = boxes.length - 1; index >= 0; index--) {
         const box = boxes[index];
         if (areBoxesClose(baseBox,box)) {
-            clustered.splice(0,0,box);
+            baseBox = mergedBoxesRect([baseBox,box])
+            merged = true;
             boxes.splice(index, 1); //delete the box
         }
     }
-    if (clustered.length>0) {
+    boxes.reverse();
+    if (merged) {
         clustered.push(baseBox);
         return clustered;
     }else{
@@ -128,17 +140,18 @@ function mergedBoxes(boxes){
     let grouped = [];
     let mergedBoxes = [];
     while (boxes.length > 0) {
-      let box = boxes[boxes.length - 1];
+      let box = boxes.splice(0,1)[0];
       let clustered = clusterBoxes(boxes,box);
       if (clustered) {
         grouped.push(clustered);
       } else {
         grouped.push([box]); //single box as a group
       }
-      boxes.shift(); //delete the base rect
     }
+    console.log(grouped);
     grouped.forEach(group => {
         let mergedBox = {};
+        
         mergedBox = mergedBoxesRect(group);
         mergedBoxes.push(mergedBox);
     });
@@ -158,6 +171,7 @@ function textMerged(boxes) {
     boxes.forEach(box => {
         text = text + box["text"] + "\n";
     });
+    text = text.replace(/\n{1,}/g,"\n");
     return text;
 }
 
@@ -181,14 +195,27 @@ function mergedBoxesRect(boxes){
     return merged;
 }
 
-function areBoxesClose(box1,box2){
-    let merged = mergedBoxesRect([box1,box2]);
-    let mergedRight = merged["geometry"]["X"] + merged["geometry"]["width"];
-    let box1Right = box1["geometry"]["X"] + box1["geometry"]["width"];
-    let box1Width = box1["geometry"]["width"];
-    let box2Right = box2["geometry"]["X"] + box2["geometry"]["width"];
-    let box2Width = box2["geometry"]["width"];
-    if (mergedRight - box1Right < box1Width * 3 || mergedRight - box2Right < box2Width * 3) {
+function areBoxesClose(mergedBox,box2){
+    if (checkCloseByHeight) {
+        let box1Bottom = mergedBox["geometry"]["Y"] + mergedBox["geometry"]["height"];
+        let box1Left = mergedBox["geometry"]["X"] + mergedBox["geometry"]["width"];
+        let box1Right = mergedBox["geometry"]["X"] + mergedBox["geometry"]["width"];
+        let box2Height = box2["geometry"]["height"];
+        let box2Top = box2["geometry"]["Y"];
+        let box2Left = box2["geometry"]["X"];
+        let box2Right = box2["geometry"]["X"] + box2["geometry"]["width"];
+        if (box1Bottom + box2Height * 3 - box2Top > 0) {
+            if (box1Left > box2Left) {
+                if (box1Right > box2Left) {
+                    return true;
+                }
+            }else{
+                if (box2Right > box1Left) {
+                    return true;
+                }
+            }
+        }
+    }else{
         return true;
     }
     return false;
