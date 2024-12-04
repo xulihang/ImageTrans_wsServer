@@ -17,6 +17,10 @@ Public Sub Init
 	LastMessages.Initialize
 End Sub
 
+Public Sub GetConnections As Map
+	Return connections
+End Sub
+
 Public Sub NewConnection(it As ImageTrans, name As String)
 	connections.Put(name, it)
 	Log("NewConnection: " & name)

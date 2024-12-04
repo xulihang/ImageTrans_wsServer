@@ -20,21 +20,22 @@ Library4=json
 Library5=jstringutils
 Library6=jokhttputils2
 Module1=CorsFilter
-Module10=TranslateHandler
-Module11=TranslateRegionHandler
-Module12=TranslatorHandler
+Module10=SettingsHandler
+Module11=TranslateHandler
+Module12=TranslateRegionHandler
+Module13=TranslatorHandler
 Module2=HttpsFilter
 Module3=ImageTrans
 Module4=ImageTransShared
 Module5=IndexFilter
 Module6=IndexHandler
-Module7=PrivateHeaderFilter
-Module8=ScanTranslatorHandler
-Module9=SettingsHandler
+Module7=ListHandler
+Module8=PrivateHeaderFilter
+Module9=ScanTranslatorHandler
 NumberOfFiles=6
 NumberOfLibraries=6
-NumberOfModules=12
-Version=10
+NumberOfModules=13
+Version=9.8
 @EndOfDesignText@
 'Non-UI application (console / server application)
 #Region Project Attributes 
@@ -59,6 +60,7 @@ Sub AppStart (Args() As String)
 	srvr.Port = 51042
 	srvr.StaticFilesFolder = File.DirApp
 	srvr.AddWebSocket("/imagetrans", "ImageTrans")
+	srvr.AddHandler("/list","ListHandler",False)
 	srvr.AddHandler("/translate","TranslateHandler",False)
 	srvr.AddHandler("/translator","TranslatorHandler",False)
 	srvr.AddHandler("/scantranslator","ScanTranslatorHandler",False)
