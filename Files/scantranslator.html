@@ -5,6 +5,10 @@
   <title>ImageTrans Online</title>
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <script src="translator.js"></script>
+  <script type="module">
+    import * as Paddle from "https://cdn.jsdelivr.net/npm/esearch-ocr@5.1.5/dist/esearch-ocr.js";
+    window.Paddle = Paddle;
+  </script>
   <style>
   .app {
     position:fixed;
@@ -382,7 +386,8 @@
       }
       toggleStatusMask("");
     }else if (engine === "paddle") {
-      await initPaddleOCR();
+      let paddleOCRLang = localStorage.getItem("paddleOCRLang") ?? "chs";
+      await initPaddleOCR(paddleOCRLang);
       let imgMap = await ocrWithPaddle(dataURL);
       let boxes = imgMap["boxes"];
       if (boxes.length>0) {

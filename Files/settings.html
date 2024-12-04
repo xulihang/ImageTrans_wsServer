@@ -49,6 +49,17 @@
     </select>
   </label>
   <br/>
+  <label id="paddleOCRLanguageLabel">
+    OCR language for PaddleOCR:
+    <select id="paddleOCRLangSelect">
+      <option value="chs">Chinese and English</option>
+      <option value="en">English</option>
+      <option value="ja">Japanese</option>
+      <option value="ko">Korean</option>
+      <option value="cht">Chinese (traditional)</option>
+    </select>
+  </label>
+  <br/>
   <label>
     Source lang:
     <select id="sourceLangSelect">
@@ -114,6 +125,8 @@
       localStorage.setItem("targetLang",targetLang);
       let tessOCRLang = document.getElementById("tessOCRLangSelect").selectedOptions[0].value;
       localStorage.setItem("tessOCRLang",tessOCRLang);
+      let paddleOCRLang = document.getElementById("paddleOCRLangSelect").selectedOptions[0].value;
+      localStorage.setItem("paddleOCRLang",paddleOCRLang);
       alert("Saved");
     })
     loadSettings();
@@ -149,6 +162,11 @@
       if (tessOCRLang) {
         let tessOCRLangSelect = document.getElementById("tessOCRLangSelect");
         setSelectedLang(tessOCRLangSelect,tessOCRLang);
+      }
+      let paddleOCRLang = localStorage.getItem("paddleOCRLang");
+      if (paddleOCRLang) {
+        let paddleOCRLangSelect = document.getElementById("paddleOCRLangSelect");
+        setSelectedLang(paddleOCRLangSelect,paddleOCRLang);
       }
     }
 

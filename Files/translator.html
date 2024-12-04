@@ -5,6 +5,10 @@
   <title>ImageTrans Online</title>
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <script src="translator.js"></script>
+  <script type="module">
+    import * as Paddle from "https://cdn.jsdelivr.net/npm/esearch-ocr@5.1.5/dist/esearch-ocr.js";
+    window.Paddle = Paddle;
+  </script>
   <style>
   .app {
     position:fixed;
@@ -188,19 +192,19 @@ async function translate(){
   toggleStatusMask("Translating...");
   let engine = localStorage.getItem("engine");
   if (!engine || engine === "imagetrans") {
-    var URL = localStorage.getItem("URL");
-    if (!URL) {
+    var serverURL = localStorage.getItem("URL");
+    if (!serverURL) {
       if (window.location.host) {
-        URL = "translate";
+        serverURL = "translate";
       }else{
-        URL = "http://127.0.0.1:51042/translate";
+        serverURL = "http://127.0.0.1:51042/translate";
       }
     }else{
-      URL = URL + "/translate"
+      serverURL = serverURL + "/translate"
     }
     
     var ajaxObj = new XMLHttpRequest();
-    ajaxObj.open('POST', URL);
+    ajaxObj.open('POST', serverURL);
     ajaxObj.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     
     ajaxObj.send("src="+encodeURIComponent(src)+"&saveToFile=true");  //+"&saveToFile=true"
@@ -241,8 +245,10 @@ async function translate(){
     updateDisplayOfSourceImgAndTargetImg(true);
     toggleStatusMask("");
   }else if (engine === "paddle") {
-    await initPaddleOCR();
+    let paddleOCRLang = localStorage.getItem("paddleOCRLang") ?? "chs";
+    await initPaddleOCR(paddleOCRLang);
     let imgMap = await ocrWithPaddle(sourceImg.src);
+    console.log(imgMap);
     await translateBoxes(imgMap.boxes);
     targetImg.onload = function(){
       overlayText(imgMap);
