@@ -26,6 +26,9 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 	End If
 	Dim src As String = req.GetParameter("src")
 	displayName = req.GetParameter("displayName")
+	If displayName = "" Then
+		displayName = "default"
+	End If
 	Dim password As String = req.GetParameter("password")
 	Log(src)
 	Dim saveToFile As String = req.GetParameter("saveToFile")

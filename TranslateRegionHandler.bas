@@ -32,6 +32,9 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 		Return
 	End If
 	displayName = req.GetParameter("displayName")
+	If displayName = "" Then
+		displayName = "default"
+	End If
 	Dim password As String = req.GetParameter("password")
 	Dim base64 As String = req.GetParameter("base64")
 	base64 = Regex.Replace("data:(.*?);base64,",base64,"")
@@ -61,6 +64,9 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse)
     Loop
 	If success Then
 		Dim map1 As Map = Main.translation.Get(displayName)
+		Log(Main.translation)
+		Log("getmap")
+		Log(map1)
 		Dim regionMapString As String = map1.Get("regionMapString")
 		If regionMapString <> "" Then
 			Dim jsonP As JSONParser
