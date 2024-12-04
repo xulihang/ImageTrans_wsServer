@@ -15,8 +15,18 @@ End Sub
 
 Sub Handle(req As ServletRequest, resp As ServletResponse)
 	Dim connections As Map = ImageTransShared.GetConnections
+	Dim list1 As List
+	list1.Initialize
+	For Each key As String In connections.Keys
+		Dim it As ImageTrans = connections.Get(key)
+		Dim item As Map
+		item.Initialize
+		item.Put("name",key)
+		item.Put("displayName",it.getDisplayName)
+		list1.Add(item)
+	Next
 	Dim JSON As JSONGenerator
-	JSON.Initialize(connections)
+	JSON.Initialize2(list1)
 	resp.ContentType="application/json"
 	resp.Write(JSON.ToString)
 End Sub

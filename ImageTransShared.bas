@@ -33,6 +33,8 @@ Public Sub Translated(result As Boolean)
 	Next
 End Sub
 
+
+
 Public Sub Translate(src As String)
 	Log(connections.Size)
 	For Each it As ImageTrans In connections.Values

@@ -8,10 +8,20 @@ Version=7.8
 Sub Class_Globals
 	Private ws As WebSocket
 	Private name As String
+	Private displayName As String
+	Private password As String
 End Sub
 
 Public Sub Initialize
 	
+End Sub
+
+Public Sub getDisplayName As String
+	Return displayName
+End Sub
+
+Public Sub getPassword As String
+	Return password
 End Sub
 
 Private Sub WebSocket_Connected (WebSocket1 As WebSocket)
@@ -41,7 +51,11 @@ Sub set_translated(map As Map)
 	Main.outputPath=map.GetDefault("output","")
 	Main.imgMap=map.GetDefault("imgMap",Null)
 	Main.regionMap=map.GetDefault("regionMap",Null)
-	Log(map)
+End Sub
+
+Sub set_name_and_password(map As Map)
+	displayName=map.GetDefault("name",name)
+	password=map.GetDefault("password","")
 End Sub
 
 Sub close_server(map As Map)
