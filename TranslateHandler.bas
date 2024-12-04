@@ -6,7 +6,7 @@ Version=7.8
 @EndOfDesignText@
 'Handler class
 Sub Class_Globals
-	
+	Private displayName As String
 End Sub
 
 Public Sub Initialize
@@ -25,6 +25,8 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 		Return
 	End If
 	Dim src As String = req.GetParameter("src")
+	displayName = req.GetParameter("displayName")
+	Dim password As String = req.GetParameter("password")
 	Log(src)
 	Dim saveToFile As String = req.GetParameter("saveToFile")
 	If saveToFile="true" And src.StartsWith("data") Then
@@ -36,13 +38,21 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 		File.WriteBytes(path,"",su.DecodeBase64(base64))
 		src = path
 	End If
-	
-	ImageTransShared.Translate(src)
+	Main.translation.Put(displayName,CreateMap("translated":False))
+	ImageTransShared.Translate(displayName,password,src)
 	Dim returnType As String=req.GetParameter("type")
 	Dim callback As String=req.GetParameter("callback")
-	Main.translated=False
+	
 	WaitForTheTranslationToBeDone(resp,returnType,callback)
 	StartMessageLoop
+End Sub
+
+Private Sub ImageTranslated As Boolean
+	If Main.translation.ContainsKey(displayName) Then
+		Dim map1 As Map = Main.translation.Get(displayName)
+		Return map1.GetDefault("translated",False)
+	End If
+	Return True
 End Sub
 
 Sub WaitForTheTranslationToBeDone(resp As ServletResponse,returnType As String,callback As String) 
@@ -50,25 +60,33 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse,returnType As String,c
 	result.Initialize
 	Dim base64 As String
 	Dim waited As Int=0
-	Do While Main.translated=False
+	Dim success As Boolean = True
+	Do While ImageTranslated=False
 		Sleep(1000)
 		waited=waited+1000
-		If Main.success Then
-			Dim su As StringUtils
-			base64=su.EncodeBase64(File.ReadBytes(Main.outputPath,""))
-			result.Put("success",True)
-			result.Put("img",base64)
-			If Main.imgMap.IsInitialized Then
-				result.Put("imgMap",Main.imgMap)
-			End If
-		Else
-			result.Put("success",False)
-		End If
 		If waited>1000*240 Then 'timeout
-			result.Put("success",False)
+			success = False
 			Exit
 		End If
 	Loop
+	If success Then
+		Dim map1 As Map = Main.translation.Get(displayName)
+		Dim imgPath As String = map1.Get("path")
+		Dim imgMapString As String = map1.Get("imgMapString")
+		Dim su As StringUtils
+		base64=su.EncodeBase64(File.ReadBytes(imgPath,""))
+		result.Put("success",True)
+		result.Put("img",base64)
+		If imgMapString <> "" Then
+			Dim jsonP As JSONParser
+			jsonP.Initialize(imgMapString)
+			Dim imgMap As Map = jsonP.NextObject
+			result.Put("imgMap", imgMap)
+		End If
+	Else
+		result.Put("success",False)
+	End If
+	Main.translation.Remove(displayName)
 	If returnType="html" Then
 		resp.ContentType="text/html"
 		resp.Write($"<img src="data:image/jpeg;base64,${base64}"  alt="result" />"$)

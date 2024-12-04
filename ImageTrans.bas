@@ -45,14 +45,6 @@ Public Sub TranslateRegion(path As String)
 	ws.Flush
 End Sub
 
-Sub set_translated(map As Map)
-	Main.translated=True
-	Main.success=map.GetDefault("success",False)
-	Main.outputPath=map.GetDefault("output","")
-	Main.imgMap=map.GetDefault("imgMap",Null)
-	Main.regionMap=map.GetDefault("regionMap",Null)
-End Sub
-
 Sub set_name_and_password(map As Map)
 	displayName=map.GetDefault("name",name)
 	password=map.GetDefault("password","")
