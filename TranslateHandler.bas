@@ -32,18 +32,25 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 	Dim password As String = req.GetParameter("password")
 	Log(src)
 	Dim saveToFile As String = req.GetParameter("saveToFile")
+	Dim filename As String
 	If saveToFile="true" And src.StartsWith("data") Then
 		Dim base64 As String
 		base64 = Regex.Replace("data:(.*?);base64,",src,"")
 		Log(base64)
 		Dim su As StringUtils
-		Dim path As String = File.Combine(File.DirTemp,DateTime.Now)
+		filename = DateTime.Now
+		Dim path As String = File.Combine(File.Combine(File.DirApp,"tmp"),filename)
 		File.WriteBytes(path,"",su.DecodeBase64(base64))
 		src = path
 	End If
 	Log("translate handler")
 	Main.translation.Put(displayName,CreateMap("translated":False))
-	ImageTransShared.Translate(displayName,password,src)
+	If filename <> "" Then
+		ImageTransShared.Translate(displayName,password,filename)
+	Else
+		ImageTransShared.Translate(displayName,password,src)
+	End If
+	
 	Log(Main.translation)
 	Dim returnType As String=req.GetParameter("type")
 	Dim callback As String=req.GetParameter("callback")

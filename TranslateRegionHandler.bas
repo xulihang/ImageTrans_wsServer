@@ -39,10 +39,11 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 	Dim base64 As String = req.GetParameter("base64")
 	base64 = Regex.Replace("data:(.*?);base64,",base64,"")
 	Dim su As StringUtils
-	Dim path As String = File.Combine(File.DirTemp,DateTime.Now)
+	Dim filename As String = DateTime.Now
+	Dim path As String = File.Combine(File.Combine(File.DirApp,"tmp"),filename)
 	File.WriteBytes(path,"",su.DecodeBase64(base64))
 	Main.translation.Put(displayName,CreateMap("translated":False))
-	ImageTransShared.TranslateRegion(displayName,path)
+	ImageTransShared.TranslateRegion(displayName,filename)
 	WaitForTheTranslationToBeDone(resp)
 	StartMessageLoop
 End Sub

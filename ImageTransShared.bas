@@ -49,15 +49,15 @@ Public Sub Translate(displayName As String, password As String,src As String)
 	Next
 End Sub
 
-Public Sub TranslateRegion(displayName As String,path As String)
+Public Sub TranslateRegion(displayName As String,filename As String)
 	For Each it As ImageTrans In connections.Values
 		If displayName <> "" And displayName <> "default" Then
 			If it.getDisplayName == displayName Then
-				CallSubDelayed2(it, "TranslateRegion", path)
+				CallSubDelayed2(it, "TranslateRegion", filename)
 				Exit
 			End If
 		Else
-			CallSubDelayed2(it, "TranslateRegion",path)
+			CallSubDelayed2(it, "TranslateRegion",filename)
 			Exit
 		End If
 	Next
