@@ -43,6 +43,6 @@ ModuleClosedNodes6=
 ModuleClosedNodes7=
 ModuleClosedNodes8=
 ModuleClosedNodes9=
-NavigationStack=TranslateRegionHandler,ImageTranslated,14,0,ImageTransShared,Init,9,0,TranslateHandler,Handle,38,6,Main,AppStart,22,0,Main,Process_Globals,8,0,TranslateHandler,ImageTranslated,47,3,TranslateHandler,WaitForTheTranslationToBeDone,82,2,TranslateRegionHandler,WaitForTheTranslationToBeDone,53,6,TranslateRegionHandler,Handle,31,3,ImageHandler,Handle,18,6
+NavigationStack=ImageHandler,Handle,17,6,TranslateHandler,ImageTranslated,50,3,ImageTrans,set_translated,66,6,ImageTrans,set_name_and_password,72,0,TranslateRegionHandler,ImageTranslated,13,0,TranslateRegionHandler,Initialize,6,0,TranslateRegionHandler,Class_Globals,4,0,TranslateRegionHandler,Handle,39,6,TranslateHandler,Handle,43,6,ImageTransShared,TranslateRegion,50,1,ImageTransShared,Translate,38,0
 SelectedBuild=0
 VisibleModules=4,5,12,2,13,3
