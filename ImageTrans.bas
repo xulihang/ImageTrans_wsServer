@@ -45,6 +45,37 @@ Public Sub TranslateRegion(path As String)
 	ws.Flush
 End Sub
 
+Sub set_translated(map As Map)
+	Log("set_translated")
+	Log(map)
+	Dim resultMap As Map
+	resultMap.Initialize
+	resultMap.Put("success",map.GetDefault("success",False))
+	resultMap.Put("translated",True)
+	resultMap.Put("path",map.GetDefault("output",""))
+	If map.ContainsKey("imgMap") Then
+		Dim imgMap As Map = map.Get("imgMap")
+		Dim jsonG As JSONGenerator
+		jsonG.Initialize(imgMap)
+		resultMap.Put("imgMapString",jsonG.ToString)
+	End If
+	If map.ContainsKey("regionMap") Then
+		Dim regionMap As Map = map.Get("regionMap")
+		Dim jsonG As JSONGenerator
+		jsonG.Initialize(regionMap)
+		resultMap.Put("regionMapString",jsonG.ToString)
+	End If
+	If displayName = "" Then
+		Main.translation.Put("default",resultMap)
+	Else
+		If Main.translation.ContainsKey(displayName) Then
+			Main.translation.Put(displayName,resultMap)
+		Else
+			Main.translation.Put("default",resultMap)
+		End If
+	End If
+End Sub
+
 Sub set_name_and_password(map As Map)
 	displayName=map.GetDefault("name",name)
 	password=map.GetDefault("password","")

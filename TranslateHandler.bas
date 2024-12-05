@@ -41,8 +41,10 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 		File.WriteBytes(path,"",su.DecodeBase64(base64))
 		src = path
 	End If
+	Log("translate handler")
 	Main.translation.Put(displayName,CreateMap("translated":False))
 	ImageTransShared.Translate(displayName,password,src)
+	Log(Main.translation)
 	Dim returnType As String=req.GetParameter("type")
 	Dim callback As String=req.GetParameter("callback")
 	
