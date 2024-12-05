@@ -21,6 +21,23 @@ Private Sub ImageTranslated As Boolean
 	Return True
 End Sub
 
+Private Sub ImageTranslationFailed As Boolean
+	If Main.translation.ContainsKey(displayName) Then
+		Dim map1 As Map = Main.translation.Get(displayName)
+		Return Not(map1.GetDefault("success",True))
+	End If
+	Return False
+End Sub
+
+Private Sub ImageTranslationMessage As String
+	If Main.translation.ContainsKey(displayName) Then
+		Dim map1 As Map = Main.translation.Get(displayName)
+		Return map1.GetDefault("message","")
+	End If
+	Return ""
+End Sub
+
+
 Sub Handle(req As ServletRequest, resp As ServletResponse)
 	resp.SetHeader("Access-Control-Allow-Origin","*")
 	resp.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, HEAD, DELETE, PUT")
@@ -57,17 +74,24 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse)
 	Do While ImageTranslated=False
 		Sleep(1000)
 		waited=waited+1000
+		
+		If ImageTranslationFailed Then
+			result.Put("message",ImageTranslationMessage)
+			result.Put("success",False)
+			success = False
+			Exit
+		End If
+		
 		If waited>1000*240 Then 'timeout
+			result.Put("message","timeout")
 			result.Put("success",False)
 		    success = False
 			Exit
 		End If
     Loop
+	
 	If success Then
 		Dim map1 As Map = Main.translation.Get(displayName)
-		Log(Main.translation)
-		Log("getmap")
-		Log(map1)
 		Dim regionMapString As String = map1.Get("regionMapString")
 		If regionMapString <> "" Then
 			Dim jsonP As JSONParser
@@ -79,6 +103,7 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse)
 	Else
 	    result.Put("success",False)
 	End If
+	
 	Main.translation.Remove(displayName)
 	Dim json As JSONGenerator
 	json.Initialize(result)

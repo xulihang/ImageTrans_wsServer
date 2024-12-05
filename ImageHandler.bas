@@ -19,6 +19,16 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 			'upload translated image
 			If req.ContentType.StartsWith("multipart/form-data") Then
 				Dim parts As Map = req.GetMultipartData(File.DirApp & "/tmp", 10000000)
+				Dim successPart As Part = parts.GetDefault("success",Null)
+				Dim success As Boolean = True
+				If successPart.IsInitialized Then
+					success = successPart.GetValue(req.CharacterEncoding)
+				End If
+				Dim messagePart As Part = parts.GetDefault("message",Null)
+				Dim message As String
+				If messagePart.IsInitialized Then
+					message = messagePart.GetValue(req.CharacterEncoding)
+				End If
 				Dim filepart As Part = parts.GetDefault("file",Null)
 				Dim name As String 
 				Dim namePart As Part = parts.GetDefault("name",Null)
@@ -46,6 +56,8 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 				End If
 				resultMap.Put("imgMapString",imgMap)
 				resultMap.Put("regionMapString",regionMap)
+				resultMap.Put("success",success)
+				resultMap.Put("message",message)
 				Main.translation.Put(name,resultMap)
 				resp.Write("success")
 			End If
