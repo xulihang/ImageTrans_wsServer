@@ -30,13 +30,11 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 		displayName = "default"
 	End If
 	Dim password As String = req.GetParameter("password")
-	Log(src)
 	Dim saveToFile As String = req.GetParameter("saveToFile")
 	Dim filename As String
 	If saveToFile="true" And src.StartsWith("data") Then
 		Dim base64 As String
 		base64 = Regex.Replace("data:(.*?);base64,",src,"")
-		Log(base64)
 		Dim su As StringUtils
 		filename = DateTime.Now
 		Dim path As String = File.Combine(File.Combine(File.DirApp,"tmp"),filename)
