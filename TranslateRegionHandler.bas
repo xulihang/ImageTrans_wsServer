@@ -52,6 +52,10 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 	If displayName = "" Then
 		displayName = "default"
 	End If
+	If Main.translation.ContainsKey(displayName) Then
+		resp.Write($"This instance of ImageTrans is processing."$)
+		Return
+	End If
 	Dim password As String = req.GetParameter("password")
 	Dim base64 As String = req.GetParameter("base64")
 	base64 = Regex.Replace("data:(.*?);base64,",base64,"")

@@ -29,6 +29,10 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 	If displayName = "" Then
 		displayName = "default"
 	End If
+	If Main.translation.ContainsKey(displayName) Then
+		resp.Write($"This instance of ImageTrans is processing."$)
+		Return
+	End If
 	Dim password As String = req.GetParameter("password")
 	Dim saveToFile As String = req.GetParameter("saveToFile")
 	Dim filename As String
