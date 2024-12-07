@@ -124,7 +124,8 @@
       if (serverURL) {
         window.open(serverURL + "/list");
       }else{
-        alert("Server URL is not set");
+        alert("Server URL is not set. Will use go to the local address.");
+        window.open("https://local.basiccat.org:51043/list");
       }
     }
     document.getElementsByClassName("saveButton")[0].addEventListener("click",function(){
