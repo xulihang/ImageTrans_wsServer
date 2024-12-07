@@ -57,6 +57,10 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 		Return
 	End If
 	Dim password As String = req.GetParameter("password")
+	If ImageTransShared.IsPasswordCorrect(displayName,password) == False Then
+		resp.Write($"Password incorrect."$)
+		Return
+	End If
 	Dim base64 As String = req.GetParameter("base64")
 	base64 = Regex.Replace("data:(.*?);base64,",base64,"")
 	Dim su As StringUtils

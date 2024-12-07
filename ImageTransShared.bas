@@ -34,8 +34,22 @@ Public Sub Translated(result As Boolean)
 End Sub
 
 
+Public Sub IsPasswordCorrect(displayName As String, password As String) As Boolean
+    If displayName <> "" And displayName <> "default" Then
+		For Each it As ImageTrans In connections.Values		
+			If it.getDisplayName == displayName Then
+				If password == it.getPassword Then
+			  		Return True
+			    Else
+					Return False
+                End If
+			End If
+		Next
+	End If
+	Return True
+End Sub
 
-Public Sub Translate(displayName As String, password As String,src As String)
+Public Sub Translate(displayName As String,src As String)
 	For Each it As ImageTrans In connections.Values
         If displayName <> "" And displayName <> "default" Then
 			If it.getDisplayName == displayName Then
