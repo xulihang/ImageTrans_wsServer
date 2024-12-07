@@ -47,6 +47,7 @@ Version=10
 Sub Process_Globals
 	Public srvr As Server
 	Public translation As Map
+	Public autoCleanTimer as Timer
 End Sub
 
 Sub AppStart (Args() As String)
@@ -80,6 +81,8 @@ Sub AppStart (Args() As String)
 	File.Copy(File.DirAssets,"translator.js",File.DirApp,"translator.js")
 	
 	ConfigureSSLAndStart(51043)
+	autoCleanTimer.Initialize("autoCleanTimer",24*60*60*1000)
+	autoCleanTimer.Enabled = True
 	StartMessageLoop
 End Sub
 
@@ -162,4 +165,11 @@ Private Sub RedownloadCertificate As ResumableSub
 	End If
 	job.Release
 	Return ""
+End Sub
+
+Sub AutoCleanTimer_Tick
+	translation.Clear
+	For Each filename As String In File.Combine(File.DirApp,"tmp")
+		File.Delete(File.Combine(File.DirApp,"tmp"), filename)
+	Next
 End Sub
