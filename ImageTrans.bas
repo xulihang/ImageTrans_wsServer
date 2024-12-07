@@ -10,10 +10,15 @@ Sub Class_Globals
 	Private name As String
 	Private displayName As String
 	Private password As String
+	Private running As Boolean
 End Sub
 
 Public Sub Initialize
 	
+End Sub
+
+Public Sub getRunning As Boolean
+	Return running
 End Sub
 
 Public Sub getDisplayName As String
@@ -79,6 +84,10 @@ End Sub
 Sub set_name_and_password(map As Map)
 	displayName=map.GetDefault("name",name)
 	password=map.GetDefault("password","")
+End Sub
+
+Sub set_running(map As Map)
+	running = map.GetDefault("running",False)
 End Sub
 
 Sub close_server(map As Map)

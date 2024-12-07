@@ -33,6 +33,21 @@ Public Sub Translated(result As Boolean)
 	Next
 End Sub
 
+Public Sub IsRunning(displayName As String) As Boolean
+	If displayName <> "" And displayName <> "default" Then
+		For Each it As ImageTrans In connections.Values
+			If it.getDisplayName == displayName Then
+				If it.getRunning Then
+					Return True
+				Else
+					Return False
+				End If
+			End If
+		Next
+	End If
+	Return False
+End Sub
+
 
 Public Sub IsPasswordCorrect(displayName As String, password As String) As Boolean
     If displayName <> "" And displayName <> "default" Then

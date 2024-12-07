@@ -23,6 +23,7 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 		item.Initialize
 		item.Put("name",key)
 		item.Put("displayName",it.getDisplayName)
+		item.Put("running",it.getRunning)
 		list1.Add(item)
 	Next
 	Dim JSON As JSONGenerator
