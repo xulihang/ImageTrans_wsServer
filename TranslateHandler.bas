@@ -130,6 +130,7 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse,returnType As String,c
 			Dim imgMap As Map = jsonP.NextObject
 			result.Put("imgMap", imgMap)
 		End If
+		File.Delete(imgPath,"")
 	Else
 		result.Put("success",False)
 	End If
