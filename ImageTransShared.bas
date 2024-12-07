@@ -49,7 +49,7 @@ End Sub
 
 Public Sub IsPasswordCorrect(displayName As String, password As String) As Boolean
     If displayName <> "" And displayName <> "default" Then
-		For Each it As ImageTrans In connections.Values		
+		For Each it As ImageTrans In connections.Values
 			If it.getDisplayName == displayName Then
 				If password == it.getPassword Then
 			  		Return True

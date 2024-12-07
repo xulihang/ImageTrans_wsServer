@@ -203,8 +203,11 @@ async function translate(){
       serverURL = serverURL + "/translate"
     }
     var name = localStorage.getItem("displayName");
+    name = name.replace(/\\\\/g,"\\");
     var password = localStorage.getItem("password");
-    
+    if (!password) {
+      password = "";
+    }
     var ajaxObj = new XMLHttpRequest();
     ajaxObj.open('POST', serverURL);
     ajaxObj.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
