@@ -138,6 +138,8 @@
       let imageTransDisplayName = document.getElementById("imagetransInstanceInput").value;
       if (imageTransDisplayName) {
         localStorage.setItem("displayName",imageTransDisplayName);
+      }else{
+        localStorage.removeItem("displayName");
       }
       let imagetransPassword = document.getElementById("imagetransPasswordInput").value;
       if (imagetransPassword) {

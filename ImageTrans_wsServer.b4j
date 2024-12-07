@@ -47,7 +47,7 @@ Version=10
 Sub Process_Globals
 	Public srvr As Server
 	Public translation As Map
-	Public autoCleanTimer as Timer
+	Public autoCleanTimer As Timer
 End Sub
 
 Sub AppStart (Args() As String)
