@@ -169,7 +169,7 @@ End Sub
 
 Sub AutoCleanTimer_Tick
 	translation.Clear
-	For Each filename As String In File.Combine(File.DirApp,"tmp")
+	For Each filename As String In File.ListFiles(File.Combine(File.DirApp,"tmp"))
 		File.Delete(File.Combine(File.DirApp,"tmp"), filename)
 	Next
 End Sub
