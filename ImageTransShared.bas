@@ -34,18 +34,16 @@ Public Sub Translated(result As Boolean)
 End Sub
 
 Public Sub IsRunning(displayName As String) As Boolean
-	If displayName <> "" And displayName <> "default" Then
-		For Each it As ImageTrans In connections.Values
+	For Each it As ImageTrans In connections.Values
+		If displayName <> "" And displayName <> "default" Then
 			If it.getDisplayName == displayName Then
-				If it.getRunning Then
-					Return True
-				Else
-					Return False
-				End If
+				Return it.getRunning
 			End If
-		Next
-	End If
-	Return False
+		Else
+			Return it.getRunning
+		End If
+	Next
+	Return True
 End Sub
 
 
