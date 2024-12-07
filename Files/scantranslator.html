@@ -361,10 +361,12 @@
       if (!password) {
         password = "";
       }
+      var sourceLang = localStorage.getItem("sourceLang") ?? "";
+      var targetLang = localStorage.getItem("targetLang") ?? "";
       var ajaxObj = new XMLHttpRequest();
       ajaxObj.open('POST', URL);
       ajaxObj.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-      ajaxObj.send("base64="+encodeURIComponent(dataURL)+"&displayName="+encodeURIComponent(name)+"&password="+encodeURIComponent(password));
+      ajaxObj.send("base64="+encodeURIComponent(dataURL)+"&displayName="+encodeURIComponent(name)+"&password="+encodeURIComponent(password)+"&sourceLang="+encodeURIComponent(sourceLang)+"&targetLang="+encodeURIComponent(targetLang));
       ajaxObj.onreadystatechange = function () {
         toggleStatusMask("");
         try {

@@ -40,13 +40,19 @@ Private Sub WebSocket_Disconnected
 	CallSubDelayed3(ImageTransShared, "Disconnect", Me, name)
 End Sub
 
-Public Sub Translate(src As String)
-	ws.RunFunction("Translate",Array(src))
+Public Sub Translate(map1 As Map)
+	Dim src As String = map1.GetDefault("src","")
+	Dim sourceLang As String = map1.GetDefault("sourceLang","")
+	Dim targetLang As String = map1.GetDefault("targetLang","")
+	ws.RunFunction("Translate",Array(src,sourceLang,targetLang))
 	ws.Flush
 End Sub
 
-Public Sub TranslateRegion(path As String)
-	ws.RunFunction("TranslateRegion",Array(path))
+Public Sub TranslateRegion(map1 As Map)
+	Dim path As String = map1.GetDefault("path","")
+	Dim sourceLang As String = map1.GetDefault("sourceLang","")
+	Dim targetLang As String = map1.GetDefault("targetLang","")
+	ws.RunFunction("TranslateRegion",Array(path,sourceLang,targetLang))
 	ws.Flush
 End Sub
 

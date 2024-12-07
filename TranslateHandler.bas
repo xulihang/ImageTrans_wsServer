@@ -26,6 +26,7 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 	End If
 	
 	Dim src As String = req.GetParameter("src")
+
 	displayName = req.GetParameter("displayName")
 	If displayName = "" Then
 		displayName = "default"
@@ -40,6 +41,8 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 		resp.Write($"Password incorrect."$)
 		Return
 	End If
+	Dim sourceLang As String = req.GetParameter("sourceLang")
+	Dim targetLang As String = req.GetParameter("targetLang")
 	Dim saveToFile As String = req.GetParameter("saveToFile")
 	Dim filename As String
 	If saveToFile="true" And src.StartsWith("data") Then
@@ -54,9 +57,9 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 	Log("translate handler")
 	Main.translation.Put(displayName,CreateMap("translated":False))
 	If filename <> "" Then
-		ImageTransShared.Translate(displayName,filename)
+		ImageTransShared.Translate(displayName,filename,sourceLang,targetLang)
 	Else
-		ImageTransShared.Translate(displayName,src)
+		ImageTransShared.Translate(displayName,src,sourceLang,targetLang)
 	End If
 	
 	Log(Main.translation)

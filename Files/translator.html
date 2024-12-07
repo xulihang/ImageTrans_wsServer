@@ -212,11 +212,13 @@ async function translate(){
     if (!password) {
       password = "";
     }
+    var sourceLang = localStorage.getItem("sourceLang") ?? "";
+    var targetLang = localStorage.getItem("targetLang") ?? "";
     var ajaxObj = new XMLHttpRequest();
     ajaxObj.open('POST', serverURL);
     ajaxObj.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     
-    ajaxObj.send("src="+encodeURIComponent(src)+"&displayName="+encodeURIComponent(name)+"&password="+encodeURIComponent(password)+"&saveToFile=true");  //+"&saveToFile=true"
+    ajaxObj.send("src="+encodeURIComponent(src)+"&displayName="+encodeURIComponent(name)+"&password="+encodeURIComponent(password)+"&sourceLang="+encodeURIComponent(sourceLang)+"&targetLang="+encodeURIComponent(targetLang)+"&saveToFile=true");  //+"&saveToFile=true"
     ajaxObj.onreadystatechange = function () {
       toggleStatusMask("");
       if (ajaxObj.readyState == 4 && ajaxObj.status == 200) {

@@ -64,6 +64,8 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 		resp.Write($"Password incorrect."$)
 		Return
 	End If
+	Dim sourceLang As String = req.GetParameter("sourceLang")
+	Dim targetLang As String = req.GetParameter("targetLang")
 	Dim base64 As String = req.GetParameter("base64")
 	base64 = Regex.Replace("data:(.*?);base64,",base64,"")
 	Dim su As StringUtils
@@ -71,7 +73,7 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 	Dim path As String = File.Combine(File.Combine(File.DirApp,"tmp"),filename)
 	File.WriteBytes(path,"",su.DecodeBase64(base64))
 	Main.translation.Put(displayName,CreateMap("translated":False))
-	ImageTransShared.TranslateRegion(displayName,filename)
+	ImageTransShared.TranslateRegion(displayName,filename,sourceLang,targetLang)
 	WaitForTheTranslationToBeDone(resp)
 	StartMessageLoop
 End Sub
