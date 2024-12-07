@@ -202,12 +202,14 @@ async function translate(){
     }else{
       serverURL = serverURL + "/translate"
     }
+    var name = localStorage.getItem("displayName");
+    var password = localStorage.getItem("password");
     
     var ajaxObj = new XMLHttpRequest();
     ajaxObj.open('POST', serverURL);
     ajaxObj.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     
-    ajaxObj.send("src="+encodeURIComponent(src)+"&saveToFile=true");  //+"&saveToFile=true"
+    ajaxObj.send("src="+encodeURIComponent(src)+"&name="+encodeURIComponent(name)+"&password="+encodeURIComponent(password)+"&saveToFile=true");  //+"&saveToFile=true"
     ajaxObj.onreadystatechange = function () {
       toggleStatusMask("");
       if (ajaxObj.readyState == 4 && ajaxObj.status == 200) {
@@ -232,6 +234,7 @@ async function translate(){
     }
     ajaxObj.onerror = function () {
       alert("error connecting the server");
+      toggleStatusMask("");
     }
   }else if (engine === "tesseract") {
     let tessOCRLang = localStorage.getItem("tessOCRLang") ?? "jpn_vert";
