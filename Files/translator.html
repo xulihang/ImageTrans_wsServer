@@ -195,7 +195,11 @@ async function translate(){
     var serverURL = localStorage.getItem("URL");
     if (!serverURL) {
       if (window.location.host) {
-        serverURL = "translate";
+        if (window.location.host === "www.basiccat.org") { //online image translator
+          serverURL = "https://service.basiccat.org:51043/translate";
+        }else{
+          serverURL = "translate";
+        }
       }else{
         serverURL = "http://127.0.0.1:51042/translate";
       }
