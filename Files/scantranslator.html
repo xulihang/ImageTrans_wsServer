@@ -352,11 +352,15 @@
       }
 
       var name = localStorage.getItem("displayName");
+      if (!name) {
+        name = "";
+      }else{
+        name = name.replace(/\\\\/g,"\\");
+      }
       var password = localStorage.getItem("password");
       if (!password) {
         password = "";
       }
-      name = name.replace(/\\\\/g,"\\");
       var ajaxObj = new XMLHttpRequest();
       ajaxObj.open('POST', URL);
       ajaxObj.setRequestHeader("Content-type", "application/x-www-form-urlencoded");

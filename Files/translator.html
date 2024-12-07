@@ -203,7 +203,11 @@ async function translate(){
       serverURL = serverURL + "/translate"
     }
     var name = localStorage.getItem("displayName");
-    name = name.replace(/\\\\/g,"\\");
+    if (!name) {
+      name = "";
+    }else{
+      name = name.replace(/\\\\/g,"\\");
+    }
     var password = localStorage.getItem("password");
     if (!password) {
       password = "";
