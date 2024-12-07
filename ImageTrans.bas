@@ -49,7 +49,7 @@ Public Sub Translate(map1 As Map)
 End Sub
 
 Public Sub TranslateRegion(map1 As Map)
-	Dim path As String = map1.GetDefault("path","")
+	Dim path As String = map1.GetDefault("filename","")
 	Dim sourceLang As String = map1.GetDefault("sourceLang","")
 	Dim targetLang As String = map1.GetDefault("targetLang","")
 	ws.RunFunction("TranslateRegion",Array(path,sourceLang,targetLang))
