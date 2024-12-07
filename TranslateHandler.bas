@@ -24,11 +24,13 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 		resp.Write($"no imagetrans is connected"$)
 		Return
 	End If
+	
 	Dim src As String = req.GetParameter("src")
 	displayName = req.GetParameter("displayName")
 	If displayName = "" Then
 		displayName = "default"
 	End If
+	
 	If Main.translation.ContainsKey(displayName) Then
 		resp.Write($"This instance of ImageTrans is processing."$)
 		Return
