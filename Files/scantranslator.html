@@ -357,7 +357,7 @@
       var ajaxObj = new XMLHttpRequest();
       ajaxObj.open('POST', URL);
       ajaxObj.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-      ajaxObj.send("base64="+encodeURIComponent(dataURL)+"&name="+encodeURIComponent(name)+"&password="+encodeURIComponent(password));
+      ajaxObj.send("base64="+encodeURIComponent(dataURL)+"&displayName="+encodeURIComponent(name)+"&password="+encodeURIComponent(password));
       ajaxObj.onreadystatechange = function () {
         toggleStatusMask("");
         try {

@@ -63,6 +63,7 @@ Public Sub IsPasswordCorrect(displayName As String, password As String) As Boole
 End Sub
 
 Public Sub Translate(displayName As String,src As String)
+	Log("translate using "&displayName)
 	For Each it As ImageTrans In connections.Values
         If displayName <> "" And displayName <> "default" Then
 			If it.getDisplayName == displayName Then
