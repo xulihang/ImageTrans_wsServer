@@ -50,6 +50,11 @@
   </label>
   <button onclick="checkImageTrans();">Check existing instances</button>
   <br/>
+  <label id="imagetransPasswordLabel">
+    Password for ImageTrans instance:
+    <input id="imagetransPasswordInput" type="password" />
+  </label>
+  <br/>
   <label id="tessOCRLanguageLabel">
     OCR language for Tesseract:
     <select id="tessOCRLangSelect">
@@ -133,6 +138,12 @@
       if (imageTransDisplayName) {
         localStorage.setItem("displayName",imageTransDisplayName);
       }
+      let imagetransPassword = document.getElementById("imagetransPasswordInput").value;
+      if (imagetransPassword) {
+        localStorage.setItem("password",imagetransPassword);
+      }else{
+        localStorage.removeItem("password");
+      }
       let region = {};
       region.left = document.getElementById("regionLeft").value;
       region.right = document.getElementById("regionRight").value;
@@ -161,6 +172,10 @@
       
       if (imageTransDisplayName) {
         document.getElementById("imagetransInstanceInput").value = imageTransDisplayName;
+      }
+      let imagetransPassword = localStorage.getItem("password");
+      if (imagetransPassword) {
+        document.getElementById("imagetransPasswordInput").value = imagetransPassword;
       }
 
       let region = JSON.parse(localStorage.getItem("region"));
