@@ -7,14 +7,12 @@ Version=7.8
 Sub Process_Globals
 	Public AvoidDuplicates As Map
 	Private connections As Map
-	Private LastMessages As List
 End Sub
 
 Public Sub Init
 	'this map is accessed from other threads so it needs to be a thread safe map
 	AvoidDuplicates = Main.srvr.CreateThreadSafeMap
 	connections.Initialize
-	LastMessages.Initialize
 End Sub
 
 Public Sub GetConnections As Map
