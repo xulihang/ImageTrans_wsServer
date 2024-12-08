@@ -17,6 +17,10 @@ Public Sub Initialize
 	
 End Sub
 
+Public Sub getName As String
+	Return name
+End Sub
+
 Public Sub getRunning As Boolean
 	Return running
 End Sub

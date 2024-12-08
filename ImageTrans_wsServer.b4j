@@ -25,6 +25,7 @@ Module11=SettingsHandler
 Module12=TranslateHandler
 Module13=TranslateRegionHandler
 Module14=TranslatorHandler
+Module15=VersionHandler
 Module2=HttpsFilter
 Module3=ImageHandler
 Module4=ImageTrans
@@ -35,7 +36,7 @@ Module8=ListHandler
 Module9=PrivateHeaderFilter
 NumberOfFiles=6
 NumberOfLibraries=6
-NumberOfModules=14
+NumberOfModules=15
 Version=10
 @EndOfDesignText@
 'Non-UI application (console / server application)
@@ -70,6 +71,7 @@ Sub AppStart (Args() As String)
 	srvr.AddFilter("/translate","PrivateHeaderFilter",False)
 	srvr.AddFilter("/","IndexFilter",False)
 	srvr.AddHandler("/index","IndexHandler",False)
+	srvr.AddHandler("/version","VersionHandler",False)
 	srvr.AddHandler("/settings","SettingsHandler",False)
 	srvr.AddHandler("/image","ImageHandler",False)
 	ConfigureCORS("/translate", "*", "GET,POST,HEAD,OPTIONS", "X-Requested-With,Content-Type,Accept,Origin")
