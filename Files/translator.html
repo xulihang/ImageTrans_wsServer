@@ -218,11 +218,15 @@ async function translate(){
     }
     var sourceLang = localStorage.getItem("sourceLang") ?? "";
     var targetLang = localStorage.getItem("targetLang") ?? "";
+    var withoutImage = "true";
+    if (localStorage.getItem("useTargetImage") === "true") {
+      withoutImage = "false";
+    } 
     var ajaxObj = new XMLHttpRequest();
     ajaxObj.open('POST', serverURL);
     ajaxObj.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     
-    ajaxObj.send("src="+encodeURIComponent(src)+"&displayName="+encodeURIComponent(name)+"&password="+encodeURIComponent(password)+"&sourceLang="+encodeURIComponent(sourceLang)+"&targetLang="+encodeURIComponent(targetLang)+"&saveToFile=true&withoutImage=true");  //+"&saveToFile=true"
+    ajaxObj.send("src="+encodeURIComponent(src)+"&displayName="+encodeURIComponent(name)+"&password="+encodeURIComponent(password)+"&sourceLang="+encodeURIComponent(sourceLang)+"&targetLang="+encodeURIComponent(targetLang)+"&saveToFile=true&withoutImage="+withoutImage);  //+"&saveToFile=true"
     ajaxObj.onreadystatechange = function () {
       toggleStatusMask("");
       if (ajaxObj.readyState == 4 && ajaxObj.status == 200) {

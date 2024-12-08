@@ -84,6 +84,11 @@
     </select>
   </label>
   <br/>
+  <label id="useTargetImageLabel">
+    Ask ImageTrans to return the translated image:
+    <input id="useTargetImageCheckbox" type="checkbox" />
+  </label>
+  <br/>
   <button class="saveButton">Save</button>
   <p style="margin-top:2em;">
     Please note that Tesseract and PaddleOCR does not work very well for whole-image translation.
@@ -163,6 +168,8 @@
       localStorage.setItem("tessOCRLang",tessOCRLang);
       let paddleOCRLang = document.getElementById("paddleOCRLangSelect").selectedOptions[0].value;
       localStorage.setItem("paddleOCRLang",paddleOCRLang);
+      let useTargetImage = document.getElementById("useTargetImageCheckbox").checked;
+      localStorage.setItem("useTargetImage",useTargetImage);
       alert("Saved");
     })
     loadSettings();
@@ -213,6 +220,10 @@
       if (paddleOCRLang) {
         let paddleOCRLangSelect = document.getElementById("paddleOCRLangSelect");
         setSelectedLang(paddleOCRLangSelect,paddleOCRLang);
+      }
+      let useTargetImage = localStorage.getItem("useTargetImage");
+      if (useTargetImage === "true") {
+        document.getElementById("useTargetImageCheckbox").checked = true;
       }
     }
 
