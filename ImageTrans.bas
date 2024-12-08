@@ -98,6 +98,9 @@ Sub set_running(map As Map)
 End Sub
 
 Sub close_server(map As Map)
+	If File.Exists(File.DirApp,"shutdownoff") Then
+		Return
+	End If
 	Log("shutting down")
 	ExitApplication
 End Sub
