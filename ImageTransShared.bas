@@ -5,14 +5,12 @@ Type=StaticCode
 Version=7.8
 @EndOfDesignText@
 Sub Process_Globals
-	Public AvoidDuplicates As Map
-	Private connections As Map
+	Public connections As Map
 End Sub
 
 Public Sub Init
 	'this map is accessed from other threads so it needs to be a thread safe map
-	AvoidDuplicates = Main.srvr.CreateThreadSafeMap
-	connections.Initialize
+	connections = Main.srvr.CreateThreadSafeMap
 End Sub
 
 Public Sub NewConnection(it As ImageTrans, name As String)
@@ -91,7 +89,6 @@ End Sub
 Public Sub Disconnect(it As ImageTrans, name As String)
 	If connections.ContainsKey(name) = False Or connections.Get(name) <> it Then Return
 	connections.Remove(name)
-	AvoidDuplicates.Remove(name.ToLowerCase)
 End Sub
 
 Public Sub HasConnection As Boolean

@@ -37,7 +37,6 @@ Private Sub WebSocket_Connected (WebSocket1 As WebSocket)
 	ws = WebSocket1
 	Log("new connection")
 	name=DateTime.Now
-	ImageTransShared.AvoidDuplicates.Put(name,Me)
 	CallSubDelayed3(ImageTransShared, "NewConnection", Me, name)
 End Sub
 
@@ -95,7 +94,7 @@ End Sub
 
 Sub set_name_and_password(map As Map)
 	Dim nameToSet As String = map.GetDefault("name",name)
-	For Each it As ImageTrans In ImageTransShared.AvoidDuplicates.Values
+	For Each it As ImageTrans In ImageTransShared.connections.Values
 		If it.displayName = nameToSet Then
 			ws.Close 'do not allow setting the same display name
 			Return
