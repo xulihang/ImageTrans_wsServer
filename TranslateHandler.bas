@@ -44,6 +44,7 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 	Dim sourceLang As String = req.GetParameter("sourceLang")
 	Dim targetLang As String = req.GetParameter("targetLang")
 	Dim saveToFile As String = req.GetParameter("saveToFile")
+	Dim withoutImage As String = req.GetParameter("withoutImage")
 	Dim filename As String
 	If saveToFile="true" And src.StartsWith("data") Then
 		Dim base64 As String
@@ -57,9 +58,9 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 	Log("translate handler")
 	Main.translation.Put(displayName,CreateMap("translated":False))
 	If filename <> "" Then
-		ImageTransShared.Translate(displayName,filename,sourceLang,targetLang)
+		ImageTransShared.Translate(displayName,filename,sourceLang,targetLang,withoutImage)
 	Else
-		ImageTransShared.Translate(displayName,src,sourceLang,targetLang)
+		ImageTransShared.Translate(displayName,src,sourceLang,targetLang,withoutImage)
 	End If
 	
 	Log(Main.translation)
@@ -121,19 +122,26 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse,returnType As String,c
 	
 	If success Then
 		Dim map1 As Map = Main.translation.Get(displayName)
-		Dim imgPath As String = map1.Get("path")
+		
 		Dim imgMapString As String = map1.Get("imgMapString")
-		Dim su As StringUtils
-		base64=su.EncodeBase64(File.ReadBytes(imgPath,""))
+		
 		result.Put("success",True)
-		result.Put("img",base64)
+		
+		If map1.ContainsKey("path") Then
+			Dim imgPath As String = map1.Get("path")
+			Dim su As StringUtils
+			base64=su.EncodeBase64(File.ReadBytes(imgPath,""))
+			result.Put("img",base64)
+			File.Delete(imgPath,"")
+		End If
+		
 		If imgMapString <> "" Then
 			Dim jsonP As JSONParser
 			jsonP.Initialize(imgMapString)
 			Dim imgMap As Map = jsonP.NextObject
 			result.Put("imgMap", imgMap)
 		End If
-		File.Delete(imgPath,"")
+		
 	Else
 		result.Put("success",False)
 	End If

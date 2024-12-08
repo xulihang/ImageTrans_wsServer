@@ -62,16 +62,16 @@ Public Sub IsPasswordCorrect(displayName As String, password As String) As Boole
 	Return True
 End Sub
 
-Public Sub Translate(displayName As String,src As String,sourceLang As String,targetLang As String)
+Public Sub Translate(displayName As String,src As String,sourceLang As String,targetLang As String,withoutImage As String)
 	Log("translate using "&displayName)
 	For Each it As ImageTrans In connections.Values
         If displayName <> "" And displayName <> "default" Then
 			If it.getDisplayName == displayName Then
-				CallSubDelayed2(it, "Translate",CreateMap("src":src,"souceLang":sourceLang,"targetLang":targetLang))
+				CallSubDelayed2(it, "Translate",CreateMap("src":src,"souceLang":sourceLang,"targetLang":targetLang,"withoutImage":withoutImage))
 				Exit
 			End If
 		Else
-			CallSubDelayed2(it, "Translate",CreateMap("src":src,"souceLang":sourceLang,"targetLang":targetLang))
+			CallSubDelayed2(it, "Translate",CreateMap("src":src,"souceLang":sourceLang,"targetLang":targetLang,"withoutImage":withoutImage))
 			Exit
         End If
 	Next

@@ -222,23 +222,26 @@ async function translate(){
     ajaxObj.open('POST', serverURL);
     ajaxObj.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
     
-    ajaxObj.send("src="+encodeURIComponent(src)+"&displayName="+encodeURIComponent(name)+"&password="+encodeURIComponent(password)+"&sourceLang="+encodeURIComponent(sourceLang)+"&targetLang="+encodeURIComponent(targetLang)+"&saveToFile=true");  //+"&saveToFile=true"
+    ajaxObj.send("src="+encodeURIComponent(src)+"&displayName="+encodeURIComponent(name)+"&password="+encodeURIComponent(password)+"&sourceLang="+encodeURIComponent(sourceLang)+"&targetLang="+encodeURIComponent(targetLang)+"&saveToFile=true&withoutImage=true");  //+"&saveToFile=true"
     ajaxObj.onreadystatechange = function () {
       toggleStatusMask("");
       if (ajaxObj.readyState == 4 && ajaxObj.status == 200) {
         //console.log(ajaxObj.responseText);
         try {
           var response = JSON.parse(ajaxObj.responseText);
-          if (!response["img"]){
-            alert("Bad result");
-          }else{
+          if (response.success === true) {
             targetImg.onload = function(){
               overlayText(response["imgMap"]);
             }
-            targetImg.src = "data:image/jpeg;base64," + response["img"];
+            if (response["img"]){
+              targetImg.src = "data:image/jpeg;base64," + response["img"];
+            }else{
+              targetImg.src = sourceImg.src;
+            }
             updateDisplayOfSourceImgAndTargetImg(true);
+          }else{
+            alert(response.message);
           }
-          
         } catch (error) {
           console.log(error);
           alert(ajaxObj.responseText);
