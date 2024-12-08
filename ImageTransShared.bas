@@ -73,7 +73,7 @@ Public Sub Translate(displayName As String,src As String,sourceLang As String,ta
 	Next
 	If displayName == "" Or displayName == "default" Then
 		For Each it As ImageTrans In connections.Values
-			CallSubDelayed2(it, "TranslateRegion",CreateMap("src":src,"souceLang":sourceLang,"targetLang":targetLang))
+			CallSubDelayed2(it, "Translate",CreateMap("src":src,"souceLang":sourceLang,"targetLang":targetLang))
 			Exit
 		Next
 	End If
