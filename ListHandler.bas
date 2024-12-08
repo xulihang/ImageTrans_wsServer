@@ -14,7 +14,7 @@ Public Sub Initialize
 End Sub
 
 Sub Handle(req As ServletRequest, resp As ServletResponse)
-	Dim connections As Map = ImageTransShared.GetConnections
+	Dim connections As Map = ImageTransShared.AvoidDuplicates
 	Dim list1 As List
 	list1.Initialize
 	For Each key As String In connections.Keys

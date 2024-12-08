@@ -59,7 +59,7 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 				resultMap.Put("success",success)
 				resultMap.Put("message",message)
 				Main.translation.Put(name,resultMap)
-				If ImageTransShared.GetConnections.Size = 1 Then
+				If ImageTransShared.AvoidDuplicates.Size = 1 Then
 					Main.translation.Put("default",resultMap)
 				End If
 				resp.Write("success")
