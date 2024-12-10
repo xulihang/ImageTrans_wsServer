@@ -177,6 +177,9 @@ Sub AutoCleanTimer_Tick
 End Sub
 
 Public Sub IsLocalNetwork(ip As String) As Boolean
+	If File.Exists(File.DirApp,"forceLocalPath") Then
+		Return True
+	End If
 	If ip.StartsWith("127.") Or ip.StartsWith("192.") Or ip.StartsWith("172.") Then
 		Return True
 	End If
