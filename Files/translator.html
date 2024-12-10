@@ -189,6 +189,10 @@ async function translate(){
     alert("Please load an image first");
     return;
   }
+  src = compress(sourceImg);
+  if (sourceImg.src.length < src.length) {
+    src = sourceImg.src;
+  }
   toggleStatusMask("Translating...");
   let engine = localStorage.getItem("engine");
   if (!engine || engine === "imagetrans") {

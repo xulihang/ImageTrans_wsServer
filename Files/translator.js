@@ -285,3 +285,38 @@ function reflowText(sourceLang,source){
     }
     return source.replace(/\n/g," ");
 }
+
+function compress(img){
+    let canvas = document.createElement("canvas");
+    let width = img.naturalWidth;
+    let height = img.naturalHeight;
+    let context = canvas.getContext('2d');
+    let maxWidth = 1500;
+    if (maxWidth && img.naturalWidth > maxWidth) {
+        width = maxWidth;
+        height = img.naturalHeight * maxWidth / img.naturalWidth;
+    }
+    canvas.width = width;
+    canvas.height = height;
+    let imageFormat = "image/webp";
+    if (!isSupportWebp(canvas)) {
+        imageFormat = "image/jpeg";
+    }
+    let quality = 0.8;
+    context.drawImage(img, 0, 0, img.naturalWidth, img.naturalHeight, 0, 0, canvas.width, canvas.height);
+    return canvas.toDataURL(imageFormat,quality);
+}
+
+function isSupportWebp(elem) {
+    let _isSupportWebp = true;
+  
+    if (!!(elem.getContext && elem.getContext('2d'))) {
+      // was able or not to get WebP representation
+      _isSupportWebp = elem.toDataURL('image/webp').indexOf('data:image/webp') == 0;
+    }
+    else {
+      // very old browser like IE 8, canvas not supported
+      _isSupportWebp = false;
+    }
+    return _isSupportWebp;
+}
