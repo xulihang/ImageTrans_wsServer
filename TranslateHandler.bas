@@ -57,8 +57,13 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 	End If
 	Log("translate handler")
 	Main.translation.Put(displayName,CreateMap("translated":False))
+	
 	If filename <> "" Then
-		ImageTransShared.Translate(displayName,filename,sourceLang,targetLang,withoutImage)
+		If Main.IsLocalNetwork(req.RemoteAddress) Then
+			ImageTransShared.Translate(displayName,src,sourceLang,targetLang,withoutImage)
+		Else
+			ImageTransShared.Translate(displayName,filename,sourceLang,targetLang,withoutImage)
+		End If
 	Else
 		ImageTransShared.Translate(displayName,src,sourceLang,targetLang,withoutImage)
 	End If

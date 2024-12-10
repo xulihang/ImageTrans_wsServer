@@ -37,7 +37,7 @@ Module9=PrivateHeaderFilter
 NumberOfFiles=6
 NumberOfLibraries=6
 NumberOfModules=15
-Version=10
+Version=9.8
 @EndOfDesignText@
 'Non-UI application (console / server application)
 #Region Project Attributes 
@@ -174,4 +174,11 @@ Sub AutoCleanTimer_Tick
 	For Each filename As String In File.ListFiles(File.Combine(File.DirApp,"tmp"))
 		File.Delete(File.Combine(File.DirApp,"tmp"), filename)
 	Next
+End Sub
+
+Public Sub IsLocalNetwork(ip As String) As Boolean
+	If ip.StartsWith("127.") Or ip.StartsWith("192.") Or ip.StartsWith("172.") Then
+		Return True
+	End If
+	Return False
 End Sub

@@ -73,7 +73,11 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 	Dim path As String = File.Combine(File.Combine(File.DirApp,"tmp"),filename)
 	File.WriteBytes(path,"",su.DecodeBase64(base64))
 	Main.translation.Put(displayName,CreateMap("translated":False))
-	ImageTransShared.TranslateRegion(displayName,filename,sourceLang,targetLang)
+	If Main.IsLocalNetwork(req.RemoteAddress) Then
+		ImageTransShared.TranslateRegion(displayName,path,sourceLang,targetLang)
+	Else
+		ImageTransShared.TranslateRegion(displayName,filename,sourceLang,targetLang)
+	End If
 	WaitForTheTranslationToBeDone(resp)
 	StartMessageLoop
 End Sub
