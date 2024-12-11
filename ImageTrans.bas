@@ -61,6 +61,11 @@ Public Sub TranslateRegion(map1 As Map)
 	ws.Flush
 End Sub
 
+Sub keep_alive(map As Map)
+	ws.RunFunction("heartbeatReceived",Null)
+	ws.Flush
+End Sub
+
 Sub set_translated(map As Map)
 	Log("set_translated")
 	Log(map)
