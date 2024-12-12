@@ -262,8 +262,11 @@ async function translate(){
     }
   }else if (engine === "tesseract") {
     let tessOCRLang = localStorage.getItem("tessOCRLang") ?? "jpn_vert";
+    toggleStatusMask("initializing Tesseract...");
     await initTess(tessOCRLang);
+    toggleStatusMask("OCRing...");
     let imgMap = await tessOCR(sourceImg);
+    toggleStatusMask("translating...");
     await translateBoxes(imgMap.boxes);
     targetImg.onload = function(){
       overlayText(imgMap);
@@ -273,9 +276,12 @@ async function translate(){
     toggleStatusMask("");
   }else if (engine === "paddle") {
     let paddleOCRLang = localStorage.getItem("paddleOCRLang") ?? "chs";
+    toggleStatusMask("initializing PaddleOCR...");
     await initPaddleOCR(paddleOCRLang);
+    toggleStatusMask("OCRing...");
     let imgMap = await ocrWithPaddle(sourceImg.src);
     console.log(imgMap);
+    toggleStatusMask("translating...");
     await translateBoxes(imgMap.boxes);
     targetImg.onload = function(){
       overlayText(imgMap);
