@@ -99,10 +99,14 @@ End Sub
 
 Sub set_name_and_password(map As Map)
 	Dim nameToSet As String = map.GetDefault("name",name)
+	Dim values As List
+	values.Initialize
 	For Each it As ImageTrans In ImageTransShared.connections.Values
+		values.Add(it)
+	Next
+	For Each it As ImageTrans In values
 		If it.displayName = nameToSet Then
-			ws.Close 'do not allow setting the same display name
-			Return
+			it.ws.Close 'close the instance with the same display name
 		End If
 	Next
 	displayName=map.GetDefault("name",name)
