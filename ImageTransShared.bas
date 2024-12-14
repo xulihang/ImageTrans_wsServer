@@ -25,13 +25,11 @@ Private Sub GetImageTransInstances As List
 		keys.Add(key)
 	Next
 	keys.Sort(False)
-	Log(keys)
 	Dim instances As List
 	instances.Initialize
 	For Each key As String In keys
 		instances.Add(connections.Get(key))
 	Next
-	Log(instances)
 	Return instances
 End Sub
 
