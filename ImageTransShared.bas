@@ -18,21 +18,31 @@ Public Sub NewConnection(it As ImageTrans, name As String)
 	Log("NewConnection: " & name)
 End Sub
 
-Public Sub Translated(result As Boolean)
-	Log(connections.Size)
-	For Each it As ImageTrans In connections.Values
-		CallSubDelayed2(it, "Translated",result)
+Private Sub GetImageTransInstances As List
+	Dim keys As List
+	keys.Initialize
+	For Each key As String In connections.Keys
+		keys.Add(key)
 	Next
+	keys.Sort(False)
+	Log(keys)
+	Dim instances As List
+	instances.Initialize
+	For Each key As String In keys
+		instances.Add(connections.Get(key))
+	Next
+	Log(instances)
+	Return instances
 End Sub
 
 Public Sub IsRunning(displayName As String) As Boolean
-	For Each it As ImageTrans In connections.Values
+	For Each it As ImageTrans In GetImageTransInstances
 		If it.getDisplayName == displayName Then
 			Return it.getRunning
 		End If
 	Next
 	If displayName == "" Or displayName == "default" Then
-		For Each it As ImageTrans In connections.Values
+		For Each it As ImageTrans In GetImageTransInstances
 			Return it.getRunning
 		Next
 	End If
@@ -42,7 +52,7 @@ End Sub
 
 Public Sub IsPasswordCorrect(displayName As String, password As String) As Boolean
     If displayName <> "" And displayName <> "default" Then
-		For Each it As ImageTrans In connections.Values
+		For Each it As ImageTrans In GetImageTransInstances
 			If it.getDisplayName == displayName Then
 				If password == it.getPassword Then
 			  		Return True
@@ -57,14 +67,14 @@ End Sub
 
 Public Sub Translate(displayName As String,src As String,sourceLang As String,targetLang As String,withoutImage As String)
 	Log("translate using "&displayName)
-	For Each it As ImageTrans In connections.Values
+	For Each it As ImageTrans In GetImageTransInstances
 		If it.getDisplayName == displayName Then
 			CallSubDelayed2(it, "Translate",CreateMap("src":src,"souceLang":sourceLang,"targetLang":targetLang,"withoutImage":withoutImage))
 			Return
 		End If
 	Next
 	If displayName == "" Or displayName == "default" Then
-		For Each it As ImageTrans In connections.Values
+		For Each it As ImageTrans In GetImageTransInstances
 			CallSubDelayed2(it, "Translate",CreateMap("src":src,"souceLang":sourceLang,"targetLang":targetLang))
 			Exit
 		Next
@@ -72,14 +82,14 @@ Public Sub Translate(displayName As String,src As String,sourceLang As String,ta
 End Sub
 
 Public Sub TranslateRegion(displayName As String,filename As String,sourceLang As String,targetLang As String)
-	For Each it As ImageTrans In connections.Values
+	For Each it As ImageTrans In GetImageTransInstances
 		If it.getDisplayName == displayName Then
 			CallSubDelayed2(it, "TranslateRegion", CreateMap("filename":filename,"souceLang":sourceLang,"targetLang":targetLang))
 			Return
 		End If
 	Next
 	If displayName == "" Or displayName == "default" Then
-		For Each it As ImageTrans In connections.Values
+		For Each it As ImageTrans In GetImageTransInstances
 			CallSubDelayed2(it, "TranslateRegion",CreateMap("filename":filename,"souceLang":sourceLang,"targetLang":targetLang))
 			Exit
 		Next
