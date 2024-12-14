@@ -82,13 +82,13 @@ Public Sub Translate(displayName As String,src As String,sourceLang As String,ta
 	Log("translate using "&displayName)
 	For Each it As ImageTrans In GetImageTransInstances
 		If it.getDisplayName == displayName Then
-			CallSubDelayed2(it, "Translate",CreateMap("src":src,"souceLang":sourceLang,"targetLang":targetLang,"withoutImage":withoutImage))
+			CallSubDelayed2(it, "Translate",CreateMap("src":src,"sourceLang":sourceLang,"targetLang":targetLang,"withoutImage":withoutImage))
 			Return
 		End If
 	Next
 	If displayName == "" Or displayName == "default" Then
 		For Each it As ImageTrans In GetImageTransInstances
-			CallSubDelayed2(it, "Translate",CreateMap("src":src,"souceLang":sourceLang,"targetLang":targetLang))
+			CallSubDelayed2(it, "Translate",CreateMap("src":src,"sourceLang":sourceLang,"targetLang":targetLang))
 			Exit
 		Next
 	End If
