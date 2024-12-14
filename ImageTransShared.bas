@@ -49,6 +49,21 @@ Public Sub IsRunning(displayName As String) As Boolean
 	Return True
 End Sub
 
+Public Sub SetIsRunning(displayName As String,running As Boolean)
+	For Each it As ImageTrans In GetImageTransInstances
+		If it.getDisplayName == displayName Then
+			it.setRunning(running)
+			Return
+		End If
+	Next
+	If displayName == "" Or displayName == "default" Then
+		For Each it As ImageTrans In GetImageTransInstances
+			it.setRunning(running)
+			Return
+		Next
+	End If
+End Sub
+
 
 Public Sub IsPasswordCorrect(displayName As String, password As String) As Boolean
     If displayName <> "" And displayName <> "default" Then

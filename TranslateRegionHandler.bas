@@ -120,7 +120,7 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse)
 	Else
 	    result.Put("success",False)
 	End If
-	
+	ImageTransShared.SetIsRunning(displayName,False)
 	Main.translation.Remove(displayName)
 	Dim json As JSONGenerator
 	json.Initialize(result)

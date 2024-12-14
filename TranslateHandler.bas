@@ -150,7 +150,7 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse,returnType As String,c
 	Else
 		result.Put("success",False)
 	End If
-	
+	ImageTransShared.SetIsRunning(displayName,False)
 	Main.translation.Remove(displayName)
 	If returnType="html" Then
 		resp.ContentType="text/html"

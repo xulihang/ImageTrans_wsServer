@@ -25,6 +25,10 @@ Public Sub getRunning As Boolean
 	Return running
 End Sub
 
+Public Sub setRunning(status As Boolean)
+	running = status
+End Sub
+
 Public Sub getDisplayName As String
 	Return displayName
 End Sub
