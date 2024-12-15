@@ -89,10 +89,16 @@
     <input id="useTargetImageCheckbox" type="checkbox" />
   </label>
   <br/>
+  <label>
+    TTS:
+    <select id="ttsSelect"></select>
+  </label>
+  <br/>
   <button class="saveButton">Save</button>
   <p style="margin-top:2em;">
     Please note that Tesseract and PaddleOCR does not work very well for whole-image translation. Tesseract works for vertical Japanese.
   </p>
+  <script src="tts.js"></script>
   <script>
     let languageCodes = [
         {name:"Arabic",code:"ar"},
@@ -122,6 +128,27 @@
     ]
     loadLanguageCodes();
     loadTessLanguages();
+    
+    if (speechSynthesis.onvoiceschanged !== undefined) {
+      speechSynthesis.onvoiceschanged = loadVoicesOptions;
+    }
+
+    function loadVoicesOptions(){
+      let select = document.getElementById("ttsSelect")
+      loadVoices();
+      populateVoiceList(select);
+      let tts = localStorage.getItem("tts");
+      if (tts) {
+        for (let index = 0; index < select.options.length; index++) {
+          const option =  select.options[index];
+          if (option.getAttribute("data-name") === tts) {
+            select.selectedIndex = index;
+            break;
+          }
+        }
+      }
+    }
+    
     function usePublicServer(){
       document.getElementById("serverURL").value = "https://service.basiccat.org:51043";
     }
@@ -171,6 +198,8 @@
       localStorage.setItem("paddleOCRLang",paddleOCRLang);
       let useTargetImage = document.getElementById("useTargetImageCheckbox").checked;
       localStorage.setItem("useTargetImage",useTargetImage);
+      let tts = document.getElementById("ttsSelect").selectedOptions[0].getAttribute('data-name');
+      localStorage.setItem("tts",tts);
       alert("Saved");
     })
     loadSettings();
