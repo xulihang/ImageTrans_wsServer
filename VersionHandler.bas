@@ -14,5 +14,5 @@ Public Sub Initialize
 End Sub
 
 Sub Handle(req As ServletRequest, resp As ServletResponse)
-	resp.Write("2.1.0")
+	resp.Write("2.2.0")
 End Sub
