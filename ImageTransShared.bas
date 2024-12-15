@@ -97,13 +97,13 @@ End Sub
 Public Sub TranslateRegion(displayName As String,filename As String,sourceLang As String,targetLang As String)
 	For Each it As ImageTrans In GetImageTransInstances
 		If it.getDisplayName == displayName Then
-			CallSubDelayed2(it, "TranslateRegion", CreateMap("filename":filename,"souceLang":sourceLang,"targetLang":targetLang))
+			CallSubDelayed2(it, "TranslateRegion", CreateMap("filename":filename,"sourceLang":sourceLang,"targetLang":targetLang))
 			Return
 		End If
 	Next
 	If displayName == "" Or displayName == "default" Then
 		For Each it As ImageTrans In GetImageTransInstances
-			CallSubDelayed2(it, "TranslateRegion",CreateMap("filename":filename,"souceLang":sourceLang,"targetLang":targetLang))
+			CallSubDelayed2(it, "TranslateRegion",CreateMap("filename":filename,"sourceLang":sourceLang,"targetLang":targetLang))
 			Exit
 		Next
 	End If
