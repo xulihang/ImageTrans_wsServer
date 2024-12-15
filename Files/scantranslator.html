@@ -9,6 +9,10 @@
     import * as Paddle from "https://cdn.jsdelivr.net/npm/esearch-ocr@5.1.5/dist/esearch-ocr.js";
     window.Paddle = Paddle;
   </script>
+  <script type="module">
+    import { defineCustomElements } from 'https://cdn.jsdelivr.net/npm/image-cropper-component/dist/esm/loader.js';
+    defineCustomElements();
+  </script>
   <style>
   .app {
     position:fixed;
@@ -53,6 +57,15 @@
   }
 
   .camera:hover {
+    cursor: pointer;
+  }
+
+  .gallery {
+    position: absolute;
+    right: 50px;
+  }
+
+  .gallery:hover {
     cursor: pointer;
   }
   
@@ -164,12 +177,27 @@
     stroke-width: 2;
   }
 
+  .image-cropper {
+    display: none;
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    left: 0;
+  }
+
   </style>
 </head>
 <body>
 <div class="app">
   <div class="header">
     Scan and Translate
+    <svg class="gallery" width="30px" height="30px" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" stroke-width="5" stroke="#FFFFFF" fill="none">
+      <rect x="9.16" y="9.16" width="45.69" height="45.69" rx="2.51"/>
+      <polyline points="9.16 41.95 20.68 32.19 29.71 40.38 43.27 23.51 54.77 40.38"/>
+      <circle cx="19.76" cy="19.38" r="3.93"/>
+    </svg>
+    <input style="display:none;" id="imgfile" type="file" name="image" onchange="onFileSelected(event);" />
     <svg class="camera" width="30px" height="30px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M12 16C13.6569 16 15 14.6569 15 13C15 11.3431 13.6569 10 12 10C10.3431 10 9 11.3431 9 13C9 14.6569 10.3431 16 12 16Z" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M3 16.8V9.2C3 8.0799 3 7.51984 3.21799 7.09202C3.40973 6.71569 3.71569 6.40973 4.09202 6.21799C4.51984 6 5.0799 6 6.2 6H7.25464C7.37758 6 7.43905 6 7.49576 5.9935C7.79166 5.95961 8.05705 5.79559 8.21969 5.54609C8.25086 5.49827 8.27836 5.44328 8.33333 5.33333C8.44329 5.11342 8.49827 5.00346 8.56062 4.90782C8.8859 4.40882 9.41668 4.08078 10.0085 4.01299C10.1219 4 10.2448 4 10.4907 4H13.5093C13.7552 4 13.8781 4 13.9915 4.01299C14.5833 4.08078 15.1141 4.40882 15.4394 4.90782C15.5017 5.00345 15.5567 5.11345 15.6667 5.33333C15.7216 5.44329 15.7491 5.49827 15.7803 5.54609C15.943 5.79559 16.2083 5.95961 16.5042 5.9935C16.561 6 16.6224 6 16.7454 6H17.8C18.9201 6 19.4802 6 19.908 6.21799C20.2843 6.40973 20.5903 6.71569 20.782 7.09202C21 7.51984 21 8.0799 21 9.2V16.8C21 17.9201 21 18.4802 20.782 18.908C20.5903 19.2843 20.2843 19.5903 19.908 19.782C19.4802 20 18.9201 20 17.8 20H6.2C5.0799 20 4.51984 20 4.09202 19.782C3.71569 19.5903 3.40973 19.2843 3.21799 18.908C3 18.4802 3 17.9201 3 16.8Z" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -200,6 +228,9 @@
     <button class="switchButton">Switch</button>
   </div>
 </div>
+<div class="image-cropper">
+  <image-cropper></image-cropper>
+</div>
 <div class="mask" style="display:none;">
   <div class="status"></div>
 </div>
@@ -216,6 +247,9 @@
     await listCameras();
     document.getElementsByClassName("camera")[0].addEventListener("click",function(){
       startCamera(cameras[cameras.length - 1]);
+    })
+    document.getElementsByClassName("gallery")[0].addEventListener("click",function(){
+      loadAnImage();
     })
     document.getElementById("video").addEventListener("loadeddata",function(){
       drawScanRegion();
@@ -235,10 +269,21 @@
       switchCamera();
     })
     document.getElementsByClassName("shutterCircle")[0].addEventListener("click",function(){
-      translate();
+      let canvas = capture();
+      translate(canvas);
     })
     document.getElementsByClassName("overlay")[0].addEventListener("click",function(event){
       adjustRegion(event);
+    })
+    let cropper = document.querySelector("image-cropper");
+    console.log(cropper);
+    cropper.addEventListener("canceled",function(){
+      document.getElementsByClassName("image-cropper")[0].style.display = "none";
+    })
+    cropper.addEventListener("confirmed",async function(){
+      console.log(cropper);
+      await cropper.getCroppedImage({});
+      translate(cropper.shadowRoot.childNodes[0].getElementsByTagName("canvas")[0]);
     })
   }
 
@@ -334,9 +379,8 @@
     }
   }
 
-  async function translate(){
+  async function translate(canvas){
     toggleStatusMask("translating...");
-    let canvas = capture();
     let dataURL = "";
     if (isSupportWebp(canvas)) {
       dataURL = canvas.toDataURL("image/webp",0.8);
@@ -526,6 +570,32 @@
         y: (event.clientY - CTM.f) / CTM.d
       };
     }
+  }
+
+  function loadAnImage(){
+    document.getElementById("imgfile").click();
+  }
+
+  function onFileSelected(e){
+    var file = event.target.files[0];
+    var reader = new FileReader();    
+    reader.onload = function(e){
+      let img = document.createElement("img");
+      img.onload = function(){
+        let cropperContainer = document.getElementsByClassName("image-cropper")[0];
+        cropperContainer.style.display = "block";
+        let cropper = document.querySelector("image-cropper");
+        cropper.img = img;
+        cropper.rect = {x:50,y:50,width:200,height:200};
+      }
+      img.src = e.target.result;
+    };
+    
+    reader.onerror = function () {
+      alert('oops, something went wrong.');
+    };
+    
+    reader.readAsDataURL(file);  
   }
 </script>
 </body>
