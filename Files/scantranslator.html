@@ -586,7 +586,13 @@
         cropperContainer.style.display = "block";
         let cropper = document.querySelector("image-cropper");
         cropper.img = img;
-        cropper.rect = {x:50,y:50,width:200,height:200};
+        let x = Math.min(Math.max(0,img.naturalWidth - 50),50);
+        let y = Math.min(Math.max(0,img.naturalHeight - 50),50);
+        let right = Math.min(x+200,img.naturalWidth);
+        let bottom = Math.min(y+200,img.naturalHeight);
+        let width = right - x;
+        let height = bottom - y;
+        cropper.rect = {x:x,y:y,width:width,height:height};
       }
       img.src = e.target.result;
     };
