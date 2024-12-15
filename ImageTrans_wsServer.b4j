@@ -6,12 +6,14 @@ File3=scantranslator.html
 File4=settings.html
 File5=translator.html
 File6=translator.js
+File7=tts.js
 FileGroup1=Default Group
 FileGroup2=Default Group
 FileGroup3=Default Group
 FileGroup4=Default Group
 FileGroup5=Default Group
 FileGroup6=Default Group
+FileGroup7=Default Group
 Group=Default Group
 Library1=javaobject
 Library2=jcore
@@ -34,7 +36,7 @@ Module6=IndexFilter
 Module7=IndexHandler
 Module8=ListHandler
 Module9=PrivateHeaderFilter
-NumberOfFiles=6
+NumberOfFiles=7
 NumberOfLibraries=6
 NumberOfModules=15
 Version=10
@@ -81,6 +83,7 @@ Sub AppStart (Args() As String)
 	File.Copy(File.DirAssets,"translator.html",File.DirApp,"translator.html")
 	File.Copy(File.DirAssets,"settings.html",File.DirApp,"settings.html")
 	File.Copy(File.DirAssets,"translator.js",File.DirApp,"translator.js")
+	File.Copy(File.DirAssets,"tts.js",File.DirApp,"tts.js")
 	
 	ConfigureSSLAndStart(51043)
 	autoCleanTimer.Initialize("autoCleanTimer",24*60*60*1000)
