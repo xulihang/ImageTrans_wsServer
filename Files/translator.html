@@ -194,6 +194,7 @@ document.getElementsByClassName("ttsButton")[0].addEventListener("click",functio
   speak(sourceText,voice);
   e.stopPropagation();
 })
+loadVoices();
 
 function onFileSelected(event){
   var file = event.target.files[0];

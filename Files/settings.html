@@ -132,7 +132,7 @@
     if (speechSynthesis.onvoiceschanged !== undefined) {
       speechSynthesis.onvoiceschanged = loadVoicesOptions;
     }
-
+    loadVoicesOptions();
     function loadVoicesOptions(){
       let select = document.getElementById("ttsSelect")
       loadVoices();
