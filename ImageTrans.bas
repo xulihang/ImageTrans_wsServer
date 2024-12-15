@@ -111,6 +111,7 @@ Sub set_name_and_password(map As Map)
 	For Each it As ImageTrans In values
 		If it.displayName = nameToSet Then
 			it.ws.Close 'close the instance with the same display name
+			ImageTransShared.connections.Remove(it.name)
 		End If
 	Next
 	displayName=map.GetDefault("name",name)

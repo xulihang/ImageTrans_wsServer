@@ -110,7 +110,6 @@ Public Sub TranslateRegion(displayName As String,filename As String,sourceLang A
 End Sub
 
 Public Sub Disconnect(it As ImageTrans, name As String)
-	If connections.ContainsKey(name) = False Or connections.Get(name) <> it Then Return
 	connections.Remove(name)
 End Sub
 
