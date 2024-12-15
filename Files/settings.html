@@ -198,8 +198,10 @@
       localStorage.setItem("paddleOCRLang",paddleOCRLang);
       let useTargetImage = document.getElementById("useTargetImageCheckbox").checked;
       localStorage.setItem("useTargetImage",useTargetImage);
-      let tts = document.getElementById("ttsSelect").selectedOptions[0].getAttribute('data-name');
-      localStorage.setItem("tts",tts);
+      if (document.getElementById("ttsSelect").selectedIndex != -1) {
+        let tts = document.getElementById("ttsSelect").selectedOptions[0].getAttribute('data-name');
+        localStorage.setItem("tts",tts);
+      }
       alert("Saved");
     })
     loadSettings();
