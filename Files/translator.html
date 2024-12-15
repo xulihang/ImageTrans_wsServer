@@ -222,6 +222,14 @@ async function translate(){
     }
     var sourceLang = localStorage.getItem("sourceLang") ?? "";
     var targetLang = localStorage.getItem("targetLang") ?? "";
+    if (serverURL.startsWith("https://service.basiccat.org:51043/")) {
+      if (!sourceLang || !targetLang || sourceLang === "auto" || targetLang === "auto") {
+        alert("Please the the source lang and the target lang first.");
+        window.open("./settings.html");
+        toggleStatusMask("");
+        return;
+      }
+    }
     var withoutImage = "true";
     if (localStorage.getItem("useTargetImage") === "true") {
       withoutImage = "false";
