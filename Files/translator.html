@@ -226,13 +226,17 @@ async function translate(){
     alert("Please load an image first");
     return;
   }
-  src = compress(sourceImg);
-  if (sourceImg.src.length < src.length) {
-    src = sourceImg.src;
-  }
   toggleStatusMask("Translating...");
   let engine = localStorage.getItem("engine");
   if (!engine || engine === "imagetrans") {
+    src = compress(sourceImg);
+    let scale = 1.0;
+    if (sourceImg.src.length < src.length) {
+      src = sourceImg.src;
+    }
+    if (sourceImg.naturalWidth > 1500) {
+      scale = 1500/sourceImg.naturalWidth;
+    }
     var serverURL = localStorage.getItem("URL");
     if (!serverURL) {
       if (window.location.host) {
@@ -284,7 +288,7 @@ async function translate(){
           var response = JSON.parse(ajaxObj.responseText);
           if (response.success === true) {
             targetImg.onload = function(){
-              overlayText(response["imgMap"]);
+              overlayText(response["imgMap"],scale);
             }
             if (response["img"]){
               targetImg.src = "data:image/jpeg;base64," + response["img"];
@@ -361,7 +365,8 @@ function toggleStatusMask(text){
   }
 }
 
-function overlayText(imgMap){
+function overlayText(imgMap,scale){
+  scale = scale ?? 1.0;
   if (imgMap) {
     console.log(imgMap);
     const overlay = document.getElementsByClassName("textOverlay")[0];
@@ -376,10 +381,10 @@ function overlayText(imgMap){
       }else{
         geometry = box["geometry"];
       }
-      const left = Math.ceil(ratio * geometry["X"]);
-      const top = Math.ceil(ratio * geometry["Y"]);
-      const width = Math.ceil(ratio * geometry["width"]);
-      const height = Math.ceil(ratio * geometry["height"]);
+      const left = Math.ceil(ratio * geometry["X"] / scale);
+      const top = Math.ceil(ratio * geometry["Y"] / scale);
+      const width = Math.ceil(ratio * geometry["width"] / scale);
+      const height = Math.ceil(ratio * geometry["height"] / scale);
       const boxContainer = document.createElement("div");
       boxContainer.className = "textBox";
       boxContainer.style.left = left  + "px";
