@@ -289,6 +289,9 @@ async function translate(){
           if (response.success === true) {
             targetImg.onload = function(){
               overlayText(response["imgMap"],scale);
+              if (response["img"] && sourceImg.naturalWidth != targetImg.naturalWidth) {
+                resizeImageBack(targetImg,sourceImg);
+              }
             }
             if (response["img"]){
               targetImg.src = "data:image/jpeg;base64," + response["img"];
@@ -339,6 +342,16 @@ async function translate(){
     updateDisplayOfSourceImgAndTargetImg(true);
     toggleStatusMask("");
   }
+}
+
+function resizeImageBack(targetImage,sourceImg){
+  const canvas = document.createElement("canvas");
+  canvas.width = sourceImg.naturalWidth;
+  canvas.height = sourceImg.naturalHeight;
+  const ctx = canvas.getContext("2d");
+  const imageHidden = document.getElementById("imageHidden");
+  ctx.drawImage(targetImage, 0, 0, targetImage.naturalWidth, targetImage.naturalHeight,0,0,canvas.width,canvas.height);
+  targetImage.src = canvas.toDataURL();
 }
 
 function toggleTranslated(event){
