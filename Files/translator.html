@@ -414,7 +414,7 @@ function showText(){
     if (box.getAttribute("fitted") != "true") {
       let isMobile = window.matchMedia("only screen and (max-width: 760px)").matches;
       if (isMobile) {
-        window.fitText(box,null,{minFontSize:2,maxFontSize:20});
+        window.fitText(box,null,{minFontSize:8,maxFontSize:20});
       }else{
         window.fitText(box,null,{minFontSize:15,maxFontSize:30});
       }
