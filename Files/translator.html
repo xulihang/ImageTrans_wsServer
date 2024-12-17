@@ -412,7 +412,12 @@ function showText(){
   for (let index = 0; index < boxes.length; index++) {
     const box = boxes[index];
     if (box.getAttribute("fitted") != "true") {
-      window.fitText(box,null,{minFontSize:15,maxFontSize:30});
+      let isMobile = window.matchMedia("only screen and (max-width: 760px)").matches;
+      if (isMobile) {
+        window.fitText(box,null,{minFontSize:2,maxFontSize:20});
+      }else{
+        window.fitText(box,null,{minFontSize:15,maxFontSize:30});
+      }
       box.setAttribute("fitted","true");
     }
     box.classList.add("showText");

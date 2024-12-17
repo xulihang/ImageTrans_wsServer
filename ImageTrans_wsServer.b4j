@@ -41,7 +41,7 @@ Module9=PrivateHeaderFilter
 NumberOfFiles=8
 NumberOfLibraries=6
 NumberOfModules=15
-Version=9.8
+Version=10
 @EndOfDesignText@
 'Non-UI application (console / server application)
 #Region Project Attributes 
