@@ -269,8 +269,12 @@
   let sourceText = "";
   init();
   async function init(){
-    await requestCameraPermission();
-    await listCameras();
+    try {
+      await requestCameraPermission();
+      await listCameras();  
+    } catch (error) {
+      console.log(error);
+    }
     document.getElementsByClassName("camera")[0].addEventListener("click",function(){
       startCamera(cameras[cameras.length - 1]);
     })
@@ -391,7 +395,6 @@
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
       closeStream(stream);
     } catch (error) {
-      console.log(error);
       throw error;
     }
   }
