@@ -5,6 +5,7 @@
   <title>ImageTrans Online</title>
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <script src="translator.js"></script>
+  <script src="fittext.js"></script>
   <script type="module">
     import * as Paddle from "https://cdn.jsdelivr.net/npm/esearch-ocr@5.1.5/dist/esearch-ocr.js";
     window.Paddle = Paddle;
@@ -74,9 +75,25 @@
 
   .textBox {
     position: absolute;
+    color: transparent;
+    background: transparent;
   }
+
   .textBox.nonImageTrans {
     border: 1px dotted blue;
+  }
+
+  .textBox.showText {
+    background: white;
+    border-radius: 20%;
+    text-align: center;
+    color: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-transform: uppercase;
+    font-family: sans-serif;
+    border-color: transparent;
   }
 
   .textBox:hover {
@@ -292,6 +309,9 @@ async function translate(){
               if (response["img"] && sourceImg.naturalWidth != targetImg.naturalWidth) {
                 resizeImageBack(targetImg,sourceImg);
               }
+              if (targetImg.src === sourceImg.src) {
+                showText();
+              }
             }
             if (response["img"]){
               targetImg.src = "data:image/jpeg;base64," + response["img"];
@@ -322,6 +342,7 @@ async function translate(){
     await translateBoxes(imgMap.boxes);
     targetImg.onload = function(){
       overlayText(imgMap);
+      showText();
     }
     targetImg.src = sourceImg.src;
     updateDisplayOfSourceImgAndTargetImg(true);
@@ -337,6 +358,7 @@ async function translate(){
     await translateBoxes(imgMap.boxes);
     targetImg.onload = function(){
       overlayText(imgMap);
+      showText();
     }
     targetImg.src = sourceImg.src;
     updateDisplayOfSourceImgAndTargetImg(true);
@@ -362,9 +384,11 @@ function updateDisplayOfSourceImgAndTargetImg(translated){
   if (!translated) {
     sourceImg.style.display = "";
     targetImg.style.display = "none";
+    hideText();
   }else{
     sourceImg.style.display = "none";
     targetImg.style.display = "";
+    showText();
   }
   document.getElementsByClassName("translatedChk")[0].checked = translated;
 }
@@ -375,6 +399,31 @@ function toggleStatusMask(text){
     document.getElementsByClassName("status")[0].innerHTML = text;
   }else{
     document.getElementsByClassName("mask")[0].style.display = "none";
+  }
+}
+
+function showText(){
+  if (localStorage.getItem("renderTranslation") != "true") {
+    return;
+  }
+  const overlay = document.getElementsByClassName("textOverlay")[0];
+  const boxes = overlay.getElementsByTagName("div");
+  for (let index = 0; index < boxes.length; index++) {
+    const box = boxes[index];
+    if (box.getAttribute("fitted") != "true") {
+      window.fitText(box);
+      box.setAttribute("fitted","true");
+    }
+    box.classList.add("showText");
+  }
+}
+
+function hideText(){
+  const overlay = document.getElementsByClassName("textOverlay")[0];
+  const boxes = overlay.getElementsByTagName("div");
+  for (let index = 0; index < boxes.length; index++) {
+    const box = boxes[index];
+    box.classList.remove("showText");
   }
 }
 
@@ -406,6 +455,7 @@ function overlayText(imgMap,scale){
       boxContainer.style.height = height  + "px";
       boxContainer.setAttribute("data-src",box["text"]);
       boxContainer.setAttribute("data-tgt",box["target"]);
+      boxContainer.innerText = box["target"];
       if (targetImg.src === sourceImg.src) {
         boxContainer.classList.add("nonImageTrans");
       }

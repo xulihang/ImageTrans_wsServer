@@ -89,6 +89,11 @@
     <input id="useTargetImageCheckbox" type="checkbox" />
   </label>
   <br/>
+  <label id="renderTranslationLabel">
+    Render translation if no translated images returned
+    <input id="renderTranslationCheckbox" type="checkbox" checked/>
+  </label>
+  <br/>
   <label>
     TTS:
     <select id="ttsSelect"></select>
@@ -198,6 +203,8 @@
       localStorage.setItem("paddleOCRLang",paddleOCRLang);
       let useTargetImage = document.getElementById("useTargetImageCheckbox").checked;
       localStorage.setItem("useTargetImage",useTargetImage);
+      let renderTranslation = document.getElementById("renderTranslationCheckbox").checked;
+      localStorage.setItem("renderTranslation",renderTranslation);
       if (document.getElementById("ttsSelect").selectedIndex != -1) {
         let tts = document.getElementById("ttsSelect").selectedOptions[0].getAttribute('data-name');
         localStorage.setItem("tts",tts);
@@ -256,6 +263,14 @@
       let useTargetImage = localStorage.getItem("useTargetImage");
       if (useTargetImage === "true") {
         document.getElementById("useTargetImageCheckbox").checked = true;
+      }
+      let renderTranslation = localStorage.getItem("renderTranslation");
+      if (renderTranslation === "true") {
+        document.getElementById("renderTranslationCheckbox").checked = true;
+      }else{
+        if (renderTranslation === "false") {
+          document.getElementById("renderTranslationCheckbox").checked = false;
+        }
       }
     }
 
