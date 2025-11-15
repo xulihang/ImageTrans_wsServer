@@ -284,6 +284,7 @@ async function translate(){
     var chatGPTURL = localStorage.getItem("chatGPTURL") ?? "";
     var chatGPTAPIKEY = localStorage.getItem("chatGPTAPIKEY") ?? "";
     var chatGPTModel = localStorage.getItem("chatGPTModel") ?? "";
+    var template = localStorage.getItem("template") ?? "";
     if (serverURL.startsWith("https://service.basiccat.org:51043/")) {
       if (!sourceLang || !targetLang || sourceLang === "auto" || targetLang === "auto") {
         alert("Please the the source lang and the target lang first.");
@@ -308,6 +309,9 @@ async function translate(){
         "model": chatGPTModel
       };
       params += "&api="+encodeURIComponent(JSON.stringify(api));
+    }
+    if (template) {
+      params += "&template="+encodeURIComponent(template);
     }
     ajaxObj.send(params);  //+"&saveToFile=true"
     ajaxObj.onreadystatechange = function () {

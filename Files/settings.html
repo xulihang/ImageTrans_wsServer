@@ -114,6 +114,16 @@
     <input id="chatGPTModel" type="text"/>
   </label>
   <br/>
+  <label>
+    Template:
+    <select id="templateSelect">
+      <option value="general">General</option>
+      <option value="manga">Black and white Manga</option>
+      <option value="cg">Colored Manga</option>
+      <option value="comics">Comics</option>
+    </select>
+  </label>
+  <br/>
   <button class="saveButton">Save</button>
   <p style="margin-top:2em;">
     Please note that Tesseract and PaddleOCR does not work very well for whole-image translation. Tesseract works for vertical Japanese.
@@ -224,6 +234,10 @@
         let tts = document.getElementById("ttsSelect").selectedOptions[0].getAttribute('data-name');
         localStorage.setItem("tts",tts);
       }
+      if (document.getElementById("templateSelect").selectedIndex != -1) {
+        let template = document.getElementById("templateSelect").selectedOptions[0].value;
+        localStorage.setItem("template",template);
+      }
       let chatGPTURL = document.getElementById("chatGPTURL").value;
       if (chatGPTURL) {
         localStorage.setItem("chatGPTURL",chatGPTURL);
@@ -305,7 +319,12 @@
           document.getElementById("renderTranslationCheckbox").checked = false;
         }
       }
-
+      let template = localStorage.getItem("template");
+      if (template) {
+        let templates = ["general","manga","cg","comics"];
+        let index = templates.indexOf(template);
+        document.getElementById("templateSelect").selectedIndex = index;
+      }
       document.getElementById("chatGPTURL").value = localStorage.getItem("chatGPTURL");
       document.getElementById("chatGPTAPIKEY").value = localStorage.getItem("chatGPTAPIKEY");
       document.getElementById("chatGPTModel").value = localStorage.getItem("chatGPTModel");

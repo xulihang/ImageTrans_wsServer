@@ -78,17 +78,17 @@ Public Sub IsPasswordCorrect(displayName As String, password As String) As Boole
 	Return True
 End Sub
 
-Public Sub Translate(displayName As String,src As String,sourceLang As String,targetLang As String,withoutImage As String,workflow As String,projectSettings As String,apis As String)
+Public Sub Translate(displayName As String,src As String,sourceLang As String,targetLang As String,withoutImage As String,workflow As String,projectSettings As String,apis As String,template As String)
 	Log("translate using "&displayName)
 	For Each it As ImageTrans In GetImageTransInstances
 		If it.getDisplayName == displayName Then
-			CallSubDelayed2(it, "Translate",CreateMap("src":src,"sourceLang":sourceLang,"targetLang":targetLang,"withoutImage":withoutImage,"workflow":workflow,"projectSettings":projectSettings,"apis":apis))
+			CallSubDelayed2(it, "Translate",CreateMap("src":src,"sourceLang":sourceLang,"targetLang":targetLang,"withoutImage":withoutImage,"workflow":workflow,"projectSettings":projectSettings,"apis":apis,"template":template))
 			Return
 		End If
 	Next
 	If displayName == "" Or displayName == "default" Then
 		For Each it As ImageTrans In GetImageTransInstances
-			CallSubDelayed2(it, "Translate",CreateMap("src":src,"sourceLang":sourceLang,"targetLang":targetLang,"workflow":workflow,"projectSettings":projectSettings,"apis":apis))
+			CallSubDelayed2(it, "Translate",CreateMap("src":src,"sourceLang":sourceLang,"targetLang":targetLang,"workflow":workflow,"projectSettings":projectSettings,"apis":apis,"template":template))
 			Exit
 		Next
 	End If
