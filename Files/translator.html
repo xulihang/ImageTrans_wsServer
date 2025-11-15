@@ -281,6 +281,9 @@ async function translate(){
     }
     var sourceLang = localStorage.getItem("sourceLang") ?? "";
     var targetLang = localStorage.getItem("targetLang") ?? "";
+    var chatGPTURL = localStorage.getItem("chatGPTURL") ?? "";
+    var chatGPTAPIKEY = localStorage.getItem("chatGPTAPIKEY") ?? "";
+    var chatGPTModel = localStorage.getItem("chatGPTModel") ?? "";
     if (serverURL.startsWith("https://service.basiccat.org:51043/")) {
       if (!sourceLang || !targetLang || sourceLang === "auto" || targetLang === "auto") {
         alert("Please the the source lang and the target lang first.");
@@ -296,8 +299,17 @@ async function translate(){
     var ajaxObj = new XMLHttpRequest();
     ajaxObj.open('POST', serverURL);
     ajaxObj.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    
-    ajaxObj.send("src="+encodeURIComponent(src)+"&displayName="+encodeURIComponent(name)+"&password="+encodeURIComponent(password)+"&sourceLang="+encodeURIComponent(sourceLang)+"&targetLang="+encodeURIComponent(targetLang)+"&saveToFile=true&withoutImage="+withoutImage);  //+"&saveToFile=true"
+    let params = "src="+encodeURIComponent(src)+"&displayName="+encodeURIComponent(name)+"&password="+encodeURIComponent(password)+"&sourceLang="+encodeURIComponent(sourceLang)+"&targetLang="+encodeURIComponent(targetLang)+"&saveToFile=true&withoutImage="+withoutImage;
+    if (chatGPTAPIKEY && chatGPTURL && chatGPTModel) {
+      var api = {};
+      api["chatGPT"] = {
+        "host": chatGPTURL,
+        "key": chatGPTAPIKEY,
+        "model": chatGPTModel
+      };
+      params += "&api="+encodeURIComponent(JSON.stringify(api));
+    }
+    ajaxObj.send(params);  //+"&saveToFile=true"
     ajaxObj.onreadystatechange = function () {
       toggleStatusMask("");
       if (ajaxObj.readyState == 4 && ajaxObj.status == 200) {
