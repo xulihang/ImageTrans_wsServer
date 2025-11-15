@@ -121,6 +121,8 @@
       <option value="manga">Black and white Manga</option>
       <option value="cg">Colored Manga</option>
       <option value="comics">Comics</option>
+      <option value="chinese-manhua">Manhua</option>
+      <option value="webtoon">Webtoon</option>
     </select>
   </label>
   <br/>
@@ -321,7 +323,7 @@
       }
       let template = localStorage.getItem("template");
       if (template) {
-        let templates = ["general","manga","cg","comics"];
+        let templates = ["general","manga","cg","comics","chinese-manhua","webtoon"];
         let index = templates.indexOf(template);
         document.getElementById("templateSelect").selectedIndex = index;
       }
