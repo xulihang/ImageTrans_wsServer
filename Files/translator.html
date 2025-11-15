@@ -308,7 +308,7 @@ async function translate(){
         "key": chatGPTAPIKEY,
         "model": chatGPTModel
       };
-      params += "&api="+encodeURIComponent(JSON.stringify(api));
+      params += "&apis="+encodeURIComponent(JSON.stringify(api));
     }
     if (template) {
       params += "&template="+encodeURIComponent(template);

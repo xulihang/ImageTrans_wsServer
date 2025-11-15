@@ -53,7 +53,11 @@ Public Sub Translate(map1 As Map)
 	Dim sourceLang As String = map1.GetDefault("sourceLang","")
 	Dim targetLang As String = map1.GetDefault("targetLang","")
 	Dim withoutImage As String = map1.GetDefault("withoutImage","")
-	ws.RunFunction("Translate",Array(src,sourceLang,targetLang,withoutImage))
+	Dim workflow As String = map1.GetDefault("workflow","")
+	Dim projectSettings As String = map1.GetDefault("projectSettings","")
+	Dim apis As String = map1.GetDefault("apis","")
+	Dim template As String = map1.GetDefault("template","")
+	ws.RunFunction("Translate",Array(src,sourceLang,targetLang,withoutImage,workflow,projectSettings,apis,template))
 	ws.Flush
 End Sub
 
