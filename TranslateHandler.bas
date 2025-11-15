@@ -42,6 +42,9 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 		Return
 	End If
 	Dim sourceLang As String = req.GetParameter("sourceLang")
+	Dim projectSettings As String = req.GetParameter("projectSettings")
+	Dim apis As String = req.GetParameter("apis")
+	Dim workflow As String = req.GetParameter("workflow")
 	Dim targetLang As String = req.GetParameter("targetLang")
 	Dim saveToFile As String = req.GetParameter("saveToFile")
 	Dim withoutImage As String = req.GetParameter("withoutImage")
@@ -60,12 +63,12 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 	
 	If filename <> "" Then
 		If Main.IsLocalNetwork(req.RemoteAddress) Then
-			ImageTransShared.Translate(displayName,src,sourceLang,targetLang,withoutImage)
+			ImageTransShared.Translate(displayName,src,sourceLang,targetLang,withoutImage,workflow,projectSettings,apis)
 		Else
-			ImageTransShared.Translate(displayName,filename,sourceLang,targetLang,withoutImage)
+			ImageTransShared.Translate(displayName,filename,sourceLang,targetLang,withoutImage,workflow,projectSettings,apis)
 		End If
 	Else
-		ImageTransShared.Translate(displayName,src,sourceLang,targetLang,withoutImage)
+		ImageTransShared.Translate(displayName,src,sourceLang,targetLang,withoutImage,workflow,projectSettings,apis)
 	End If
 	
 	Log(Main.translation)
