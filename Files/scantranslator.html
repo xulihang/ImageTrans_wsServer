@@ -330,7 +330,7 @@
   async function startCamera(camera){
     document.getElementsByClassName("scanner")[0].style.display = "";
     currentCamera = camera;
-    const videoConstraints = {video: {width:1920, height:1080, deviceId: currentCamera.deviceId}, audio: false};
+    const videoConstraints = {video: {width:1920, height:1080, deviceId: {exact:currentCamera.deviceId}}, audio: false};
     const cameraStream = await navigator.mediaDevices.getUserMedia(videoConstraints);
     document.getElementById("video").srcObject = cameraStream;
   }
