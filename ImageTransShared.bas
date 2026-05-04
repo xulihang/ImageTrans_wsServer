@@ -88,7 +88,8 @@ Public Sub Translate(displayName As String,src As String,sourceLang As String,ta
 	Next
 	If displayName == "" Or displayName == "default" Then
 		For Each it As ImageTrans In GetImageTransInstances
-			CallSubDelayed2(it, "Translate",CreateMap("src":src,"sourceLang":sourceLang,"targetLang":targetLang,"workflow":workflow,"projectSettings":projectSettings,"apis":apis,"template":template))
+			Log("translate using fallback")
+			CallSubDelayed2(it, "Translate",CreateMap("src":src,"sourceLang":sourceLang,"targetLang":targetLang,"withoutImage":withoutImage,"workflow":workflow,"projectSettings":projectSettings,"apis":apis,"template":template))
 			Exit
 		Next
 	End If
