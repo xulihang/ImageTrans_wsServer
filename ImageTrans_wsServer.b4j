@@ -41,7 +41,7 @@ Module9=PrivateHeaderFilter
 NumberOfFiles=8
 NumberOfLibraries=6
 NumberOfModules=15
-Version=10
+Version=10.5
 @EndOfDesignText@
 'Non-UI application (console / server application)
 #Region Project Attributes 
@@ -96,20 +96,30 @@ End Sub
 
 Private Sub ConfigureSSLAndStart (SslPort As Int) As ResumableSub
 	'example of SSL connector configuration
-	If File.Exists(File.DirApp, "certificate.jks") = False Then
-		File.Copy(File.DirAssets,"certificate.jks",File.DirApp,"certificate.jks")
+	If File.Exists(File.DirApp, "server.jks") Then
+		Dim ssl As SslConfiguration
+		ssl.Initialize
+		ssl.SetKeyStorePath(File.DirApp, "server.jks") 'path to keystore file
+		ssl.KeyStorePassword = "changeit"
+		
+		srvr.SetSslConfiguration(ssl, SslPort)
+	Else
+		If File.Exists(File.DirApp, "certificate.jks") = False Then
+			File.Copy(File.DirAssets,"certificate.jks",File.DirApp,"certificate.jks")
+		End If
+	
+		If IsCertificateNotExpired(File.Combine(File.DirApp,"certificate.jks")) = False Then
+			Wait For (RedownloadCertificate) complete (result As Object)
+		End If
+	
+		Dim ssl As SslConfiguration
+		ssl.Initialize
+		ssl.SetKeyStorePath(File.DirApp, "certificate.jks") 'path to keystore file
+		ssl.KeyStorePassword = "xulihang"
+		ssl.KeyManagerPassword = "xulihang"
+		srvr.SetSslConfiguration(ssl, SslPort)
 	End If
 	
-	If IsCertificateNotExpired(File.Combine(File.DirApp,"certificate.jks")) = False Then
-		Wait For (RedownloadCertificate) complete (result As Object)
-	End If
-	
-	Dim ssl As SslConfiguration
-	ssl.Initialize
-	ssl.SetKeyStorePath(File.DirApp, "certificate.jks") 'path to keystore file
-	ssl.KeyStorePassword = "xulihang"
-	ssl.KeyManagerPassword = "xulihang"
-	srvr.SetSslConfiguration(ssl, SslPort)
 	'srvr.AddFilter("/*","HttpsFilter",False)
 	srvr.Start
 	Return ""
