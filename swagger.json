@@ -1,0 +1,467 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "ImageTrans wsServer API",
+    "description": "REST API and WebSocket interface for ImageTrans wsServer — a bridge between web clients and the ImageTrans desktop application. Browser clients send images for translation via HTTP; the server relays requests through WebSocket to a running ImageTrans instance.",
+    "version": "2.2.0",
+    "contact": {
+      "name": "xulihang",
+      "url": "https://blog.xulihang.me/ImageTrans_wsServer/"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:51042",
+      "description": "Local HTTP server"
+    },
+    {
+      "url": "https://localhost:51043",
+      "description": "Local HTTPS server (if SSL configured)"
+    }
+  ],
+  "tags": [
+    { "name": "Translation", "description": "Image translation endpoints" },
+    { "name": "Meta", "description": "Server info and management endpoints" },
+    { "name": "Pages", "description": "HTML page serving endpoints" }
+  ],
+  "paths": {
+    "/translate": {
+      "post": {
+        "tags": ["Translation"],
+        "summary": "Translate a whole image",
+        "description": "Sends a source image to an ImageTrans desktop client for full-image translation. The image can be a base64 data URI or a file path. Waits (polls) for the result from the ImageTrans client via WebSocket, with a 240-second timeout.",
+        "operationId": "translateImage",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": { "$ref": "#/components/schemas/TranslateRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Translation result",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TranslateResponse" }
+              },
+              "text/html": {
+                "schema": { "type": "string" },
+                "description": "When type=html, returns an <img> tag with base64 data URI."
+              },
+              "application/javascript": {
+                "schema": { "type": "string" },
+                "description": "When callback is set, returns JSONP: callback({...})."
+              },
+              "text/plain": {
+                "schema": { "type": "string" },
+                "description": "Error messages returned as plain text."
+              }
+            }
+          }
+        }
+      }
+    },
+    "/translateRegion": {
+      "post": {
+        "tags": ["Translation"],
+        "summary": "Translate a region of an image",
+        "description": "Sends a base64-encoded image snippet for region-level text translation (e.g., OCR and translate a single text box). The base64 prefix is stripped, the raw data is decoded to a temp file, and the file path is sent to the target ImageTrans instance via WebSocket.",
+        "operationId": "translateRegion",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": { "$ref": "#/components/schemas/TranslateRegionRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Region translation result",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/TranslateRegionResponse" }
+              },
+              "text/plain": {
+                "schema": { "type": "string" },
+                "description": "Error messages returned as plain text."
+              }
+            }
+          }
+        }
+      }
+    },
+    "/image": {
+      "post": {
+        "tags": ["Translation"],
+        "summary": "Upload translated image (internal)",
+        "description": "Internal endpoint called by the ImageTrans desktop client to upload the rendered translated image. Stores the result in the server's translation map so the /translate polling loop can pick it up.",
+        "operationId": "uploadImage",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": { "$ref": "#/components/schemas/ImageUploadRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Upload acknowledgment",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "success"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/list": {
+      "get": {
+        "tags": ["Meta"],
+        "summary": "List connected ImageTrans instances",
+        "description": "Returns a JSON array of all currently connected ImageTrans WebSocket clients with their names and running status.",
+        "operationId": "listInstances",
+        "responses": {
+          "200": {
+            "description": "Array of connected instances",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/InstanceInfo" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/version": {
+      "get": {
+        "tags": ["Meta"],
+        "summary": "Get server version",
+        "description": "Returns the server version string.",
+        "operationId": "getVersion",
+        "responses": {
+          "200": {
+            "description": "Version string",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "2.2.0"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/translator": {
+      "get": {
+        "tags": ["Pages"],
+        "summary": "Translator page",
+        "description": "Serves the translator.html page for whole-image translation UI.",
+        "operationId": "getTranslatorPage",
+        "responses": {
+          "200": {
+            "description": "HTML page",
+            "content": {
+              "text/html": { "schema": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "/scantranslator": {
+      "get": {
+        "tags": ["Pages"],
+        "summary": "Scan translator page",
+        "description": "Serves the scantranslator.html page for camera-based region scan and translate UI.",
+        "operationId": "getScanTranslatorPage",
+        "responses": {
+          "200": {
+            "description": "HTML page",
+            "content": {
+              "text/html": { "schema": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "/settings": {
+      "get": {
+        "tags": ["Pages"],
+        "summary": "Settings page",
+        "description": "Serves the settings.html configuration page.",
+        "operationId": "getSettingsPage",
+        "responses": {
+          "200": {
+            "description": "HTML page",
+            "content": {
+              "text/html": { "schema": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "/index": {
+      "get": {
+        "tags": ["Pages"],
+        "summary": "Index page",
+        "description": "Serves the index.html landing page with links to all tools.",
+        "operationId": "getIndexPage",
+        "responses": {
+          "200": {
+            "description": "HTML page",
+            "content": {
+              "text/html": { "schema": { "type": "string" } }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "TranslateRequest": {
+        "type": "object",
+        "required": ["src"],
+        "properties": {
+          "src": {
+            "type": "string",
+            "description": "Source image as a base64 data URI (e.g. data:image/jpeg;base64,...) or a file path on the server."
+          },
+          "displayName": {
+            "type": "string",
+            "default": "default",
+            "description": "Name of the target ImageTrans instance. Defaults to 'default'."
+          },
+          "password": {
+            "type": "string",
+            "description": "Password for the named ImageTrans instance. Only required if the instance has set a password."
+          },
+          "sourceLang": {
+            "type": "string",
+            "description": "Source language code (e.g. 'ja', 'en', 'zh')."
+          },
+          "targetLang": {
+            "type": "string",
+            "description": "Target language code (e.g. 'en', 'zh', 'ko')."
+          },
+          "projectSettings": {
+            "type": "string",
+            "description": "Project settings string for ImageTrans."
+          },
+          "apis": {
+            "type": "string",
+            "description": "JSON string of API configurations.",
+            "example": "{\"chatGPT\":{\"host\":\"https://api.openai.com/v1/chat/completions\",\"key\":\"sk-...\",\"model\":\"gpt-4\"}}"
+          },
+          "template": {
+            "type": "string",
+            "description": "Template name for translation style.",
+            "enum": ["general", "manga", "cg", "comics", "chinese-manhua", "webtoon"]
+          },
+          "workflow": {
+            "type": "string",
+            "description": "Workflow configuration string."
+          },
+          "saveToFile": {
+            "type": "string",
+            "enum": ["true", "false"],
+            "description": "If 'true' and src is a data URI, decode and save base64 to a temp file on the server."
+          },
+          "withoutImage": {
+            "type": "string",
+            "enum": ["true", "false"],
+            "description": "If 'true', skip returning the translated image (only return text boxes)."
+          },
+          "type": {
+            "type": "string",
+            "description": "Response format. 'html' returns an <img> tag; otherwise returns JSON.",
+            "enum": ["html", "json"]
+          },
+          "callback": {
+            "type": "string",
+            "description": "JSONP callback function name. If set, response is wrapped as callback(json)."
+          }
+        }
+      },
+      "TranslateResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "message": {
+            "type": "string",
+            "description": "Error message or 'timeout' when translation fails. Only present when success is false."
+          },
+          "img": {
+            "type": "string",
+            "description": "Base64-encoded JPEG data of the translated image. Not present when withoutImage=true."
+          },
+          "imgMap": {
+            "$ref": "#/components/schemas/ImgMap"
+          }
+        }
+      },
+      "ImgMap": {
+        "type": "object",
+        "description": "Map of detected text boxes with source text, translated text, and geometry.",
+        "properties": {
+          "boxes": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/TextBox" }
+          }
+        }
+      },
+      "TextBox": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "Original source text detected in the image."
+          },
+          "target": {
+            "type": "string",
+            "description": "Translated text."
+          },
+          "geometry": {
+            "$ref": "#/components/schemas/Rectangle"
+          },
+          "targetGeometry": {
+            "$ref": "#/components/schemas/Rectangle",
+            "description": "Geometry of the translated text region (may differ from source)."
+          }
+        }
+      },
+      "Rectangle": {
+        "type": "object",
+        "properties": {
+          "X": { "type": "integer" },
+          "Y": { "type": "integer" },
+          "width": { "type": "integer" },
+          "height": { "type": "integer" }
+        }
+      },
+      "TranslateRegionRequest": {
+        "type": "object",
+        "required": ["base64"],
+        "properties": {
+          "base64": {
+            "type": "string",
+            "description": "Base64-encoded image data URI (e.g. data:image/jpeg;base64,...). The prefix is stripped and raw data decoded to a temp file."
+          },
+          "displayName": {
+            "type": "string",
+            "default": "default",
+            "description": "Name of the target ImageTrans instance."
+          },
+          "password": {
+            "type": "string",
+            "description": "Password for the named instance."
+          },
+          "sourceLang": {
+            "type": "string",
+            "description": "Source language code."
+          },
+          "targetLang": {
+            "type": "string",
+            "description": "Target language code."
+          }
+        }
+      },
+      "TranslateRegionResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "message": {
+            "type": "string",
+            "description": "Error message or 'timeout' when translation fails. Only present when success is false."
+          },
+          "regionMap": {
+            "$ref": "#/components/schemas/RegionMap"
+          }
+        }
+      },
+      "RegionMap": {
+        "type": "object",
+        "properties": {
+          "source": {
+            "type": "string",
+            "description": "Original text detected in the region."
+          },
+          "target": {
+            "type": "array",
+            "description": "Array of translation results from different engines.",
+            "items": {
+              "type": "object",
+              "properties": {
+                "engine": { "type": "string", "example": "mymemory" },
+                "text": { "type": "string" }
+              }
+            }
+          }
+        }
+      },
+      "ImageUploadRequest": {
+        "type": "object",
+        "description": "Multipart form data uploaded by the ImageTrans desktop client.",
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "description": "The translated image file (binary)."
+          },
+          "name": {
+            "type": "string",
+            "default": "default",
+            "description": "Display name of the ImageTrans instance."
+          },
+          "success": {
+            "type": "string",
+            "enum": ["True", "False"],
+            "default": "True",
+            "description": "Whether the translation succeeded."
+          },
+          "message": {
+            "type": "string",
+            "description": "Error message if translation failed."
+          },
+          "imgMap": {
+            "type": "string",
+            "description": "JSON string of the imgMap (text boxes with geometry)."
+          },
+          "regionMap": {
+            "type": "string",
+            "description": "JSON string of the regionMap."
+          }
+        }
+      },
+      "InstanceInfo": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Connection ID (timestamp when connected)."
+          },
+          "displayName": {
+            "type": "string",
+            "description": "User-assigned display name, or empty string."
+          },
+          "running": {
+            "type": "boolean",
+            "description": "Whether this instance is currently processing a translation."
+          }
+        }
+      }
+    }
+  }
+}
