@@ -1,4 +1,4 @@
-﻿B4J=true
+B4J=true
 Group=Default Group
 ModulesStructureVersion=1
 Type=Class
@@ -10,7 +10,7 @@ Sub Class_Globals
 End Sub
 
 Public Sub Initialize
-	
+
 End Sub
 
 Sub Handle(req As ServletRequest, resp As ServletResponse)
@@ -24,14 +24,14 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 		resp.Write($"no imagetrans is connected"$)
 		Return
 	End If
-	
+
 	Dim src As String = req.GetParameter("src")
 
 	displayName = req.GetParameter("displayName")
 	If displayName = "" Then
 		displayName = "default"
 	End If
-	
+
 	Dim password As String = req.GetParameter("password")
 	If ImageTransShared.IsPasswordCorrect(displayName,password) == False Then
 		resp.Write($"Password incorrect."$)
@@ -57,21 +57,27 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 	End If
 	Log("translate handler")
 	Main.translation.Put(displayName,CreateMap("translated":False))
-	
+
+	Dim dispatched As Boolean
 	If filename <> "" Then
 		If Main.IsLocalNetwork(req.RemoteAddress) Then
-			ImageTransShared.Translate(displayName,src,sourceLang,targetLang,withoutImage,workflow,projectSettings,apis,template)
+			dispatched = ImageTransShared.Translate(displayName,src,sourceLang,targetLang,withoutImage,workflow,projectSettings,apis,template)
 		Else
-			ImageTransShared.Translate(displayName,filename,sourceLang,targetLang,withoutImage,workflow,projectSettings,apis,template)
+			dispatched = ImageTransShared.Translate(displayName,filename,sourceLang,targetLang,withoutImage,workflow,projectSettings,apis,template)
 		End If
 	Else
-		ImageTransShared.Translate(displayName,src,sourceLang,targetLang,withoutImage,workflow,projectSettings,apis,template)
+		dispatched = ImageTransShared.Translate(displayName,src,sourceLang,targetLang,withoutImage,workflow,projectSettings,apis,template)
 	End If
-	
+	If dispatched = False Then
+		Main.translation.Remove(displayName)
+		resp.Write($"all instances are busy"$)
+		Return
+	End If
+
 	Log(Main.translation)
 	Dim returnType As String=req.GetParameter("type")
 	Dim callback As String=req.GetParameter("callback")
-	
+
 	WaitForTheTranslationToBeDone(resp,returnType,callback)
 	StartMessageLoop
 End Sub
@@ -100,7 +106,7 @@ Private Sub ImageTranslationMessage As String
 	Return ""
 End Sub
 
-Sub WaitForTheTranslationToBeDone(resp As ServletResponse,returnType As String,callback As String) 
+Sub WaitForTheTranslationToBeDone(resp As ServletResponse,returnType As String,callback As String)
 	Dim result As Map
 	result.Initialize
 	Dim base64 As String
@@ -109,14 +115,14 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse,returnType As String,c
 	Do While ImageTranslated=False
 		Sleep(1000)
 		waited=waited+1000
-		
+
 		If ImageTranslationFailed Then
 			result.Put("message",ImageTranslationMessage)
 			result.Put("success",False)
 			success = False
 			Exit
 		End If
-		
+
 		If waited>1000*240 Then 'timeout
 			result.Put("message","timeout")
 			result.Put("success",False)
@@ -124,14 +130,14 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse,returnType As String,c
 			Exit
 		End If
 	Loop
-	
+
 	If success Then
 		Dim map1 As Map = Main.translation.Get(displayName)
-		
+
 		Dim imgMapString As String = map1.Get("imgMapString")
-		
+
 		result.Put("success",True)
-		
+
 		If map1.ContainsKey("path") Then
 			Dim imgPath As String = map1.Get("path")
 			Dim su As StringUtils
@@ -139,14 +145,14 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse,returnType As String,c
 			result.Put("img",base64)
 			File.Delete(imgPath,"")
 		End If
-		
+
 		If imgMapString <> "" Then
 			Dim jsonP As JSONParser
 			jsonP.Initialize(imgMapString)
 			Dim imgMap As Map = jsonP.NextObject
 			result.Put("imgMap", imgMap)
 		End If
-		
+
 	Else
 		result.Put("success",False)
 	End If

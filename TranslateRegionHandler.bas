@@ -1,4 +1,4 @@
-﻿B4J=true
+B4J=true
 Group=Default Group
 ModulesStructureVersion=1
 Type=Class
@@ -10,7 +10,7 @@ Sub Class_Globals
 End Sub
 
 Public Sub Initialize
-	
+
 End Sub
 
 Private Sub ImageTranslated As Boolean
@@ -48,13 +48,13 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 		resp.Write($"no imagetrans is connected"$)
 		Return
 	End If
-	
+
 	displayName = req.GetParameter("displayName")
 	If displayName = "" Then
 		displayName = "default"
 	End If
-	
-	
+
+
 	Dim password As String = req.GetParameter("password")
 	If ImageTransShared.IsPasswordCorrect(displayName,password) == False Then
 		resp.Write($"Password incorrect."$)
@@ -69,10 +69,16 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 	Dim path As String = File.Combine(File.Combine(File.DirApp,"tmp"),filename)
 	File.WriteBytes(path,"",su.DecodeBase64(base64))
 	Main.translation.Put(displayName,CreateMap("translated":False))
+	Dim dispatched As Boolean
 	If Main.IsLocalNetwork(req.RemoteAddress) Then
-		ImageTransShared.TranslateRegion(displayName,path,sourceLang,targetLang)
+		dispatched = ImageTransShared.TranslateRegion(displayName,path,sourceLang,targetLang)
 	Else
-		ImageTransShared.TranslateRegion(displayName,filename,sourceLang,targetLang)
+		dispatched = ImageTransShared.TranslateRegion(displayName,filename,sourceLang,targetLang)
+	End If
+	If dispatched = False Then
+		Main.translation.Remove(displayName)
+		resp.Write($"all instances are busy"$)
+		Return
 	End If
 	WaitForTheTranslationToBeDone(resp)
 	StartMessageLoop
@@ -83,26 +89,26 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse)
 	Dim result As Map
 	result.Initialize
 	Dim waited As Int=0
-    Dim success As Boolean = True
+	Dim success As Boolean = True
 	Do While ImageTranslated=False
 		Sleep(1000)
 		waited=waited+1000
-		
+
 		If ImageTranslationFailed Then
 			result.Put("message",ImageTranslationMessage)
 			result.Put("success",False)
 			success = False
 			Exit
 		End If
-		
+
 		If waited>1000*240 Then 'timeout
 			result.Put("message","timeout")
 			result.Put("success",False)
-		    success = False
+			success = False
 			Exit
 		End If
-    Loop
-	
+	Loop
+
 	If success Then
 		Dim map1 As Map = Main.translation.Get(displayName)
 		Dim regionMapString As String = map1.Get("regionMapString")
@@ -114,7 +120,7 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse)
 		End If
 		result.Put("success",True)
 	Else
-	    result.Put("success",False)
+		result.Put("success",False)
 	End If
 	ImageTransShared.SetIsRunning(displayName,False)
 	Main.translation.Remove(displayName)
