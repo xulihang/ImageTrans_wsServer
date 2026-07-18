@@ -87,7 +87,6 @@ Private Sub ImageTranslated As Boolean
 		If map1.GetDefault("translated",False) Then
 			Return True
 		End If
-		' Instance stopped processing → stop waiting
 		If ImageTransShared.IsRunning(displayName) = False And ImageTransShared.IsInstanceBusy(displayName) = False Then
 			Return True
 		End If
@@ -138,26 +137,26 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse,returnType As String,c
 
 	If success Then
 		Dim map1 As Map = Main.translation.Get(uniqueKey)
-
-		Dim imgMapString As String = map1.Get("imgMapString")
-
-		result.Put("success",True)
-
-		If map1.ContainsKey("path") Then
-			Dim imgPath As String = map1.Get("path")
-			Dim su As StringUtils
-			base64=su.EncodeBase64(File.ReadBytes(imgPath,""))
-			result.Put("img",base64)
-			File.Delete(imgPath,"")
+		If map1.GetDefault("translated",False) Then
+			Dim imgMapString As String = map1.GetDefault("imgMapString","")
+			result.Put("success",True)
+			If map1.ContainsKey("path") Then
+				Dim imgPath As String = map1.Get("path")
+				Dim su As StringUtils
+				base64=su.EncodeBase64(File.ReadBytes(imgPath,""))
+				result.Put("img",base64)
+				File.Delete(imgPath,"")
+			End If
+			If imgMapString <> "" Then
+				Dim jsonP As JSONParser
+				jsonP.Initialize(imgMapString)
+				Dim imgMap As Map = jsonP.NextObject
+				result.Put("imgMap", imgMap)
+			End If
+		Else
+			result.Put("success",False)
+			result.Put("message","translation did not complete")
 		End If
-
-		If imgMapString <> "" Then
-			Dim jsonP As JSONParser
-			jsonP.Initialize(imgMapString)
-			Dim imgMap As Map = jsonP.NextObject
-			result.Put("imgMap", imgMap)
-		End If
-
 	Else
 		result.Put("success",False)
 	End If

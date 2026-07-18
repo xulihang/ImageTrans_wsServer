@@ -20,7 +20,6 @@ Private Sub ImageTranslated As Boolean
 		If map1.GetDefault("translated",False) Then
 			Return True
 		End If
-		' Instance stopped processing → stop waiting
 		If ImageTransShared.IsRunning(displayName) = False And ImageTransShared.IsInstanceBusy(displayName) = False Then
 			Return True
 		End If
@@ -115,14 +114,19 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse)
 
 	If success Then
 		Dim map1 As Map = Main.translation.Get(uniqueKey)
-		Dim regionMapString As String = map1.Get("regionMapString")
-		If regionMapString <> "" Then
-			Dim jsonP As JSONParser
-			jsonP.Initialize(regionMapString)
-			Dim regionMap As Map = jsonP.NextObject
-			result.Put("regionMap", regionMap)
+		If map1.GetDefault("translated",False) Then
+			Dim regionMapString As String = map1.GetDefault("regionMapString","")
+			If regionMapString <> "" Then
+				Dim jsonP As JSONParser
+				jsonP.Initialize(regionMapString)
+				Dim regionMap As Map = jsonP.NextObject
+				result.Put("regionMap", regionMap)
+			End If
+			result.Put("success",True)
+		Else
+			result.Put("success",False)
+			result.Put("message","translation did not complete")
 		End If
-		result.Put("success",True)
 	Else
 		result.Put("success",False)
 	End If
