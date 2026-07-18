@@ -84,7 +84,13 @@ End Sub
 Private Sub ImageTranslated As Boolean
 	If Main.translation.ContainsKey(uniqueKey) Then
 		Dim map1 As Map = Main.translation.Get(uniqueKey)
-		Return map1.GetDefault("translated",False)
+		If map1.GetDefault("translated",False) Then
+			Return True
+		End If
+		' Instance stopped processing → stop waiting
+		If ImageTransShared.IsRunning(displayName) = False And ImageTransShared.IsInstanceBusy(displayName) = False Then
+			Return True
+		End If
 	End If
 	Return True
 End Sub

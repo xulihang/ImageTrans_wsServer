@@ -1,4 +1,4 @@
-B4J=true
+﻿B4J=true
 Group=Default Group
 ModulesStructureVersion=1
 Type=StaticCode
@@ -25,6 +25,10 @@ End Sub
 
 Public Sub MarkIdle(instanceName As String)
 	busyInstances.RunMethod("remove", Array(instanceName))
+End Sub
+
+Public Sub IsInstanceBusy(instanceName As String) As Boolean
+	Return busyInstances.RunMethod("containsKey", Array(instanceName))
 End Sub
 
 Public Sub SetCurrentRequestKey(instanceName As String, requestKey As String)
