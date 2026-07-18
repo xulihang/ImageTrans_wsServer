@@ -1,4 +1,4 @@
-﻿B4J=true
+B4J=true
 Group=Default Group
 ModulesStructureVersion=1
 Type=Class
@@ -7,6 +7,7 @@ Version=7.8
 'Handler class
 Sub Class_Globals
 	Private displayName As String
+	Private uniqueKey As String
 End Sub
 
 Public Sub Initialize
@@ -52,30 +53,25 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 		src = path
 	End If
 	Log("translate handler")
-	Main.translation.Put(displayName,CreateMap("translated":False))
+	uniqueKey = displayName & "_" & DateTime.Now
+	Main.translation.Put(uniqueKey,CreateMap("translated":False))
 
 	Dim dispatchedTo As String
 	If filename <> "" Then
 		If Main.IsLocalNetwork(req.RemoteAddress) Then
-			dispatchedTo = ImageTransShared.Translate(displayName,src,sourceLang,targetLang,withoutImage,workflow,projectSettings,apis,template,password)
+			dispatchedTo = ImageTransShared.Translate(displayName,src,sourceLang,targetLang,withoutImage,workflow,projectSettings,apis,template,password,uniqueKey)
 		Else
-			dispatchedTo = ImageTransShared.Translate(displayName,filename,sourceLang,targetLang,withoutImage,workflow,projectSettings,apis,template,password)
+			dispatchedTo = ImageTransShared.Translate(displayName,filename,sourceLang,targetLang,withoutImage,workflow,projectSettings,apis,template,password,uniqueKey)
 		End If
 	Else
-		dispatchedTo = ImageTransShared.Translate(displayName,src,sourceLang,targetLang,withoutImage,workflow,projectSettings,apis,template,password)
+		dispatchedTo = ImageTransShared.Translate(displayName,src,sourceLang,targetLang,withoutImage,workflow,projectSettings,apis,template,password,uniqueKey)
 	End If
 	If dispatchedTo = "" Then
-		Main.translation.Remove(displayName)
+		Main.translation.Remove(uniqueKey)
 		resp.Write($"all instances are busy"$)
 		Return
 	End If
-	' Update displayName to match the actual instance that received the work
-	If dispatchedTo <> displayName Then
-		Dim initMap As Map = Main.translation.Get(displayName)
-		Main.translation.Remove(displayName)
-		Main.translation.Put(dispatchedTo, initMap)
-		displayName = dispatchedTo
-	End If
+	displayName = dispatchedTo
 
 	Log(Main.translation)
 	Dim returnType As String=req.GetParameter("type")
@@ -86,24 +82,24 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 End Sub
 
 Private Sub ImageTranslated As Boolean
-	If Main.translation.ContainsKey(displayName) Then
-		Dim map1 As Map = Main.translation.Get(displayName)
+	If Main.translation.ContainsKey(uniqueKey) Then
+		Dim map1 As Map = Main.translation.Get(uniqueKey)
 		Return map1.GetDefault("translated",False)
 	End If
 	Return True
 End Sub
 
 Private Sub ImageTranslationFailed As Boolean
-	If Main.translation.ContainsKey(displayName) Then
-		Dim map1 As Map = Main.translation.Get(displayName)
+	If Main.translation.ContainsKey(uniqueKey) Then
+		Dim map1 As Map = Main.translation.Get(uniqueKey)
 		Return Not(map1.GetDefault("success",True))
 	End If
 	Return False
 End Sub
 
 Private Sub ImageTranslationMessage As String
-	If Main.translation.ContainsKey(displayName) Then
-		Dim map1 As Map = Main.translation.Get(displayName)
+	If Main.translation.ContainsKey(uniqueKey) Then
+		Dim map1 As Map = Main.translation.Get(uniqueKey)
 		Return map1.GetDefault("message","")
 	End If
 	Return ""
@@ -135,7 +131,7 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse,returnType As String,c
 	Loop
 
 	If success Then
-		Dim map1 As Map = Main.translation.Get(displayName)
+		Dim map1 As Map = Main.translation.Get(uniqueKey)
 
 		Dim imgMapString As String = map1.Get("imgMapString")
 
@@ -160,7 +156,8 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse,returnType As String,c
 		result.Put("success",False)
 	End If
 	ImageTransShared.SetIsRunning(displayName,False)
-	Main.translation.Remove(displayName)
+	Main.translation.Remove(uniqueKey)
+	ImageTransShared.RemoveCurrentRequestKey(displayName)
 	If returnType="html" Then
 		resp.ContentType="text/html"
 		resp.Write($"<img src="data:image/jpeg;base64,${base64}"  alt="result" />"$)

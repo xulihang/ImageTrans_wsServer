@@ -1,4 +1,4 @@
-﻿B4J=true
+B4J=true
 Group=Default Group
 ModulesStructureVersion=1
 Type=Class
@@ -7,6 +7,7 @@ Version=9.8
 'Handler class
 Sub Class_Globals
 	Private displayName As String
+	Private uniqueKey As String
 End Sub
 
 Public Sub Initialize
@@ -14,24 +15,24 @@ Public Sub Initialize
 End Sub
 
 Private Sub ImageTranslated As Boolean
-	If Main.translation.ContainsKey(displayName) Then
-		Dim map1 As Map = Main.translation.Get(displayName)
+	If Main.translation.ContainsKey(uniqueKey) Then
+		Dim map1 As Map = Main.translation.Get(uniqueKey)
 		Return map1.GetDefault("translated",False)
 	End If
 	Return True
 End Sub
 
 Private Sub ImageTranslationFailed As Boolean
-	If Main.translation.ContainsKey(displayName) Then
-		Dim map1 As Map = Main.translation.Get(displayName)
+	If Main.translation.ContainsKey(uniqueKey) Then
+		Dim map1 As Map = Main.translation.Get(uniqueKey)
 		Return Not(map1.GetDefault("success",True))
 	End If
 	Return False
 End Sub
 
 Private Sub ImageTranslationMessage As String
-	If Main.translation.ContainsKey(displayName) Then
-		Dim map1 As Map = Main.translation.Get(displayName)
+	If Main.translation.ContainsKey(uniqueKey) Then
+		Dim map1 As Map = Main.translation.Get(uniqueKey)
 		Return map1.GetDefault("message","")
 	End If
 	Return ""
@@ -54,7 +55,6 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 		displayName = "default"
 	End If
 
-
 	Dim password As String = req.GetParameter("password")
 	Dim sourceLang As String = req.GetParameter("sourceLang")
 	Dim targetLang As String = req.GetParameter("targetLang")
@@ -64,25 +64,20 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 	Dim filename As String = DateTime.Now
 	Dim path As String = File.Combine(File.Combine(File.DirApp,"tmp"),filename)
 	File.WriteBytes(path,"",su.DecodeBase64(base64))
-	Main.translation.Put(displayName,CreateMap("translated":False))
+	uniqueKey = displayName & "_" & DateTime.Now
+	Main.translation.Put(uniqueKey,CreateMap("translated":False))
 	Dim dispatchedTo As String
 	If Main.IsLocalNetwork(req.RemoteAddress) Then
-		dispatchedTo = ImageTransShared.TranslateRegion(displayName,path,sourceLang,targetLang,password)
+		dispatchedTo = ImageTransShared.TranslateRegion(displayName,path,sourceLang,targetLang,password,uniqueKey)
 	Else
-		dispatchedTo = ImageTransShared.TranslateRegion(displayName,filename,sourceLang,targetLang,password)
+		dispatchedTo = ImageTransShared.TranslateRegion(displayName,filename,sourceLang,targetLang,password,uniqueKey)
 	End If
 	If dispatchedTo = "" Then
-		Main.translation.Remove(displayName)
+		Main.translation.Remove(uniqueKey)
 		resp.Write($"all instances are busy"$)
 		Return
 	End If
-	' Update displayName to match the actual instance that received the work
-	If dispatchedTo <> displayName Then
-		Dim initMap As Map = Main.translation.Get(displayName)
-		Main.translation.Remove(displayName)
-		Main.translation.Put(dispatchedTo, initMap)
-		displayName = dispatchedTo
-	End If
+	displayName = dispatchedTo
 	WaitForTheTranslationToBeDone(resp)
 	StartMessageLoop
 End Sub
@@ -113,7 +108,7 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse)
 	Loop
 
 	If success Then
-		Dim map1 As Map = Main.translation.Get(displayName)
+		Dim map1 As Map = Main.translation.Get(uniqueKey)
 		Dim regionMapString As String = map1.Get("regionMapString")
 		If regionMapString <> "" Then
 			Dim jsonP As JSONParser
@@ -126,7 +121,8 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse)
 		result.Put("success",False)
 	End If
 	ImageTransShared.SetIsRunning(displayName,False)
-	Main.translation.Remove(displayName)
+	Main.translation.Remove(uniqueKey)
+	ImageTransShared.RemoveCurrentRequestKey(displayName)
 	Dim json As JSONGenerator
 	json.Initialize(result)
 	resp.ContentType="application/json"

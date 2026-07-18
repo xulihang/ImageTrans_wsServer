@@ -94,15 +94,12 @@ Sub set_translated(map As Map)
 		jsonG.Initialize(regionMap)
 		resultMap.Put("regionMapString",jsonG.ToString)
 	End If
-	If displayName = "" Then
-		Main.translation.Put("default",resultMap)
-	Else
-		If Main.translation.ContainsKey(displayName) Then
-			Main.translation.Put(displayName,resultMap)
+		Dim key As String = ImageTransShared.GetCurrentRequestKey(displayName)
+		If Main.translation.ContainsKey(key) Then
+			Main.translation.Put(key,resultMap)
 		Else
 			Main.translation.Put("default",resultMap)
 		End If
-	End If
 End Sub
 
 Sub set_name_and_password(map As Map)

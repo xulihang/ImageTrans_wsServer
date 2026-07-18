@@ -6,11 +6,28 @@ Version=7.8
 @EndOfDesignText@
 Sub Process_Globals
 	Public connections As Map
+	Public requestKeyMap As Map
 End Sub
 
 Public Sub Init
 	'this map is accessed from other threads so it needs to be a thread safe map
 	connections = Main.srvr.CreateThreadSafeMap
+	requestKeyMap = Main.srvr.CreateThreadSafeMap
+End Sub
+
+Public Sub SetCurrentRequestKey(instanceName As String, requestKey As String)
+	requestKeyMap.Put(instanceName, requestKey)
+End Sub
+
+Public Sub GetCurrentRequestKey(instanceName As String) As String
+	If requestKeyMap.ContainsKey(instanceName) Then
+		Return requestKeyMap.Get(instanceName)
+	End If
+	Return instanceName
+End Sub
+
+Public Sub RemoveCurrentRequestKey(instanceName As String)
+	requestKeyMap.Remove(instanceName)
 End Sub
 
 Public Sub NewConnection(it As ImageTrans, name As String)
@@ -78,7 +95,7 @@ Public Sub IsPasswordCorrect(displayName As String, password As String) As Boole
 	Return True
 End Sub
 
-Public Sub Translate(displayName As String,src As String,sourceLang As String,targetLang As String,withoutImage As String,workflow As String,projectSettings As String,apis As String,template As String,password As String) As String
+Public Sub Translate(displayName As String,src As String,sourceLang As String,targetLang As String,withoutImage As String,workflow As String,projectSettings As String,apis As String,template As String,password As String,requestKey As String) As String
 	Log("translate using "&displayName)
 	Dim specifiedFound As Boolean = False
 	Dim specifiedBusy As Boolean = False
@@ -93,6 +110,7 @@ Public Sub Translate(displayName As String,src As String,sourceLang As String,ta
 			If it.getRunning == False Then
 				' Specified instance is idle, mark as running immediately
 				it.setRunning(True)
+				SetCurrentRequestKey(it.getDisplayName, requestKey)
 				CallSubDelayed2(it, "Translate",CreateMap("src":src,"sourceLang":sourceLang,"targetLang":targetLang,"withoutImage":withoutImage,"workflow":workflow,"projectSettings":projectSettings,"apis":apis,"template":template))
 				Return it.getDisplayName
 			Else
@@ -107,6 +125,7 @@ Public Sub Translate(displayName As String,src As String,sourceLang As String,ta
 			If it.getRunning == False And password = it.getPassword Then
 				Log("translate using idle instance: "&it.getDisplayName)
 				it.setRunning(True)
+				SetCurrentRequestKey(it.getDisplayName, requestKey)
 				CallSubDelayed2(it, "Translate",CreateMap("src":src,"sourceLang":sourceLang,"targetLang":targetLang,"withoutImage":withoutImage,"workflow":workflow,"projectSettings":projectSettings,"apis":apis,"template":template))
 				Return it.getDisplayName
 			End If
@@ -120,6 +139,7 @@ Public Sub Translate(displayName As String,src As String,sourceLang As String,ta
 			If it.getRunning == False Then
 				Log("translate using fallback")
 				it.setRunning(True)
+				SetCurrentRequestKey(it.getDisplayName, requestKey)
 				CallSubDelayed2(it, "Translate",CreateMap("src":src,"sourceLang":sourceLang,"targetLang":targetLang,"withoutImage":withoutImage,"workflow":workflow,"projectSettings":projectSettings,"apis":apis,"template":template))
 				Return it.getDisplayName
 			End If
@@ -130,7 +150,7 @@ Public Sub Translate(displayName As String,src As String,sourceLang As String,ta
 	Return ""
 End Sub
 
-Public Sub TranslateRegion(displayName As String,filename As String,sourceLang As String,targetLang As String,password As String) As String
+Public Sub TranslateRegion(displayName As String,filename As String,sourceLang As String,targetLang As String,password As String,requestKey As String) As String
 	Dim specifiedFound As Boolean = False
 	Dim specifiedBusy As Boolean = False
 	' Check if specified instance exists, password matches, and whether it's running
@@ -144,6 +164,7 @@ Public Sub TranslateRegion(displayName As String,filename As String,sourceLang A
 			If it.getRunning == False Then
 				' Specified instance is idle, mark as running immediately
 				it.setRunning(True)
+				SetCurrentRequestKey(it.getDisplayName, requestKey)
 				CallSubDelayed2(it, "TranslateRegion", CreateMap("filename":filename,"sourceLang":sourceLang,"targetLang":targetLang))
 				Return it.getDisplayName
 			Else
@@ -157,6 +178,7 @@ Public Sub TranslateRegion(displayName As String,filename As String,sourceLang A
 		For Each it As ImageTrans In GetImageTransInstances
 			If it.getRunning == False And password = it.getPassword Then
 				it.setRunning(True)
+				SetCurrentRequestKey(it.getDisplayName, requestKey)
 				CallSubDelayed2(it, "TranslateRegion",CreateMap("filename":filename,"sourceLang":sourceLang,"targetLang":targetLang))
 				Return it.getDisplayName
 			End If
@@ -169,6 +191,7 @@ Public Sub TranslateRegion(displayName As String,filename As String,sourceLang A
 		For Each it As ImageTrans In GetImageTransInstances
 			If it.getRunning == False Then
 				it.setRunning(True)
+				SetCurrentRequestKey(it.getDisplayName, requestKey)
 				CallSubDelayed2(it, "TranslateRegion",CreateMap("filename":filename,"sourceLang":sourceLang,"targetLang":targetLang))
 				Return it.getDisplayName
 			End If
