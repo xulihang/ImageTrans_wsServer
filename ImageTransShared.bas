@@ -1,4 +1,4 @@
-﻿B4J=true
+B4J=true
 Group=Default Group
 ModulesStructureVersion=1
 Type=StaticCode
@@ -101,7 +101,7 @@ Public Sub IsPasswordCorrect(displayName As String, password As String) As Boole
 		For Each it As ImageTrans In GetImageTransInstances
 			If it.getDisplayName == displayName Then
 				If password == it.getPassword Then
-	 		  		Return True
+					Return True
 			    Else
 					Return False
                 End If
@@ -123,8 +123,7 @@ Public Sub Translate(displayName As String,src As String,sourceLang As String,ta
 				Log("password incorrect for "&displayName)
 				Return ""
 			End If
-			If it.getRunning == False And TryMarkBusy(it.getDisplayName) Then
-				it.setRunning(True)
+			If TryMarkBusy(it.getDisplayName) Then
 				SetCurrentRequestKey(it.getDisplayName, requestKey)
 				CallSubDelayed2(it, "Translate",CreateMap("src":src,"sourceLang":sourceLang,"targetLang":targetLang,"withoutImage":withoutImage,"workflow":workflow,"projectSettings":projectSettings,"apis":apis,"template":template))
 				Return it.getDisplayName
@@ -137,10 +136,9 @@ Public Sub Translate(displayName As String,src As String,sourceLang As String,ta
 	' If specified instance is busy, try any idle instance with matching password
 	If specifiedFound And specifiedBusy Then
 		For Each it As ImageTrans In GetImageTransInstances
-			If it.getRunning == False And TryMarkBusy(it.getDisplayName) Then
+			If TryMarkBusy(it.getDisplayName) Then
 				If password = it.getPassword Then
 					Log("translate using idle instance: "&it.getDisplayName)
-					it.setRunning(True)
 					SetCurrentRequestKey(it.getDisplayName, requestKey)
 					CallSubDelayed2(it, "Translate",CreateMap("src":src,"sourceLang":sourceLang,"targetLang":targetLang,"withoutImage":withoutImage,"workflow":workflow,"projectSettings":projectSettings,"apis":apis,"template":template))
 					Return it.getDisplayName
@@ -155,9 +153,8 @@ Public Sub Translate(displayName As String,src As String,sourceLang As String,ta
 	' Fallback for default/empty displayName
 	If displayName == "" Or displayName == "default" Then
 		For Each it As ImageTrans In GetImageTransInstances
-			If it.getRunning == False And TryMarkBusy(it.getDisplayName) Then
+			If TryMarkBusy(it.getDisplayName) Then
 				Log("translate using fallback")
-				it.setRunning(True)
 				SetCurrentRequestKey(it.getDisplayName, requestKey)
 				CallSubDelayed2(it, "Translate",CreateMap("src":src,"sourceLang":sourceLang,"targetLang":targetLang,"withoutImage":withoutImage,"workflow":workflow,"projectSettings":projectSettings,"apis":apis,"template":template))
 				Return it.getDisplayName
@@ -180,8 +177,7 @@ Public Sub TranslateRegion(displayName As String,filename As String,sourceLang A
 				Log("password incorrect for "&displayName)
 				Return ""
 			End If
-			If it.getRunning == False And TryMarkBusy(it.getDisplayName) Then
-				it.setRunning(True)
+			If TryMarkBusy(it.getDisplayName) Then
 				SetCurrentRequestKey(it.getDisplayName, requestKey)
 				CallSubDelayed2(it, "TranslateRegion", CreateMap("filename":filename,"sourceLang":sourceLang,"targetLang":targetLang))
 				Return it.getDisplayName
@@ -194,9 +190,8 @@ Public Sub TranslateRegion(displayName As String,filename As String,sourceLang A
 	' If specified instance is busy, try any idle instance with matching password
 	If specifiedFound And specifiedBusy Then
 		For Each it As ImageTrans In GetImageTransInstances
-			If it.getRunning == False And TryMarkBusy(it.getDisplayName) Then
+			If TryMarkBusy(it.getDisplayName) Then
 				If password = it.getPassword Then
-					it.setRunning(True)
 					SetCurrentRequestKey(it.getDisplayName, requestKey)
 					CallSubDelayed2(it, "TranslateRegion",CreateMap("filename":filename,"sourceLang":sourceLang,"targetLang":targetLang))
 					Return it.getDisplayName
@@ -211,8 +206,7 @@ Public Sub TranslateRegion(displayName As String,filename As String,sourceLang A
 	' Fallback for default/empty displayName
 	If displayName == "" Or displayName == "default" Then
 		For Each it As ImageTrans In GetImageTransInstances
-			If it.getRunning == False And TryMarkBusy(it.getDisplayName) Then
-				it.setRunning(True)
+			If TryMarkBusy(it.getDisplayName) Then
 				SetCurrentRequestKey(it.getDisplayName, requestKey)
 				CallSubDelayed2(it, "TranslateRegion",CreateMap("filename":filename,"sourceLang":sourceLang,"targetLang":targetLang))
 				Return it.getDisplayName
