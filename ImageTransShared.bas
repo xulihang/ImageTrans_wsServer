@@ -1,4 +1,4 @@
-B4J=true
+﻿B4J=true
 Group=Default Group
 ModulesStructureVersion=1
 Type=StaticCode
@@ -80,32 +80,48 @@ End Sub
 
 Public Sub Translate(displayName As String,src As String,sourceLang As String,targetLang As String,withoutImage As String,workflow As String,projectSettings As String,apis As String,template As String)
 	Log("translate using "&displayName)
-	' Try the specified instance if it's not running
-	For Each it As ImageTrans In GetImageTransInstances
-		If it.getDisplayName == displayName And it.getRunning == False Then
-			CallSubDelayed2(it, "Translate",CreateMap("src":src,"sourceLang":sourceLang,"targetLang":targetLang,"withoutImage":withoutImage,"workflow":workflow,"projectSettings":projectSettings,"apis":apis,"template":template))
-			Return
-		End If
-	Next
-	' If specified instance is running or not found, try any non-running instance
-	For Each it As ImageTrans In GetImageTransInstances
-		If it.getRunning == False Then
-			Log("translate using idle instance: "&it.getDisplayName)
-			CallSubDelayed2(it, "Translate",CreateMap("src":src,"sourceLang":sourceLang,"targetLang":targetLang,"withoutImage":withoutImage,"workflow":workflow,"projectSettings":projectSettings,"apis":apis,"template":template))
-			Return
-		End If
-	Next
-	' All instances are running, fallback to specified instance
+	Dim specifiedFound As Boolean = False
+	Dim specifiedBusy As Boolean = False
+	' Check if specified instance exists and whether it's running
 	For Each it As ImageTrans In GetImageTransInstances
 		If it.getDisplayName == displayName Then
-			Log("translate using specified instance (busy): "&displayName)
-			CallSubDelayed2(it, "Translate",CreateMap("src":src,"sourceLang":sourceLang,"targetLang":targetLang,"withoutImage":withoutImage,"workflow":workflow,"projectSettings":projectSettings,"apis":apis,"template":template))
-			Return
+			specifiedFound = True
+			If it.getRunning == False Then
+				' Specified instance is idle, mark as running immediately
+				it.setRunning(True)
+				CallSubDelayed2(it, "Translate",CreateMap("src":src,"sourceLang":sourceLang,"targetLang":targetLang,"withoutImage":withoutImage,"workflow":workflow,"projectSettings":projectSettings,"apis":apis,"template":template))
+				Return
+			Else
+				specifiedBusy = True
+			End If
+			Exit
 		End If
 	Next
+	' If specified instance is busy, try any non-running instance
+	If specifiedFound And specifiedBusy Then
+		For Each it As ImageTrans In GetImageTransInstances
+			If it.getRunning == False Then
+				Log("translate using idle instance: "&it.getDisplayName)
+				it.setRunning(True)
+				CallSubDelayed2(it, "Translate",CreateMap("src":src,"sourceLang":sourceLang,"targetLang":targetLang,"withoutImage":withoutImage,"workflow":workflow,"projectSettings":projectSettings,"apis":apis,"template":template))
+				Return
+			End If
+		Next
+		' All instances are running, fallback to specified instance even if busy
+		For Each it As ImageTrans In GetImageTransInstances
+			If it.getDisplayName == displayName Then
+				Log("translate using specified instance (busy): "&displayName)
+				it.setRunning(True)
+				CallSubDelayed2(it, "Translate",CreateMap("src":src,"sourceLang":sourceLang,"targetLang":targetLang,"withoutImage":withoutImage,"workflow":workflow,"projectSettings":projectSettings,"apis":apis,"template":template))
+				Return
+			End If
+		Next
+	End If
+	' Fallback for default/empty displayName
 	If displayName == "" Or displayName == "default" Then
 		For Each it As ImageTrans In GetImageTransInstances
 			Log("translate using fallback")
+			it.setRunning(True)
 			CallSubDelayed2(it, "Translate",CreateMap("src":src,"sourceLang":sourceLang,"targetLang":targetLang,"withoutImage":withoutImage,"workflow":workflow,"projectSettings":projectSettings,"apis":apis,"template":template))
 			Exit
 		Next
@@ -113,29 +129,45 @@ Public Sub Translate(displayName As String,src As String,sourceLang As String,ta
 End Sub
 
 Public Sub TranslateRegion(displayName As String,filename As String,sourceLang As String,targetLang As String)
-	' Try the specified instance if it's not running
-	For Each it As ImageTrans In GetImageTransInstances
-		If it.getDisplayName == displayName And it.getRunning == False Then
-			CallSubDelayed2(it, "TranslateRegion", CreateMap("filename":filename,"sourceLang":sourceLang,"targetLang":targetLang))
-			Return
-		End If
-	Next
-	' If specified instance is running or not found, try any non-running instance
-	For Each it As ImageTrans In GetImageTransInstances
-		If it.getRunning == False Then
-			CallSubDelayed2(it, "TranslateRegion",CreateMap("filename":filename,"sourceLang":sourceLang,"targetLang":targetLang))
-			Return
-		End If
-	Next
-	' All instances are running, fallback to specified instance
+	Dim specifiedFound As Boolean = False
+	Dim specifiedBusy As Boolean = False
+	' Check if specified instance exists and whether it's running
 	For Each it As ImageTrans In GetImageTransInstances
 		If it.getDisplayName == displayName Then
-			CallSubDelayed2(it, "TranslateRegion", CreateMap("filename":filename,"sourceLang":sourceLang,"targetLang":targetLang))
-			Return
+			specifiedFound = True
+			If it.getRunning == False Then
+				' Specified instance is idle, mark as running immediately
+				it.setRunning(True)
+				CallSubDelayed2(it, "TranslateRegion", CreateMap("filename":filename,"sourceLang":sourceLang,"targetLang":targetLang))
+				Return
+			Else
+				specifiedBusy = True
+			End If
+			Exit
 		End If
 	Next
+	' If specified instance is busy, try any non-running instance
+	If specifiedFound And specifiedBusy Then
+		For Each it As ImageTrans In GetImageTransInstances
+			If it.getRunning == False Then
+				it.setRunning(True)
+				CallSubDelayed2(it, "TranslateRegion",CreateMap("filename":filename,"sourceLang":sourceLang,"targetLang":targetLang))
+				Return
+			End If
+		Next
+		' All instances are running, fallback to specified instance even if busy
+		For Each it As ImageTrans In GetImageTransInstances
+			If it.getDisplayName == displayName Then
+				it.setRunning(True)
+				CallSubDelayed2(it, "TranslateRegion", CreateMap("filename":filename,"sourceLang":sourceLang,"targetLang":targetLang))
+				Return
+			End If
+		Next
+	End If
+	' Fallback for default/empty displayName
 	If displayName == "" Or displayName == "default" Then
 		For Each it As ImageTrans In GetImageTransInstances
+			it.setRunning(True)
 			CallSubDelayed2(it, "TranslateRegion",CreateMap("filename":filename,"sourceLang":sourceLang,"targetLang":targetLang))
 			Exit
 		Next
