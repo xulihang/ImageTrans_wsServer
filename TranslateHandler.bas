@@ -1,4 +1,4 @@
-﻿B4J=true
+B4J=true
 Group=Default Group
 ModulesStructureVersion=1
 Type=Class
@@ -54,20 +54,27 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 	Log("translate handler")
 	Main.translation.Put(displayName,CreateMap("translated":False))
 
-	Dim dispatched As Boolean
+	Dim dispatchedTo As String
 	If filename <> "" Then
 		If Main.IsLocalNetwork(req.RemoteAddress) Then
-			dispatched = ImageTransShared.Translate(displayName,src,sourceLang,targetLang,withoutImage,workflow,projectSettings,apis,template,password)
+			dispatchedTo = ImageTransShared.Translate(displayName,src,sourceLang,targetLang,withoutImage,workflow,projectSettings,apis,template,password)
 		Else
-			dispatched = ImageTransShared.Translate(displayName,filename,sourceLang,targetLang,withoutImage,workflow,projectSettings,apis,template,password)
+			dispatchedTo = ImageTransShared.Translate(displayName,filename,sourceLang,targetLang,withoutImage,workflow,projectSettings,apis,template,password)
 		End If
 	Else
-		dispatched = ImageTransShared.Translate(displayName,src,sourceLang,targetLang,withoutImage,workflow,projectSettings,apis,template,password)
+		dispatchedTo = ImageTransShared.Translate(displayName,src,sourceLang,targetLang,withoutImage,workflow,projectSettings,apis,template,password)
 	End If
-	If dispatched = False Then
+	If dispatchedTo = "" Then
 		Main.translation.Remove(displayName)
 		resp.Write($"all instances are busy"$)
 		Return
+	End If
+	' Update displayName to match the actual instance that received the work
+	If dispatchedTo <> displayName Then
+		Dim initMap As Map = Main.translation.Get(displayName)
+		Main.translation.Remove(displayName)
+		Main.translation.Put(dispatchedTo, initMap)
+		displayName = dispatchedTo
 	End If
 
 	Log(Main.translation)

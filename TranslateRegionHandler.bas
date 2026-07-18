@@ -1,4 +1,4 @@
-﻿B4J=true
+B4J=true
 Group=Default Group
 ModulesStructureVersion=1
 Type=Class
@@ -65,16 +65,23 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 	Dim path As String = File.Combine(File.Combine(File.DirApp,"tmp"),filename)
 	File.WriteBytes(path,"",su.DecodeBase64(base64))
 	Main.translation.Put(displayName,CreateMap("translated":False))
-	Dim dispatched As Boolean
+	Dim dispatchedTo As String
 	If Main.IsLocalNetwork(req.RemoteAddress) Then
-		dispatched = ImageTransShared.TranslateRegion(displayName,path,sourceLang,targetLang,password)
+		dispatchedTo = ImageTransShared.TranslateRegion(displayName,path,sourceLang,targetLang,password)
 	Else
-		dispatched = ImageTransShared.TranslateRegion(displayName,filename,sourceLang,targetLang,password)
+		dispatchedTo = ImageTransShared.TranslateRegion(displayName,filename,sourceLang,targetLang,password)
 	End If
-	If dispatched = False Then
+	If dispatchedTo = "" Then
 		Main.translation.Remove(displayName)
 		resp.Write($"all instances are busy"$)
 		Return
+	End If
+	' Update displayName to match the actual instance that received the work
+	If dispatchedTo <> displayName Then
+		Dim initMap As Map = Main.translation.Get(displayName)
+		Main.translation.Remove(displayName)
+		Main.translation.Put(dispatchedTo, initMap)
+		displayName = dispatchedTo
 	End If
 	WaitForTheTranslationToBeDone(resp)
 	StartMessageLoop

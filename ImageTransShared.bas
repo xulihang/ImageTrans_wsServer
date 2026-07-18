@@ -78,7 +78,7 @@ Public Sub IsPasswordCorrect(displayName As String, password As String) As Boole
 	Return True
 End Sub
 
-Public Sub Translate(displayName As String,src As String,sourceLang As String,targetLang As String,withoutImage As String,workflow As String,projectSettings As String,apis As String,template As String,password As String) As Boolean
+Public Sub Translate(displayName As String,src As String,sourceLang As String,targetLang As String,withoutImage As String,workflow As String,projectSettings As String,apis As String,template As String,password As String) As String
 	Log("translate using "&displayName)
 	Dim specifiedFound As Boolean = False
 	Dim specifiedBusy As Boolean = False
@@ -88,13 +88,13 @@ Public Sub Translate(displayName As String,src As String,sourceLang As String,ta
 			specifiedFound = True
 			If password <> it.getPassword Then
 				Log("password incorrect for "&displayName)
-				Return False
+				Return ""
 			End If
 			If it.getRunning == False Then
 				' Specified instance is idle, mark as running immediately
 				it.setRunning(True)
 				CallSubDelayed2(it, "Translate",CreateMap("src":src,"sourceLang":sourceLang,"targetLang":targetLang,"withoutImage":withoutImage,"workflow":workflow,"projectSettings":projectSettings,"apis":apis,"template":template))
-				Return True
+				Return it.getDisplayName
 			Else
 				specifiedBusy = True
 			End If
@@ -108,11 +108,11 @@ Public Sub Translate(displayName As String,src As String,sourceLang As String,ta
 				Log("translate using idle instance: "&it.getDisplayName)
 				it.setRunning(True)
 				CallSubDelayed2(it, "Translate",CreateMap("src":src,"sourceLang":sourceLang,"targetLang":targetLang,"withoutImage":withoutImage,"workflow":workflow,"projectSettings":projectSettings,"apis":apis,"template":template))
-				Return True
+				Return it.getDisplayName
 			End If
 		Next
 		Log("all instances are busy")
-		Return False
+		Return ""
 	End If
 	' Fallback for default/empty displayName
 	If displayName == "" Or displayName == "default" Then
@@ -121,16 +121,16 @@ Public Sub Translate(displayName As String,src As String,sourceLang As String,ta
 				Log("translate using fallback")
 				it.setRunning(True)
 				CallSubDelayed2(it, "Translate",CreateMap("src":src,"sourceLang":sourceLang,"targetLang":targetLang,"withoutImage":withoutImage,"workflow":workflow,"projectSettings":projectSettings,"apis":apis,"template":template))
-				Return True
+				Return it.getDisplayName
 			End If
 		Next
 		Log("all instances are busy")
-		Return False
+		Return ""
 	End If
-	Return False
+	Return ""
 End Sub
 
-Public Sub TranslateRegion(displayName As String,filename As String,sourceLang As String,targetLang As String,password As String) As Boolean
+Public Sub TranslateRegion(displayName As String,filename As String,sourceLang As String,targetLang As String,password As String) As String
 	Dim specifiedFound As Boolean = False
 	Dim specifiedBusy As Boolean = False
 	' Check if specified instance exists, password matches, and whether it's running
@@ -139,13 +139,13 @@ Public Sub TranslateRegion(displayName As String,filename As String,sourceLang A
 			specifiedFound = True
 			If password <> it.getPassword Then
 				Log("password incorrect for "&displayName)
-				Return False
+				Return ""
 			End If
 			If it.getRunning == False Then
 				' Specified instance is idle, mark as running immediately
 				it.setRunning(True)
 				CallSubDelayed2(it, "TranslateRegion", CreateMap("filename":filename,"sourceLang":sourceLang,"targetLang":targetLang))
-				Return True
+				Return it.getDisplayName
 			Else
 				specifiedBusy = True
 			End If
@@ -158,11 +158,11 @@ Public Sub TranslateRegion(displayName As String,filename As String,sourceLang A
 			If it.getRunning == False And password = it.getPassword Then
 				it.setRunning(True)
 				CallSubDelayed2(it, "TranslateRegion",CreateMap("filename":filename,"sourceLang":sourceLang,"targetLang":targetLang))
-				Return True
+				Return it.getDisplayName
 			End If
 		Next
 		Log("all instances are busy")
-		Return False
+		Return ""
 	End If
 	' Fallback for default/empty displayName
 	If displayName == "" Or displayName == "default" Then
@@ -170,13 +170,13 @@ Public Sub TranslateRegion(displayName As String,filename As String,sourceLang A
 			If it.getRunning == False Then
 				it.setRunning(True)
 				CallSubDelayed2(it, "TranslateRegion",CreateMap("filename":filename,"sourceLang":sourceLang,"targetLang":targetLang))
-				Return True
+				Return it.getDisplayName
 			End If
 		Next
 		Log("all instances are busy")
-		Return False
+		Return ""
 	End If
-	Return False
+	Return ""
 End Sub
 
 Public Sub Disconnect(it As ImageTrans, name As String)
