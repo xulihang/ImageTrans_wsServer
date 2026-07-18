@@ -58,8 +58,10 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 				resultMap.Put("regionMapString",regionMap)
 				resultMap.Put("success",success)
 				resultMap.Put("message",message)
-				Main.translation.Put(name,resultMap)
-				If ImageTransShared.connections.Size = 1 Then
+				Dim key As String = ImageTransShared.GetCurrentRequestKey(name)
+				If Main.translation.ContainsKey(key) Then
+					Main.translation.Put(key,resultMap)
+				Else
 					Main.translation.Put("default",resultMap)
 				End If
 				resp.Write("success")
