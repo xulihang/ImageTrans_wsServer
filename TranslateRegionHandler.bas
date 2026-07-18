@@ -1,4 +1,4 @@
-B4J=true
+﻿B4J=true
 Group=Default Group
 ModulesStructureVersion=1
 Type=Class
@@ -64,7 +64,7 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 	Dim filename As String = DateTime.Now
 	Dim path As String = File.Combine(File.Combine(File.DirApp,"tmp"),filename)
 	File.WriteBytes(path,"",su.DecodeBase64(base64))
-	uniqueKey = displayName & "_" & DateTime.Now
+	uniqueKey = displayName & "_" & DateTime.Now & "_" & Rnd(0, 99999999)
 	Main.translation.Put(uniqueKey,CreateMap("translated":False))
 	Dim dispatchedTo As String
 	If Main.IsLocalNetwork(req.RemoteAddress) Then
