@@ -57,7 +57,7 @@ End Sub
 
 Sub AppStart (Args() As String)
 	srvr.Initialize("srvr")
-	translation.Initialize
+	translation = srvr.CreateThreadSafeMap
 	Dim jo As JavaObject = srvr
 	jo.GetFieldJO("context").RunMethod("setMaxFormContentSize", Array(10*1000*1000))'in bytes
 	ImageTransShared.Init
