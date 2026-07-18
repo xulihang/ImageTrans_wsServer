@@ -120,7 +120,10 @@ Sub set_name_and_password(map As Map)
 End Sub
 
 Sub set_running(map As Map)
-	running = map.GetDefault("running",False)
+		running = map.GetDefault("running",False)
+		If running = False Then
+			ImageTransShared.MarkIdle(displayName)
+		End If
 End Sub
 
 Sub close_server(map As Map)

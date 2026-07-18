@@ -7,12 +7,24 @@ Version=7.8
 Sub Process_Globals
 	Public connections As Map
 	Public requestKeyMap As Map
+	Private busyInstances As JavaObject
 End Sub
 
 Public Sub Init
 	'this map is accessed from other threads so it needs to be a thread safe map
 	connections = Main.srvr.CreateThreadSafeMap
 	requestKeyMap = Main.srvr.CreateThreadSafeMap
+	busyInstances.InitializeNewInstance("java.util.concurrent.ConcurrentHashMap", Null)
+End Sub
+
+' Atomically marks an instance as busy. Returns True if it was idle and now marked, False if already busy.
+Private Sub TryMarkBusy(instanceName As String) As Boolean
+	Dim result As Object = busyInstances.RunMethod("putIfAbsent", Array(instanceName, True))
+	Return result = Null
+End Sub
+
+Public Sub MarkIdle(instanceName As String)
+	busyInstances.RunMethod("remove", Array(instanceName))
 End Sub
 
 Public Sub SetCurrentRequestKey(instanceName As String, requestKey As String)
@@ -20,10 +32,11 @@ Public Sub SetCurrentRequestKey(instanceName As String, requestKey As String)
 End Sub
 
 Public Sub GetCurrentRequestKey(instanceName As String) As String
-	If requestKeyMap.ContainsKey(instanceName) Then
-		Return requestKeyMap.Get(instanceName)
+	Dim key As String = requestKeyMap.GetDefault(instanceName, "")
+	If key = "" Then
+		Return instanceName
 	End If
-	Return instanceName
+	Return key
 End Sub
 
 Public Sub RemoveCurrentRequestKey(instanceName As String)
@@ -65,6 +78,9 @@ Public Sub IsRunning(displayName As String) As Boolean
 End Sub
 
 Public Sub SetIsRunning(displayName As String,running As Boolean)
+	If running = False Then
+		MarkIdle(displayName)
+	End If
 	For Each it As ImageTrans In GetImageTransInstances
 		If it.getDisplayName == displayName Then
 			it.setRunning(running)
@@ -85,7 +101,7 @@ Public Sub IsPasswordCorrect(displayName As String, password As String) As Boole
 		For Each it As ImageTrans In GetImageTransInstances
 			If it.getDisplayName == displayName Then
 				If password == it.getPassword Then
-			  		Return True
+	 		  		Return True
 			    Else
 					Return False
                 End If
@@ -107,8 +123,7 @@ Public Sub Translate(displayName As String,src As String,sourceLang As String,ta
 				Log("password incorrect for "&displayName)
 				Return ""
 			End If
-			If it.getRunning == False Then
-				' Specified instance is idle, mark as running immediately
+			If it.getRunning == False And TryMarkBusy(it.getDisplayName) Then
 				it.setRunning(True)
 				SetCurrentRequestKey(it.getDisplayName, requestKey)
 				CallSubDelayed2(it, "Translate",CreateMap("src":src,"sourceLang":sourceLang,"targetLang":targetLang,"withoutImage":withoutImage,"workflow":workflow,"projectSettings":projectSettings,"apis":apis,"template":template))
@@ -122,12 +137,16 @@ Public Sub Translate(displayName As String,src As String,sourceLang As String,ta
 	' If specified instance is busy, try any idle instance with matching password
 	If specifiedFound And specifiedBusy Then
 		For Each it As ImageTrans In GetImageTransInstances
-			If it.getRunning == False And password = it.getPassword Then
-				Log("translate using idle instance: "&it.getDisplayName)
-				it.setRunning(True)
-				SetCurrentRequestKey(it.getDisplayName, requestKey)
-				CallSubDelayed2(it, "Translate",CreateMap("src":src,"sourceLang":sourceLang,"targetLang":targetLang,"withoutImage":withoutImage,"workflow":workflow,"projectSettings":projectSettings,"apis":apis,"template":template))
-				Return it.getDisplayName
+			If it.getRunning == False And TryMarkBusy(it.getDisplayName) Then
+				If password = it.getPassword Then
+					Log("translate using idle instance: "&it.getDisplayName)
+					it.setRunning(True)
+					SetCurrentRequestKey(it.getDisplayName, requestKey)
+					CallSubDelayed2(it, "Translate",CreateMap("src":src,"sourceLang":sourceLang,"targetLang":targetLang,"withoutImage":withoutImage,"workflow":workflow,"projectSettings":projectSettings,"apis":apis,"template":template))
+					Return it.getDisplayName
+				Else
+					MarkIdle(it.getDisplayName)
+				End If
 			End If
 		Next
 		Log("all instances are busy")
@@ -136,7 +155,7 @@ Public Sub Translate(displayName As String,src As String,sourceLang As String,ta
 	' Fallback for default/empty displayName
 	If displayName == "" Or displayName == "default" Then
 		For Each it As ImageTrans In GetImageTransInstances
-			If it.getRunning == False Then
+			If it.getRunning == False And TryMarkBusy(it.getDisplayName) Then
 				Log("translate using fallback")
 				it.setRunning(True)
 				SetCurrentRequestKey(it.getDisplayName, requestKey)
@@ -161,8 +180,7 @@ Public Sub TranslateRegion(displayName As String,filename As String,sourceLang A
 				Log("password incorrect for "&displayName)
 				Return ""
 			End If
-			If it.getRunning == False Then
-				' Specified instance is idle, mark as running immediately
+			If it.getRunning == False And TryMarkBusy(it.getDisplayName) Then
 				it.setRunning(True)
 				SetCurrentRequestKey(it.getDisplayName, requestKey)
 				CallSubDelayed2(it, "TranslateRegion", CreateMap("filename":filename,"sourceLang":sourceLang,"targetLang":targetLang))
@@ -176,11 +194,15 @@ Public Sub TranslateRegion(displayName As String,filename As String,sourceLang A
 	' If specified instance is busy, try any idle instance with matching password
 	If specifiedFound And specifiedBusy Then
 		For Each it As ImageTrans In GetImageTransInstances
-			If it.getRunning == False And password = it.getPassword Then
-				it.setRunning(True)
-				SetCurrentRequestKey(it.getDisplayName, requestKey)
-				CallSubDelayed2(it, "TranslateRegion",CreateMap("filename":filename,"sourceLang":sourceLang,"targetLang":targetLang))
-				Return it.getDisplayName
+			If it.getRunning == False And TryMarkBusy(it.getDisplayName) Then
+				If password = it.getPassword Then
+					it.setRunning(True)
+					SetCurrentRequestKey(it.getDisplayName, requestKey)
+					CallSubDelayed2(it, "TranslateRegion",CreateMap("filename":filename,"sourceLang":sourceLang,"targetLang":targetLang))
+					Return it.getDisplayName
+				Else
+					MarkIdle(it.getDisplayName)
+				End If
 			End If
 		Next
 		Log("all instances are busy")
@@ -189,7 +211,7 @@ Public Sub TranslateRegion(displayName As String,filename As String,sourceLang A
 	' Fallback for default/empty displayName
 	If displayName == "" Or displayName == "default" Then
 		For Each it As ImageTrans In GetImageTransInstances
-			If it.getRunning == False Then
+			If it.getRunning == False And TryMarkBusy(it.getDisplayName) Then
 				it.setRunning(True)
 				SetCurrentRequestKey(it.getDisplayName, requestKey)
 				CallSubDelayed2(it, "TranslateRegion",CreateMap("filename":filename,"sourceLang":sourceLang,"targetLang":targetLang))
