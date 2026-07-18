@@ -20,9 +20,7 @@ Private Sub ImageTranslated As Boolean
 		If map1.GetDefault("translated",False) Then
 			Return True
 		End If
-		If ImageTransShared.IsRunning(displayName) = False And ImageTransShared.IsInstanceBusy(displayName) = False Then
-			Return True
-		End If
+		Return False
 	End If
 	Return True
 End Sub
@@ -92,6 +90,7 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse)
 	Dim result As Map
 	result.Initialize
 	Dim waited As Int=0
+	Dim idleCount As Int=0
 	Dim success As Boolean = True
 	Do While ImageTranslated=False
 		Sleep(1000)
@@ -102,6 +101,18 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse)
 			result.Put("success",False)
 			success = False
 			Exit
+		End If
+
+		If ImageTransShared.IsRunning(displayName) = False And ImageTransShared.IsInstanceBusy(displayName) = False Then
+			idleCount = idleCount + 1
+			If idleCount >= 10 Then
+				result.Put("message","instance stopped")
+				result.Put("success",False)
+				success = False
+				Exit
+			End If
+		Else
+			idleCount = 0
 		End If
 
 		If waited>1000*240 Then 'timeout
@@ -133,6 +144,7 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse)
 	ImageTransShared.SetIsRunning(displayName,False)
 	Main.translation.Remove(uniqueKey)
 	ImageTransShared.RemoveCurrentRequestKey(displayName)
+	
 	Dim json As JSONGenerator
 	json.Initialize(result)
 	resp.ContentType="application/json"
