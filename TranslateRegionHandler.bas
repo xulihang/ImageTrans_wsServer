@@ -1,4 +1,4 @@
-B4J=true
+﻿B4J=true
 Group=Default Group
 ModulesStructureVersion=1
 Type=Class
@@ -125,4 +125,4 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse)
 	resp.ContentType="application/json"
 	resp.Write(json.ToString)
 	StopMessageLoop
-End Sub
+End Sub

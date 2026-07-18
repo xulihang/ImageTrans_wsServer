@@ -1,4 +1,4 @@
-B4J=true
+﻿B4J=true
 Group=Default Group
 ModulesStructureVersion=1
 Type=Class
@@ -169,4 +169,4 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse,returnType As String,c
 		End If
 	End If
 	StopMessageLoop
-End Sub
+End Sub
