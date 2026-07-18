@@ -78,14 +78,18 @@ Public Sub IsPasswordCorrect(displayName As String, password As String) As Boole
 	Return True
 End Sub
 
-Public Sub Translate(displayName As String,src As String,sourceLang As String,targetLang As String,withoutImage As String,workflow As String,projectSettings As String,apis As String,template As String) As Boolean
+Public Sub Translate(displayName As String,src As String,sourceLang As String,targetLang As String,withoutImage As String,workflow As String,projectSettings As String,apis As String,template As String,password As String) As Boolean
 	Log("translate using "&displayName)
 	Dim specifiedFound As Boolean = False
 	Dim specifiedBusy As Boolean = False
-	' Check if specified instance exists and whether it's running
+	' Check if specified instance exists, password matches, and whether it's running
 	For Each it As ImageTrans In GetImageTransInstances
 		If it.getDisplayName == displayName Then
 			specifiedFound = True
+			If password <> it.getPassword Then
+				Log("password incorrect for "&displayName)
+				Return False
+			End If
 			If it.getRunning == False Then
 				' Specified instance is idle, mark as running immediately
 				it.setRunning(True)
@@ -97,10 +101,10 @@ Public Sub Translate(displayName As String,src As String,sourceLang As String,ta
 			Exit
 		End If
 	Next
-	' If specified instance is busy, try any non-running instance
+	' If specified instance is busy, try any idle instance with matching password
 	If specifiedFound And specifiedBusy Then
 		For Each it As ImageTrans In GetImageTransInstances
-			If it.getRunning == False Then
+			If it.getRunning == False And password = it.getPassword Then
 				Log("translate using idle instance: "&it.getDisplayName)
 				it.setRunning(True)
 				CallSubDelayed2(it, "Translate",CreateMap("src":src,"sourceLang":sourceLang,"targetLang":targetLang,"withoutImage":withoutImage,"workflow":workflow,"projectSettings":projectSettings,"apis":apis,"template":template))
@@ -126,13 +130,17 @@ Public Sub Translate(displayName As String,src As String,sourceLang As String,ta
 	Return False
 End Sub
 
-Public Sub TranslateRegion(displayName As String,filename As String,sourceLang As String,targetLang As String) As Boolean
+Public Sub TranslateRegion(displayName As String,filename As String,sourceLang As String,targetLang As String,password As String) As Boolean
 	Dim specifiedFound As Boolean = False
 	Dim specifiedBusy As Boolean = False
-	' Check if specified instance exists and whether it's running
+	' Check if specified instance exists, password matches, and whether it's running
 	For Each it As ImageTrans In GetImageTransInstances
 		If it.getDisplayName == displayName Then
 			specifiedFound = True
+			If password <> it.getPassword Then
+				Log("password incorrect for "&displayName)
+				Return False
+			End If
 			If it.getRunning == False Then
 				' Specified instance is idle, mark as running immediately
 				it.setRunning(True)
@@ -144,10 +152,10 @@ Public Sub TranslateRegion(displayName As String,filename As String,sourceLang A
 			Exit
 		End If
 	Next
-	' If specified instance is busy, try any non-running instance
+	' If specified instance is busy, try any idle instance with matching password
 	If specifiedFound And specifiedBusy Then
 		For Each it As ImageTrans In GetImageTransInstances
-			If it.getRunning == False Then
+			If it.getRunning == False And password = it.getPassword Then
 				it.setRunning(True)
 				CallSubDelayed2(it, "TranslateRegion",CreateMap("filename":filename,"sourceLang":sourceLang,"targetLang":targetLang))
 				Return True

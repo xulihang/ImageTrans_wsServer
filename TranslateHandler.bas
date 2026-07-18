@@ -33,10 +33,6 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 	End If
 
 	Dim password As String = req.GetParameter("password")
-	If ImageTransShared.IsPasswordCorrect(displayName,password) == False Then
-		resp.Write($"Password incorrect."$)
-		Return
-	End If
 	Dim sourceLang As String = req.GetParameter("sourceLang")
 	Dim projectSettings As String = req.GetParameter("projectSettings")
 	Dim apis As String = req.GetParameter("apis")
@@ -61,12 +57,12 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 	Dim dispatched As Boolean
 	If filename <> "" Then
 		If Main.IsLocalNetwork(req.RemoteAddress) Then
-			dispatched = ImageTransShared.Translate(displayName,src,sourceLang,targetLang,withoutImage,workflow,projectSettings,apis,template)
+			dispatched = ImageTransShared.Translate(displayName,src,sourceLang,targetLang,withoutImage,workflow,projectSettings,apis,template,password)
 		Else
-			dispatched = ImageTransShared.Translate(displayName,filename,sourceLang,targetLang,withoutImage,workflow,projectSettings,apis,template)
+			dispatched = ImageTransShared.Translate(displayName,filename,sourceLang,targetLang,withoutImage,workflow,projectSettings,apis,template,password)
 		End If
 	Else
-		dispatched = ImageTransShared.Translate(displayName,src,sourceLang,targetLang,withoutImage,workflow,projectSettings,apis,template)
+		dispatched = ImageTransShared.Translate(displayName,src,sourceLang,targetLang,withoutImage,workflow,projectSettings,apis,template,password)
 	End If
 	If dispatched = False Then
 		Main.translation.Remove(displayName)

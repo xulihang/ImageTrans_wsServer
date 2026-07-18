@@ -56,10 +56,6 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 
 
 	Dim password As String = req.GetParameter("password")
-	If ImageTransShared.IsPasswordCorrect(displayName,password) == False Then
-		resp.Write($"Password incorrect."$)
-		Return
-	End If
 	Dim sourceLang As String = req.GetParameter("sourceLang")
 	Dim targetLang As String = req.GetParameter("targetLang")
 	Dim base64 As String = req.GetParameter("base64")
@@ -71,9 +67,9 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 	Main.translation.Put(displayName,CreateMap("translated":False))
 	Dim dispatched As Boolean
 	If Main.IsLocalNetwork(req.RemoteAddress) Then
-		dispatched = ImageTransShared.TranslateRegion(displayName,path,sourceLang,targetLang)
+		dispatched = ImageTransShared.TranslateRegion(displayName,path,sourceLang,targetLang,password)
 	Else
-		dispatched = ImageTransShared.TranslateRegion(displayName,filename,sourceLang,targetLang)
+		dispatched = ImageTransShared.TranslateRegion(displayName,filename,sourceLang,targetLang,password)
 	End If
 	If dispatched = False Then
 		Main.translation.Remove(displayName)
