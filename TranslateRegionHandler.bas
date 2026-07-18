@@ -54,10 +54,6 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 		displayName = "default"
 	End If
 	
-	If ImageTransShared.IsRunning(displayName) Then
-		resp.Write($"This instance of ImageTrans is processing or does not exist."$)
-		Return
-	End If
 	
 	Dim password As String = req.GetParameter("password")
 	If ImageTransShared.IsPasswordCorrect(displayName,password) == False Then
@@ -127,4 +123,4 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse)
 	resp.ContentType="application/json"
 	resp.Write(json.ToString)
 	StopMessageLoop
-End Sub
+End Sub
