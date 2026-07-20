@@ -29,6 +29,38 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 
 	clientIP = req.RemoteAddress
 
+	If ImageTransShared.GetRequestCount(clientIP) >= 20 Then
+		Dim su As StringUtils
+		Dim warningBase64 As String = su.EncodeBase64(File.ReadBytes(File.DirAssets,"warning.jpg"))
+		Dim limitResult As Map
+		limitResult.Initialize
+		limitResult.Put("success",True)
+		limitResult.Put("img",warningBase64)
+		Dim imgMap As Map
+		imgMap.Initialize
+		Dim boxes As List
+		boxes.Initialize
+		Dim box As Map
+		box.Initialize
+		box.Put("text","Daily limit exceeded (20 images/IP). Purchase ImageTrans to host your own server.")
+		box.Put("target","")
+		Dim geometry As Map
+		geometry.Initialize
+		geometry.Put("X",21)
+		geometry.Put("Y",54)
+		geometry.Put("width",218)
+		geometry.Put("height",133)
+		box.Put("geometry",geometry)
+		boxes.Add(box)
+		imgMap.Put("boxes",boxes)
+		limitResult.Put("imgMap",imgMap)
+		Dim json As JSONGenerator
+		json.Initialize(limitResult)
+		resp.ContentType="application/json"
+		resp.Write(json.ToString)
+		Return
+	End If
+
 	Dim src As String = req.GetParameter("src")
 
 	displayName = req.GetParameter("displayName")
@@ -175,7 +207,7 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse,returnType As String,c
 	Else
 		result.Put("success",False)
 	End If
-
+    File.DirAssets
 	ImageTransShared.SetIsRunning(displayName,False)
 	Main.translation.Remove(uniqueKey)
 	ImageTransShared.RemoveCurrentRequestKey(displayName)

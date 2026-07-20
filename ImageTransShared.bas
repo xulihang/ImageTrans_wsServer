@@ -253,6 +253,10 @@ Public Sub GetTotalRequestCount As Int
 	Return total
 End Sub
 
+Public Sub GetRequestCount(ip As String) As Int
+	Return ipRequestCount.GetDefault(ip, 0)
+End Sub
+
 Public Sub ClearRequestCounts
 	ipRequestCount.Clear
 End Sub
