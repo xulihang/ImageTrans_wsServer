@@ -70,8 +70,10 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 			limitResult.Put("regionMap",regionMap)
 			Dim json As JSONGenerator
 			json.Initialize(limitResult)
+			resp.SetHeader("Connection", "close")
 			resp.ContentType="application/json"
 			resp.Write(json.ToString)
+			resp.OutputStream.Flush
 			Return
 		End If
 	End If

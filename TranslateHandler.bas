@@ -30,7 +30,8 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 	clientIP = req.RemoteAddress
 
 	If File.Exists(File.DirApp, "public") Then
-		If ImageTransShared.GetRequestCount(clientIP) > 20 Then
+		Log("public server. check requests")
+		If ImageTransShared.GetRequestCount(clientIP) > 2 Then
 			Dim su As StringUtils
 			Dim warningBase64 As String = su.EncodeBase64(File.ReadBytes(File.DirAssets,"warning.jpg"))
 			Dim limitResult As Map
@@ -57,10 +58,10 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 			limitResult.Put("imgMap",imgMap)
 			Dim json As JSONGenerator
 			json.Initialize(limitResult)
+			resp.SetHeader("Connection", "close")
 			resp.ContentType="application/json"
-			Log("rate limit response size: " & json.ToString.Length)
 			resp.Write(json.ToString)
-			Log("rate limit response sent")
+			resp.OutputStream.Flush
 			Return
 		End If
 	End If
