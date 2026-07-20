@@ -146,6 +146,8 @@ End Sub
 
 'Return true to allow the default exceptions handler to handle the uncaught exception.
 Sub Application_Error (Error As Exception, StackTrace As String) As Boolean
+	Log(Error)
+	Log(StackTrace)
 	Return True
 End Sub
 
