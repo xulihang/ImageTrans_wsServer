@@ -31,7 +31,7 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 
 	If File.Exists(File.DirApp, "public") Then
 		Log("public server. check requests")
-		If ImageTransShared.GetRequestCount(clientIP) > 2 Then
+		If ImageTransShared.GetRequestCount(clientIP) > 20 Then
 			Dim su As StringUtils
 			Dim warningBase64 As String = su.EncodeBase64(File.ReadBytes(File.DirAssets,"warning.jpg"))
 			Dim limitResult As Map
