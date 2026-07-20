@@ -8,12 +8,14 @@ Sub Process_Globals
 	Public connections As Map
 	Public requestKeyMap As Map
 	Private busyInstances As JavaObject
+	Public ipRequestCount As Map
 End Sub
 
 Public Sub Init
 	'this map is accessed from other threads so it needs to be a thread safe map
 	connections = Main.srvr.CreateThreadSafeMap
 	requestKeyMap = Main.srvr.CreateThreadSafeMap
+	ipRequestCount = Main.srvr.CreateThreadSafeMap
 	busyInstances.InitializeNewInstance("java.util.concurrent.ConcurrentHashMap", Null)
 End Sub
 
@@ -232,4 +234,25 @@ Public Sub HasConnection As Boolean
 	Else
 		Return True
 	End If
+End Sub
+
+Public Sub IncrementRequestCount(ip As String)
+	Dim currentCount As Int = ipRequestCount.GetDefault(ip, 0)
+	ipRequestCount.Put(ip, currentCount + 1)
+End Sub
+
+Public Sub GetRequestCounts As Map
+	Return ipRequestCount
+End Sub
+
+Public Sub GetTotalRequestCount As Int
+	Dim total As Int = 0
+	For Each count As Int In ipRequestCount.Values
+		total = total + count
+	Next
+	Return total
+End Sub
+
+Public Sub ClearRequestCounts
+	ipRequestCount.Clear
 End Sub

@@ -8,6 +8,7 @@ Version=7.8
 Sub Class_Globals
 	Private displayName As String
 	Private uniqueKey As String
+	Private clientIP As String
 End Sub
 
 Public Sub Initialize
@@ -25,6 +26,8 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 		resp.Write($"no imagetrans is connected"$)
 		Return
 	End If
+
+	clientIP = req.RemoteAddress
 
 	Dim src As String = req.GetParameter("src")
 
@@ -149,6 +152,7 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse,returnType As String,c
 	If success Then
 		Dim map1 As Map = Main.translation.Get(uniqueKey)
 		If map1.GetDefault("translated",False) Then
+			ImageTransShared.IncrementRequestCount(clientIP)
 			Dim imgMapString As String = map1.GetDefault("imgMapString","")
 			result.Put("success",True)
 			If map1.ContainsKey("path") Then

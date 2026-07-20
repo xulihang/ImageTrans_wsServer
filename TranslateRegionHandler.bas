@@ -8,6 +8,7 @@ Version=9.8
 Sub Class_Globals
 	Private displayName As String
 	Private uniqueKey As String
+	Private clientIP As String
 End Sub
 
 Public Sub Initialize
@@ -52,6 +53,8 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 		resp.Write($"no imagetrans is connected"$)
 		Return
 	End If
+
+	clientIP = req.RemoteAddress
 
 	displayName = req.GetParameter("displayName")
 	If displayName = "" Then
@@ -133,6 +136,7 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse)
 				Dim regionMap As Map = jsonP.NextObject
 				result.Put("regionMap", regionMap)
 			End If
+			ImageTransShared.IncrementRequestCount(clientIP)
 			result.Put("success",True)
 		Else
 			result.Put("success",False)

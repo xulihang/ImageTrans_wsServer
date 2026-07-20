@@ -26,10 +26,11 @@ Library6=jokhttputils2
 Module1=CorsFilter
 Module10=ScanTranslatorHandler
 Module11=SettingsHandler
-Module12=TranslateHandler
-Module13=TranslateRegionHandler
-Module14=TranslatorHandler
-Module15=VersionHandler
+Module12=StatsHandler
+Module13=TranslateHandler
+Module14=TranslateRegionHandler
+Module15=TranslatorHandler
+Module16=VersionHandler
 Module2=HttpsFilter
 Module3=ImageHandler
 Module4=ImageTrans
@@ -40,7 +41,7 @@ Module8=ListHandler
 Module9=PrivateHeaderFilter
 NumberOfFiles=8
 NumberOfLibraries=6
-NumberOfModules=15
+NumberOfModules=16
 Version=10
 @EndOfDesignText@
 'Non-UI application (console / server application)
@@ -78,8 +79,10 @@ Sub AppStart (Args() As String)
 	srvr.AddHandler("/version","VersionHandler",False)
 	srvr.AddHandler("/settings","SettingsHandler",False)
 	srvr.AddHandler("/image","ImageHandler",False)
+	srvr.AddHandler("/stats","StatsHandler",False)
 	ConfigureCORS("/translate", "*", "GET,POST,HEAD,OPTIONS", "X-Requested-With,Content-Type,Accept,Origin")
 	ConfigureCORS("/translateRegion", "*", "GET,POST,HEAD,OPTIONS", "X-Requested-With,Content-Type,Accept,Origin")
+	ConfigureCORS("/stats", "*", "GET,HEAD,OPTIONS", "X-Requested-With,Content-Type,Accept,Origin")
 
 	File.Copy(File.DirAssets,"scantranslator.html",File.DirApp,"scantranslator.html")
 	File.Copy(File.DirAssets,"translator.html",File.DirApp,"translator.html")
@@ -187,6 +190,7 @@ End Sub
 
 Sub AutoCleanTimer_Tick
 	translation.Clear
+	ImageTransShared.ClearRequestCounts
 	For Each filename As String In File.ListFiles(File.Combine(File.DirApp,"tmp"))
 		File.Delete(File.Combine(File.DirApp,"tmp"), filename)
 	Next
