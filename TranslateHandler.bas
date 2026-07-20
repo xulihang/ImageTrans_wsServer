@@ -29,7 +29,8 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 
 	clientIP = req.RemoteAddress
 
-	If ImageTransShared.GetRequestCount(clientIP) >= 20 Then
+	If File.Exists(File.DirApp, "public") Then
+		If ImageTransShared.GetRequestCount(clientIP) >= 20 Then
 		Dim su As StringUtils
 		Dim warningBase64 As String = su.EncodeBase64(File.ReadBytes(File.DirAssets,"warning.jpg"))
 		Dim limitResult As Map
@@ -59,6 +60,7 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 		resp.ContentType="application/json"
 		resp.Write(json.ToString)
 		Return
+	End If
 	End If
 
 	Dim src As String = req.GetParameter("src")
