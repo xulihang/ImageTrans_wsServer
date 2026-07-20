@@ -57,7 +57,7 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 	clientIP = req.RemoteAddress
 	
 	If File.Exists(File.DirApp, "public") Then
-		If ImageTransShared.GetRequestCount(clientIP) >= 20 Then
+		If ImageTransShared.GetRequestCount(clientIP) > 20 Then
 			Dim limitResult As Map
 			limitResult.Initialize
 			limitResult.Put("success",True)

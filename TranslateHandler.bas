@@ -30,7 +30,7 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 	clientIP = req.RemoteAddress
 
 	If File.Exists(File.DirApp, "public") Then
-		If ImageTransShared.GetRequestCount(clientIP) >= 20 Then
+		If ImageTransShared.GetRequestCount(clientIP) > 20 Then
 		Dim su As StringUtils
 		Dim warningBase64 As String = su.EncodeBase64(File.ReadBytes(File.DirAssets,"warning.jpg"))
 		Dim limitResult As Map
@@ -209,7 +209,7 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse,returnType As String,c
 	Else
 		result.Put("success",False)
 	End If
-    File.DirAssets
+
 	ImageTransShared.SetIsRunning(displayName,False)
 	Main.translation.Remove(uniqueKey)
 	ImageTransShared.RemoveCurrentRequestKey(displayName)
