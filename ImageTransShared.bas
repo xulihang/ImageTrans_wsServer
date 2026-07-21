@@ -174,10 +174,14 @@ Public Sub Translate(displayName As String,src As String,sourceLang As String,ta
 	If displayName == "" Or displayName == "default" Then
 		For Each it As ImageTrans In GetImageTransInstances
 			If TryMarkBusy(it.getDisplayName) Then
-				Log("translate using fallback")
-				SetCurrentRequestKey(it.getDisplayName, requestKey)
-				CallSubDelayed2(it, "Translate",CreateMap("src":src,"sourceLang":sourceLang,"targetLang":targetLang,"withoutImage":withoutImage,"workflow":workflow,"projectSettings":projectSettings,"apis":apis,"template":template))
-				Return it.getDisplayName
+				If password = it.getPassword Then
+					Log("translate using fallback")
+					SetCurrentRequestKey(it.getDisplayName, requestKey)
+					CallSubDelayed2(it, "Translate",CreateMap("src":src,"sourceLang":sourceLang,"targetLang":targetLang,"withoutImage":withoutImage,"workflow":workflow,"projectSettings":projectSettings,"apis":apis,"template":template))
+					Return it.getDisplayName
+				Else
+					MarkIdle(it.getDisplayName)
+				End If
 			End If
 		Next
 		Log("all instances are busy")
@@ -227,9 +231,13 @@ Public Sub TranslateRegion(displayName As String,filename As String,sourceLang A
 	If displayName == "" Or displayName == "default" Then
 		For Each it As ImageTrans In GetImageTransInstances
 			If TryMarkBusy(it.getDisplayName) Then
-				SetCurrentRequestKey(it.getDisplayName, requestKey)
-				CallSubDelayed2(it, "TranslateRegion",CreateMap("filename":filename,"sourceLang":sourceLang,"targetLang":targetLang))
-				Return it.getDisplayName
+				If password = it.getPassword Then
+					SetCurrentRequestKey(it.getDisplayName, requestKey)
+					CallSubDelayed2(it, "TranslateRegion",CreateMap("filename":filename,"sourceLang":sourceLang,"targetLang":targetLang))
+					Return it.getDisplayName
+				Else
+					MarkIdle(it.getDisplayName)
+				End If
 			End If
 		Next
 		Log("all instances are busy")
