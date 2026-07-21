@@ -154,7 +154,7 @@ Public Sub Translate(displayName As String,src As String,sourceLang As String,ta
 		End If
 	Next
 	' If specified instance is busy, try any idle instance with matching password
-	If specifiedFound And specifiedBusy Then
+	If specifiedFound And specifiedBusy And password = "" Then
 		For Each it As ImageTrans In GetImageTransInstances
 			If TryMarkBusy(it.getDisplayName) Then
 				If password = it.getPassword Then
@@ -171,7 +171,7 @@ Public Sub Translate(displayName As String,src As String,sourceLang As String,ta
 		Return ""
 	End If
 	' Fallback for default/empty displayName
-	If displayName == "" Or displayName == "default" Then
+	If (displayName == "" Or displayName == "default") And password = "" Then
 		For Each it As ImageTrans In GetImageTransInstances
 			If TryMarkBusy(it.getDisplayName) Then
 				If password = it.getPassword Then
@@ -212,7 +212,7 @@ Public Sub TranslateRegion(displayName As String,filename As String,sourceLang A
 		End If
 	Next
 	' If specified instance is busy, try any idle instance with matching password
-	If specifiedFound And specifiedBusy Then
+	If specifiedFound And specifiedBusy And password = "" Then
 		For Each it As ImageTrans In GetImageTransInstances
 			If TryMarkBusy(it.getDisplayName) Then
 				If password = it.getPassword Then
@@ -228,7 +228,7 @@ Public Sub TranslateRegion(displayName As String,filename As String,sourceLang A
 		Return ""
 	End If
 	' Fallback for default/empty displayName
-	If displayName == "" Or displayName == "default" Then
+	If (displayName == "" Or displayName == "default") And password = "" Then
 		For Each it As ImageTrans In GetImageTransInstances
 			If TryMarkBusy(it.getDisplayName) Then
 				If password = it.getPassword Then
