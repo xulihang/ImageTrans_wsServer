@@ -60,7 +60,23 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 	If displayName = "" Then
 		displayName = "default"
 	End If
-	
+
+	Dim password As String = req.GetParameter("password")
+
+	If displayName <> "" And displayName <> "default" And password <> "" Then
+		If ImageTransShared.IsPasswordCorrect(displayName, password) = False Then
+			Dim pwResult As Map
+			pwResult.Initialize
+			pwResult.Put("success", False)
+			pwResult.Put("message", "incorrect password")
+			Dim pwJson As JSONGenerator
+			pwJson.Initialize(pwResult)
+			resp.ContentType = "application/json"
+			resp.Write(pwJson.ToString)
+			Return
+		End If
+	End If
+
 	If File.Exists(File.DirApp, "public") Then
 		If ImageTransShared.HasPassword(displayName) = False Then
 			If ImageTransShared.GetRequestCount(clientIP) > 20 Then
@@ -85,7 +101,6 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 		End If
 	End If
 
-	Dim password As String = req.GetParameter("password")
 	Dim sourceLang As String = req.GetParameter("sourceLang")
 	Dim targetLang As String = req.GetParameter("targetLang")
 	Dim base64 As String = req.GetParameter("base64")

@@ -36,6 +36,20 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 
 	Dim password As String = req.GetParameter("password")
 
+	If displayName <> "" And displayName <> "default" And password <> "" Then
+		If ImageTransShared.IsPasswordCorrect(displayName, password) = False Then
+			Dim pwResult As Map
+			pwResult.Initialize
+			pwResult.Put("success", False)
+			pwResult.Put("message", "incorrect password")
+			Dim pwJson As JSONGenerator
+			pwJson.Initialize(pwResult)
+			resp.ContentType = "application/json"
+			resp.Write(pwJson.ToString)
+			Return
+		End If
+	End If
+
 	If File.Exists(File.DirApp, "public") Then
 		If ImageTransShared.HasPassword(displayName) = False Then
 			Log("public server. instance no password. check requests")
