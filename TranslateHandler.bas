@@ -29,51 +29,54 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 
 	clientIP = req.RemoteAddress
 
-	If File.Exists(File.DirApp, "public") Then
-		Log("public server. check requests")
-		If ImageTransShared.GetRequestCount(clientIP) > 20 Then
-			Dim su As StringUtils
-			Dim warningBase64 As String = su.EncodeBase64(File.ReadBytes(File.DirAssets,"warning.jpg"))
-			Dim limitResult As Map
-			limitResult.Initialize
-			limitResult.Put("success",True)
-			limitResult.Put("img",warningBase64)
-			Dim imgMap As Map
-			imgMap.Initialize
-			Dim boxes As List
-			boxes.Initialize
-			Dim box As Map
-			box.Initialize
-			box.Put("text","Daily limit exceeded (20 images/IP). Purchase ImageTrans to host your own server.")
-			box.Put("target","")
-			Dim geometry As Map
-			geometry.Initialize
-			geometry.Put("X",21)
-			geometry.Put("Y",54)
-			geometry.Put("width",218)
-			geometry.Put("height",133)
-			box.Put("geometry",geometry)
-			boxes.Add(box)
-			imgMap.Put("boxes",boxes)
-			limitResult.Put("imgMap",imgMap)
-			Dim json As JSONGenerator
-			json.Initialize(limitResult)
-			resp.SetHeader("Connection", "close")
-			resp.ContentType="application/json"
-			resp.Write(json.ToString)
-			resp.OutputStream.Flush
-			Return
-		End If
-	End If
-
-	Dim src As String = req.GetParameter("src")
-
 	displayName = req.GetParameter("displayName")
 	If displayName = "" Then
 		displayName = "default"
 	End If
 
 	Dim password As String = req.GetParameter("password")
+
+	If File.Exists(File.DirApp, "public") Then
+		If ImageTransShared.HasPassword(displayName) = False Then
+			Log("public server. instance no password. check requests")
+			If ImageTransShared.GetRequestCount(clientIP) > 20 Then
+				Dim su As StringUtils
+				Dim warningBase64 As String = su.EncodeBase64(File.ReadBytes(File.DirAssets,"warning.jpg"))
+				Dim limitResult As Map
+				limitResult.Initialize
+				limitResult.Put("success",True)
+				limitResult.Put("img",warningBase64)
+				Dim imgMap As Map
+				imgMap.Initialize
+				Dim boxes As List
+				boxes.Initialize
+				Dim box As Map
+				box.Initialize
+				box.Put("text","Daily limit exceeded (20 images/IP). Purchase ImageTrans to host your own server.")
+				box.Put("target","")
+				Dim geometry As Map
+				geometry.Initialize
+				geometry.Put("X",21)
+				geometry.Put("Y",54)
+				geometry.Put("width",218)
+				geometry.Put("height",133)
+				box.Put("geometry",geometry)
+				boxes.Add(box)
+				imgMap.Put("boxes",boxes)
+				limitResult.Put("imgMap",imgMap)
+				Dim json As JSONGenerator
+				json.Initialize(limitResult)
+				resp.SetHeader("Connection", "close")
+				resp.ContentType="application/json"
+				resp.Write(json.ToString)
+				resp.OutputStream.Flush
+				Return
+			End If
+		End If
+	End If
+
+	Dim src As String = req.GetParameter("src")
+
 	Dim sourceLang As String = req.GetParameter("sourceLang")
 	Dim projectSettings As String = req.GetParameter("projectSettings")
 	Dim apis As String = req.GetParameter("apis")

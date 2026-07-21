@@ -55,33 +55,34 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 	End If
 
 	clientIP = req.RemoteAddress
-	
-	If File.Exists(File.DirApp, "public") Then
-		If ImageTransShared.GetRequestCount(clientIP) > 20 Then
-			Dim limitResult As Map
-			limitResult.Initialize
-			limitResult.Put("success",True)
-			Dim regionMap As Map
-			regionMap.Initialize
-			regionMap.Put("source","Daily limit exceeded (20 images/IP). Purchase ImageTrans to host your own server.")
-			Dim targetList As List
-			targetList.Initialize
-			regionMap.Put("target",targetList)
-			limitResult.Put("regionMap",regionMap)
-			Dim json As JSONGenerator
-			json.Initialize(limitResult)
-			resp.SetHeader("Connection", "close")
-			resp.ContentType="application/json"
-			resp.Write(json.ToString)
-			resp.OutputStream.Flush
-			Return
-		End If
-	End If
-	
 
 	displayName = req.GetParameter("displayName")
 	If displayName = "" Then
 		displayName = "default"
+	End If
+	
+	If File.Exists(File.DirApp, "public") Then
+		If ImageTransShared.HasPassword(displayName) = False Then
+			If ImageTransShared.GetRequestCount(clientIP) > 20 Then
+				Dim limitResult As Map
+				limitResult.Initialize
+				limitResult.Put("success",True)
+				Dim regionMap As Map
+				regionMap.Initialize
+				regionMap.Put("source","Daily limit exceeded (20 images/IP). Purchase ImageTrans to host your own server.")
+				Dim targetList As List
+				targetList.Initialize
+				regionMap.Put("target",targetList)
+				limitResult.Put("regionMap",regionMap)
+				Dim json As JSONGenerator
+				json.Initialize(limitResult)
+				resp.SetHeader("Connection", "close")
+				resp.ContentType="application/json"
+				resp.Write(json.ToString)
+				resp.OutputStream.Flush
+				Return
+			End If
+		End If
 	End If
 
 	Dim password As String = req.GetParameter("password")
