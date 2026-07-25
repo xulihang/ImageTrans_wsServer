@@ -1,4 +1,4 @@
-B4J=true
+﻿B4J=true
 Group=Default Group
 ModulesStructureVersion=1
 Type=StaticCode
@@ -133,6 +133,7 @@ End Sub
 
 Public Sub Translate(displayName As String,src As String,sourceLang As String,targetLang As String,withoutImage As String,workflow As String,projectSettings As String,apis As String,template As String,password As String,requestKey As String) As String
 	Log("translate using "&displayName)
+	Dim isPublic As Boolean = File.Exists(File.DirApp, "public")
 	Dim specifiedFound As Boolean = False
 	Dim specifiedBusy As Boolean = False
 	' Check if specified instance exists, password matches, and whether it's running
@@ -153,10 +154,10 @@ Public Sub Translate(displayName As String,src As String,sourceLang As String,ta
 			Exit
 		End If
 	Next
-	' If specified instance is busy, try any idle instance whose name starts with "default"
+	' If specified instance is busy, try any idle instance (public: only default-prefixed)
 	If specifiedFound And specifiedBusy And password = "" Then
 		For Each it As ImageTrans In GetImageTransInstances
-			If it.getDisplayName.StartsWith("default") And TryMarkBusy(it.getDisplayName) Then
+			If (isPublic = False Or it.getDisplayName.StartsWith("default")) And TryMarkBusy(it.getDisplayName) Then
 				If password = it.getPassword Then
 					Log("translate using idle instance: "&it.getDisplayName)
 					SetCurrentRequestKey(it.getDisplayName, requestKey)
@@ -170,10 +171,10 @@ Public Sub Translate(displayName As String,src As String,sourceLang As String,ta
 		Log("all instances are busy")
 		Return ""
 	End If
-	' Fallback for default/empty displayName - only use instances starting with "default"
+	' Fallback for default/empty displayName (public: only default-prefixed)
 	If (displayName == "" Or displayName == "default") And password = "" Then
 		For Each it As ImageTrans In GetImageTransInstances
-			If it.getDisplayName.StartsWith("default") And TryMarkBusy(it.getDisplayName) Then
+			If (isPublic = False Or it.getDisplayName.StartsWith("default")) And TryMarkBusy(it.getDisplayName) Then
 				If password = it.getPassword Then
 					Log("translate using fallback")
 					SetCurrentRequestKey(it.getDisplayName, requestKey)
@@ -191,6 +192,7 @@ Public Sub Translate(displayName As String,src As String,sourceLang As String,ta
 End Sub
 
 Public Sub TranslateRegion(displayName As String,filename As String,sourceLang As String,targetLang As String,password As String,requestKey As String) As String
+	Dim isPublic As Boolean = File.Exists(File.DirApp, "public")
 	Dim specifiedFound As Boolean = False
 	Dim specifiedBusy As Boolean = False
 	' Check if specified instance exists, password matches, and whether it's running
@@ -211,10 +213,10 @@ Public Sub TranslateRegion(displayName As String,filename As String,sourceLang A
 			Exit
 		End If
 	Next
-	' If specified instance is busy, try any idle instance whose name starts with "default"
+	' If specified instance is busy, try any idle instance (public: only default-prefixed)
 	If specifiedFound And specifiedBusy And password = "" Then
 		For Each it As ImageTrans In GetImageTransInstances
-			If it.getDisplayName.StartsWith("default") And TryMarkBusy(it.getDisplayName) Then
+			If (isPublic = False Or it.getDisplayName.StartsWith("default")) And TryMarkBusy(it.getDisplayName) Then
 				If password = it.getPassword Then
 					SetCurrentRequestKey(it.getDisplayName, requestKey)
 					CallSubDelayed2(it, "TranslateRegion",CreateMap("filename":filename,"sourceLang":sourceLang,"targetLang":targetLang))
@@ -227,10 +229,10 @@ Public Sub TranslateRegion(displayName As String,filename As String,sourceLang A
 		Log("all instances are busy")
 		Return ""
 	End If
-	' Fallback for default/empty displayName - only use instances starting with "default"
+	' Fallback for default/empty displayName (public: only default-prefixed)
 	If (displayName == "" Or displayName == "default") And password = "" Then
 		For Each it As ImageTrans In GetImageTransInstances
-			If it.getDisplayName.StartsWith("default") And TryMarkBusy(it.getDisplayName) Then
+			If (isPublic = False Or it.getDisplayName.StartsWith("default")) And TryMarkBusy(it.getDisplayName) Then
 				If password = it.getPassword Then
 					SetCurrentRequestKey(it.getDisplayName, requestKey)
 					CallSubDelayed2(it, "TranslateRegion",CreateMap("filename":filename,"sourceLang":sourceLang,"targetLang":targetLang))
