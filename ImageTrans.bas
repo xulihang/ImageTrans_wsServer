@@ -104,6 +104,15 @@ End Sub
 
 Sub set_name_and_password(map As Map)
 	Dim nameToSet As String = map.GetDefault("name",name)
+	If nameToSet.StartsWith("default") Then
+		Dim wsSecret As String = ImageTransShared.GetWsSecret
+		Dim providedSecret As String = map.GetDefault("secret","")
+		If wsSecret <> "" And providedSecret <> wsSecret Then
+			Log("set_name_and_password: incorrect ws_secret for " & nameToSet & ", closing connection")
+			ws.Close
+			Return
+		End If
+	End If
 	Dim values As List
 	values.Initialize
 	For Each it As ImageTrans In ImageTransShared.connections.Values

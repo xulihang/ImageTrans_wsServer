@@ -250,6 +250,13 @@ Public Sub Disconnect(it As ImageTrans, name As String)
 	connections.Remove(name)
 End Sub
 
+Public Sub GetWsSecret As String
+	If File.Exists(File.DirApp, "ws_secret") Then
+		Return File.ReadString(File.DirApp, "ws_secret").Trim
+	End If
+	Return ""
+End Sub
+
 Public Sub HasConnection As Boolean
 	If connections.Size=0 Then
 		Return False
