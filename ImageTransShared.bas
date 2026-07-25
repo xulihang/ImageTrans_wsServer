@@ -1,4 +1,4 @@
-﻿B4J=true
+B4J=true
 Group=Default Group
 ModulesStructureVersion=1
 Type=StaticCode
@@ -153,10 +153,10 @@ Public Sub Translate(displayName As String,src As String,sourceLang As String,ta
 			Exit
 		End If
 	Next
-	' If specified instance is busy, try any idle instance with matching password
+	' If specified instance is busy, try any idle instance whose name starts with "default"
 	If specifiedFound And specifiedBusy And password = "" Then
 		For Each it As ImageTrans In GetImageTransInstances
-			If TryMarkBusy(it.getDisplayName) Then
+			If it.getDisplayName.StartsWith("default") And TryMarkBusy(it.getDisplayName) Then
 				If password = it.getPassword Then
 					Log("translate using idle instance: "&it.getDisplayName)
 					SetCurrentRequestKey(it.getDisplayName, requestKey)
@@ -170,10 +170,10 @@ Public Sub Translate(displayName As String,src As String,sourceLang As String,ta
 		Log("all instances are busy")
 		Return ""
 	End If
-	' Fallback for default/empty displayName
+	' Fallback for default/empty displayName - only use instances starting with "default"
 	If (displayName == "" Or displayName == "default") And password = "" Then
 		For Each it As ImageTrans In GetImageTransInstances
-			If TryMarkBusy(it.getDisplayName) Then
+			If it.getDisplayName.StartsWith("default") And TryMarkBusy(it.getDisplayName) Then
 				If password = it.getPassword Then
 					Log("translate using fallback")
 					SetCurrentRequestKey(it.getDisplayName, requestKey)
@@ -211,10 +211,10 @@ Public Sub TranslateRegion(displayName As String,filename As String,sourceLang A
 			Exit
 		End If
 	Next
-	' If specified instance is busy, try any idle instance with matching password
+	' If specified instance is busy, try any idle instance whose name starts with "default"
 	If specifiedFound And specifiedBusy And password = "" Then
 		For Each it As ImageTrans In GetImageTransInstances
-			If TryMarkBusy(it.getDisplayName) Then
+			If it.getDisplayName.StartsWith("default") And TryMarkBusy(it.getDisplayName) Then
 				If password = it.getPassword Then
 					SetCurrentRequestKey(it.getDisplayName, requestKey)
 					CallSubDelayed2(it, "TranslateRegion",CreateMap("filename":filename,"sourceLang":sourceLang,"targetLang":targetLang))
@@ -227,10 +227,10 @@ Public Sub TranslateRegion(displayName As String,filename As String,sourceLang A
 		Log("all instances are busy")
 		Return ""
 	End If
-	' Fallback for default/empty displayName
+	' Fallback for default/empty displayName - only use instances starting with "default"
 	If (displayName == "" Or displayName == "default") And password = "" Then
 		For Each it As ImageTrans In GetImageTransInstances
-			If TryMarkBusy(it.getDisplayName) Then
+			If it.getDisplayName.StartsWith("default") And TryMarkBusy(it.getDisplayName) Then
 				If password = it.getPassword Then
 					SetCurrentRequestKey(it.getDisplayName, requestKey)
 					CallSubDelayed2(it, "TranslateRegion",CreateMap("filename":filename,"sourceLang":sourceLang,"targetLang":targetLang))
