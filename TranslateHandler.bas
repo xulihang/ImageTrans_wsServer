@@ -53,9 +53,9 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 	If File.Exists(File.DirApp, "public") Then
 		If ImageTransShared.HasPassword(displayName) = False Then
 			Log("public server. instance no password. check requests")
-			If ImageTransShared.GetRequestCount(clientIP) > 20 Then
+			If ImageTransShared.GetRequestCount(clientIP) > 10 Then
 				Dim su As StringUtils
-				Dim warningBase64 As String = su.EncodeBase64(File.ReadBytes(File.DirAssets,"warning.jpg"))
+				Dim warningBase64 As String = su.EncodeBase64(File.ReadBytes(File.DirAssets,"warning.png"))
 				Dim limitResult As Map
 				limitResult.Initialize
 				limitResult.Put("success",True)
@@ -66,7 +66,7 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 				boxes.Initialize
 				Dim box As Map
 				box.Initialize
-				box.Put("text","Daily limit exceeded (20 images/IP). Purchase ImageTrans to host your own server.")
+				box.Put("text","Daily limit exceeded (10 images/IP). Purchase ImageTrans to host your own server.")
 				box.Put("target","")
 				Dim geometry As Map
 				geometry.Initialize

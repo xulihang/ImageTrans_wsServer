@@ -79,13 +79,13 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 
 	If File.Exists(File.DirApp, "public") Then
 		If ImageTransShared.HasPassword(displayName) = False Then
-			If ImageTransShared.GetRequestCount(clientIP) > 20 Then
+			If ImageTransShared.GetRequestCount(clientIP) > 10 Then
 				Dim limitResult As Map
 				limitResult.Initialize
 				limitResult.Put("success",True)
 				Dim regionMap As Map
 				regionMap.Initialize
-				regionMap.Put("source","Daily limit exceeded (20 images/IP). Purchase ImageTrans to host your own server.")
+				regionMap.Put("source","Daily limit exceeded (10 images/IP). Purchase ImageTrans to host your own server.")
 				Dim targetList As List
 				targetList.Initialize
 				regionMap.Put("target",targetList)
