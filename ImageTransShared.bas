@@ -221,6 +221,9 @@ Public Sub Translate(displayName As String,src As String,sourceLang As String,ta
 				Log("password incorrect for "&displayName)
 				Return ""
 			End If
+			If IsInstanceInCooldown(it.getDisplayName) Then
+				Log("skipping " & it.getDisplayName & " (in cooldown)")
+			End If
 			If IsInstanceInCooldown(it.getDisplayName) = False And TryMarkBusy(it.getDisplayName) Then
 				StoreRequest(it.getDisplayName, src, sourceLang, targetLang, withoutImage, workflow, projectSettings, apis, template, password, requestKey, False, "")
 				SetCurrentRequestKey(it.getDisplayName, requestKey)
@@ -235,6 +238,9 @@ Public Sub Translate(displayName As String,src As String,sourceLang As String,ta
 	' If specified instance is busy, try any idle instance (public: only default-prefixed)
 	If specifiedFound And specifiedBusy And password = "" Then
 		For Each it As ImageTrans In GetImageTransInstances
+			If IsInstanceInCooldown(it.getDisplayName) Then
+				Log("skipping " & it.getDisplayName & " (in cooldown)")
+			End If
 			If (isPublic = False Or it.getDisplayName.StartsWith("default")) And IsInstanceInCooldown(it.getDisplayName) = False And TryMarkBusy(it.getDisplayName) Then
 				If password = it.getPassword Then
 					Log("translate using idle instance: "&it.getDisplayName)
@@ -253,6 +259,9 @@ Public Sub Translate(displayName As String,src As String,sourceLang As String,ta
 	' Fallback for default/empty displayName (public: only default-prefixed)
 	If (displayName == "" Or displayName == "default") And password = "" Then
 		For Each it As ImageTrans In GetImageTransInstances
+			If IsInstanceInCooldown(it.getDisplayName) Then
+				Log("skipping " & it.getDisplayName & " (in cooldown)")
+			End If
 			If (isPublic = False Or it.getDisplayName.StartsWith("default")) And IsInstanceInCooldown(it.getDisplayName) = False And TryMarkBusy(it.getDisplayName) Then
 				If password = it.getPassword Then
 					Log("translate using fallback")

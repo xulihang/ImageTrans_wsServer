@@ -161,12 +161,14 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse)
 				ImageTransShared.RecordFailure(displayName)
 				Dim newInstance As String = ImageTransShared.TryReDispatch(displayName)
 				If newInstance <> "" Then
+					Log("re-dispatched to: " & newInstance)
 					ImageTransShared.reDispatched.Put(displayName, newInstance)
 					displayName = newInstance
 					waited = 0
 					idleCount = 0
 					instanceResponded = False
 				Else
+					Log("re-dispatch failed, no other instance available")
 					ImageTransShared.MarkIdle(displayName)
 				End If
 			End If
@@ -179,12 +181,14 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse)
 				ImageTransShared.RecordFailure(displayName)
 				Dim newInstance As String = ImageTransShared.TryReDispatch(displayName)
 				If newInstance <> "" Then
+					Log("re-dispatched to: " & newInstance)
 					ImageTransShared.reDispatched.Put(displayName, newInstance)
 					displayName = newInstance
 					waited = 0
 					idleCount = 0
 					instanceResponded = False
 				Else
+					Log("re-dispatch failed, no other instance, giving up")
 					result.Put("message","instance stopped")
 					result.Put("success",False)
 					success = False
