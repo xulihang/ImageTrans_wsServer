@@ -168,12 +168,6 @@ Public Sub TryReDispatch(failedName As String) As String
 	Dim params As Map = pendingRequests.Get(failedName)
 	Dim requestKey As String = params.Get("requestKey")
 	Dim password As String = params.GetDefault("password", "")
-	Dim dispatchTime As Long = params.GetDefault("dispatchTime", DateTime.Now)
-	If DateTime.Now - dispatchTime > 3 * 1000 Then
-		Log("TryReDispatch: task ran too long before failing, skip re-dispatch")
-		pendingRequests.Remove(failedName)
-		Return ""
-	End If
 	Dim isRegion As Boolean = params.GetDefault("isRegion", False)
 	Dim isPublic As Boolean = File.Exists(File.DirApp, "public")
 
