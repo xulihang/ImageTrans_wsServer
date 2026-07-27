@@ -129,9 +129,18 @@ Sub set_name_and_password(map As Map)
 End Sub
 
 Sub set_running(map As Map)
-		running = map.GetDefault("running",False)
-		If running = False Then
-			If ImageTransShared.HasActiveRequest(displayName) Then
+	running = map.GetDefault("running",False)
+	If running = False Then
+		If ImageTransShared.HasActiveRequest(displayName) Then
+			Dim key As String = ImageTransShared.GetCurrentRequestKey(displayName)
+			Dim alreadyDone As Boolean = False
+			If Main.translation.ContainsKey(key) Then
+				Dim resultMap As Map = Main.translation.Get(key)
+				If resultMap.GetDefault("translated", False) Then
+					alreadyDone = True
+				End If
+			End If
+			If alreadyDone = False Then
 				ImageTransShared.RecordFailure(displayName)
 				Dim newInstance As String = ImageTransShared.TryReDispatch(displayName)
 				If newInstance = "" Then
@@ -142,7 +151,10 @@ Sub set_running(map As Map)
 			Else
 				ImageTransShared.MarkIdle(displayName)
 			End If
+		Else
+			ImageTransShared.MarkIdle(displayName)
 		End If
+	End If
 End Sub
 
 Sub close_server(map As Map)

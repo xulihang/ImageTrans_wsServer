@@ -171,6 +171,7 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse,returnType As String,c
 	Dim base64 As String
 	Dim waited As Int=0
 	Dim idleCount As Int=0
+	Dim instanceResponded As Boolean = False
 	Dim success As Boolean = True
 	Do While ImageTranslated=False
 		Dim newName As String = ImageTransShared.GetReDispatchedName(displayName)
@@ -181,11 +182,32 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse,returnType As String,c
 		Sleep(1000)
 		waited=waited+1000
 
+		If ImageTransShared.IsRunning(displayName) Then
+			instanceResponded = True
+		End If
+
 		If ImageTranslationFailed Then
 			result.Put("message",ImageTranslationMessage)
 			result.Put("success",False)
 			success = False
 			Exit
+		End If
+
+		If waited = 3000 And instanceResponded = False Then
+			If ImageTransShared.IsInstanceBusy(displayName) Then
+				Log("instance unresponsive after 3s: " & displayName)
+				ImageTransShared.RecordFailure(displayName)
+				Dim newInstance As String = ImageTransShared.TryReDispatch(displayName)
+				If newInstance <> "" Then
+					ImageTransShared.reDispatched.Put(displayName, newInstance)
+					displayName = newInstance
+					waited = 0
+					idleCount = 0
+					instanceResponded = False
+				Else
+					ImageTransShared.MarkIdle(displayName)
+				End If
+			End If
 		End If
 
 		If ImageTransShared.IsRunning(displayName) = False And ImageTransShared.IsInstanceBusy(displayName) = False Then
