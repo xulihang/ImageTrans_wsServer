@@ -175,10 +175,21 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse)
 		If ImageTransShared.IsRunning(displayName) = False And ImageTransShared.IsInstanceBusy(displayName) = False Then
 			idleCount = idleCount + 1
 			If idleCount >= 10 Then
-				result.Put("message","instance stopped")
-				result.Put("success",False)
-				success = False
-				Exit
+				Log("instance idle for 10s, trying re-dispatch: " & displayName)
+				ImageTransShared.RecordFailure(displayName)
+				Dim newInstance As String = ImageTransShared.TryReDispatch(displayName)
+				If newInstance <> "" Then
+					ImageTransShared.reDispatched.Put(displayName, newInstance)
+					displayName = newInstance
+					waited = 0
+					idleCount = 0
+					instanceResponded = False
+				Else
+					result.Put("message","instance stopped")
+					result.Put("success",False)
+					success = False
+					Exit
+				End If
 			End If
 		Else
 			idleCount = 0
