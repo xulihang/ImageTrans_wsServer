@@ -172,6 +172,7 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse,returnType As String,c
 	Dim waited As Int=0
 	Dim idleCount As Int=0
 	Dim instanceResponded As Boolean = False
+	Dim unresponsiveChecked As Boolean = False
 	Dim success As Boolean = True
 	Do While ImageTranslated=False
 		Dim newName As String = ImageTransShared.GetReDispatchedName(displayName)
@@ -193,7 +194,8 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse,returnType As String,c
 			Exit
 		End If
 
-		If waited = 3000 And instanceResponded = False Then
+		If waited >= 3000 And instanceResponded = False And unresponsiveChecked = False Then
+			unresponsiveChecked = True
 			If ImageTransShared.IsInstanceBusy(displayName) Then
 				Log("instance unresponsive after 3s: " & displayName)
 				ImageTransShared.RecordFailure(displayName)
@@ -204,6 +206,7 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse,returnType As String,c
 					waited = 0
 					idleCount = 0
 					instanceResponded = False
+					unresponsiveChecked = False
 				Else
 					ImageTransShared.MarkIdle(displayName)
 				End If
@@ -222,6 +225,7 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse,returnType As String,c
 					waited = 0
 					idleCount = 0
 					instanceResponded = False
+					unresponsiveChecked = False
 				Else
 					result.Put("message","instance stopped")
 					result.Put("success",False)
