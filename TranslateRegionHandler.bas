@@ -135,6 +135,11 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse)
 	Dim idleCount As Int=0
 	Dim success As Boolean = True
 	Do While ImageTranslated=False
+		Dim newName As String = ImageTransShared.GetReDispatchedName(displayName)
+		If newName <> "" Then
+			ImageTransShared.reDispatched.Remove(displayName)
+			displayName = newName
+		End If
 		Sleep(1000)
 		waited=waited+1000
 
@@ -187,7 +192,8 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse)
 	ImageTransShared.SetIsRunning(displayName,False)
 	Main.translation.Remove(uniqueKey)
 	ImageTransShared.RemoveCurrentRequestKey(displayName)
-	
+	ImageTransShared.reDispatched.Clear
+
 	Dim json As JSONGenerator
 	json.Initialize(result)
 	resp.ContentType="application/json"

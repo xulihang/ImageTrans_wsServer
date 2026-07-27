@@ -173,6 +173,11 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse,returnType As String,c
 	Dim idleCount As Int=0
 	Dim success As Boolean = True
 	Do While ImageTranslated=False
+		Dim newName As String = ImageTransShared.GetReDispatchedName(displayName)
+		If newName <> "" Then
+			ImageTransShared.reDispatched.Remove(displayName)
+			displayName = newName
+		End If
 		Sleep(1000)
 		waited=waited+1000
 
@@ -233,6 +238,7 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse,returnType As String,c
 	ImageTransShared.SetIsRunning(displayName,False)
 	Main.translation.Remove(uniqueKey)
 	ImageTransShared.RemoveCurrentRequestKey(displayName)
+	ImageTransShared.reDispatched.Clear
 	If returnType="html" Then
 		resp.ContentType="text/html"
 		resp.Write($"<img src="data:image/jpeg;base64,${base64}"  alt="result" />"$)

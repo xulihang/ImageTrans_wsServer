@@ -131,7 +131,17 @@ End Sub
 Sub set_running(map As Map)
 		running = map.GetDefault("running",False)
 		If running = False Then
-			ImageTransShared.MarkIdle(displayName)
+			If ImageTransShared.HasActiveRequest(displayName) Then
+				ImageTransShared.RecordFailure(displayName)
+				Dim newInstance As String = ImageTransShared.TryReDispatch(displayName)
+				If newInstance = "" Then
+					ImageTransShared.MarkIdle(displayName)
+				Else
+					ImageTransShared.MarkIdle(displayName)
+				End If
+			Else
+				ImageTransShared.MarkIdle(displayName)
+			End If
 		End If
 End Sub
 
