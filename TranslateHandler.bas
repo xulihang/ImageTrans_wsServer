@@ -267,7 +267,14 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse,returnType As String,c
 			Exit
 		End If
 	Loop
-
+	
+	If ImageTranslationFailed Then
+		If result.ContainsKey("message") = False Then
+			result.Put("message", ImageTranslationMessage)
+		End If
+		success = False
+	End If
+	
 	If success Then
 		Dim map1 As Map = Main.translation.Get(uniqueKey)
 		If map1.GetDefault("translated",False) Then
