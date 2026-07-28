@@ -215,10 +215,10 @@ Sub WaitForTheTranslationToBeDone(resp As ServletResponse,returnType As String,c
 			End If
 		End If
 
-		If waited >= 30000 And instanceResponded And stuckChecked = False Then
+		If waited >= 60000 And instanceResponded And stuckChecked = False Then
 			stuckChecked = True
 			If ImageTransShared.IsInstanceBusy(displayName) Then
-				Log("instance stuck after 30s: " & displayName)
+				Log("instance stuck after 60s: " & displayName)
 				ImageTransShared.RecordFailure(displayName)
 				Dim newInstance As String = ImageTransShared.TryReDispatch(displayName)
 				If newInstance <> "" Then
