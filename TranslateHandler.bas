@@ -82,7 +82,8 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 				json.Initialize(limitResult)
 				resp.SetHeader("Connection", "close")
 				resp.ContentType="application/json"
-				resp.Write(json.ToString)
+				Dim jsonBytes() As Byte = json.ToString.GetBytes("UTF8")
+				resp.OutputStream.WriteBytes(jsonBytes, 0, jsonBytes.Length)
 				resp.OutputStream.Flush
 				Return
 			End If
