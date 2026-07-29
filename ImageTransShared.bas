@@ -180,6 +180,7 @@ Public Sub TryReDispatch(failedName As String) As String
 							Log("re-dispatching from " & failedName & " to " & it.getDisplayName)
 							SetCurrentRequestKey(it.getDisplayName, requestKey)
 							RemoveCurrentRequestKey(failedName)
+							MarkIdle(failedName)
 							reDispatched.Put(failedName, it.getDisplayName)
 							If isRegion Then
 								CallSubDelayed2(it, "TranslateRegion", CreateMap("filename":params.Get("filename"),"sourceLang":params.Get("sourceLang"),"targetLang":params.Get("targetLang")))
