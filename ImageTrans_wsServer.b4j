@@ -44,7 +44,7 @@ Module9=PrivateHeaderFilter
 NumberOfFiles=9
 NumberOfLibraries=6
 NumberOfModules=16
-Version=10.5
+Version=10
 @EndOfDesignText@
 'Non-UI application (console / server application)
 #Region Project Attributes 
@@ -179,7 +179,8 @@ Private Sub RedownloadCertificate As ResumableSub
 	Log("redownloading")
 	Dim job As HttpJob
 	job.Initialize("job",Me)
-	job.Download("https://blog.xulihang.me/ImageTrans_wsServer/certificate.jks")
+	'job.Download("https://blog.xulihang.me/ImageTrans_wsServer/certificate.jks")
+	job.Download("https://cdn.jsdelivr.net/gh/xulihang/ImageTrans_wsServer@gh-pages/certificate.jks")
 	wait for (job) jobDone(job As HttpJob)
 	If job.Success Then
 		Dim out As OutputStream = File.OpenOutput(File.DirApp,"certificate.jks", False)
