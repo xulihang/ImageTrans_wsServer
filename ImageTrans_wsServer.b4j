@@ -95,6 +95,9 @@ Sub AppStart (Args() As String)
 	File.Copy(File.DirAssets,"translator.js",staticFolder,"translator.js")
 	File.Copy(File.DirAssets,"tts.js",staticFolder,"tts.js")
 	File.Copy(File.DirAssets,"fittext.js",staticFolder,"fittext.js")
+	If File.Exists(File.DirApp,"rootCA.crt") Then
+		File.Copy(File.DirApp,"rootCA.crt",staticFolder,"rootCA.crt")
+	End If
 	
 	ConfigureSSLAndStart(51043)
 	autoCleanTimer.Initialize("autoCleanTimer",24*60*60*1000)

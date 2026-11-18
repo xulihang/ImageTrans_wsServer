@@ -15,7 +15,7 @@ End Sub
 
 'Return True to allow the request to proceed.
 Public Sub Filter(req As ServletRequest, resp As ServletResponse) As Boolean
-	If File.Exists(main.staticFolder,"index.html") == False Then
+	If File.Exists(Main.staticFolder,"index.html") == False Then
 		resp.SendRedirect("/index")
 		Return False
 	End If
