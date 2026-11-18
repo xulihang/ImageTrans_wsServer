@@ -62,8 +62,16 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 	End If
 
 	Dim password As String = req.GetParameter("password")
-
-	If displayName <> "" And displayName <> "default" And password <> "" Then
+	Dim freeTimes As Int = 10
+	If File.Exists(File.DirApp,"tokens") Then
+		If File.ReadList(File.DirApp,"tokens").IndexOf(password) <> -1 Then
+			Log("paid user")
+			freeTimes = 100
+			password = ""
+		End If
+	End If
+	
+	If displayName <> "" And displayName.StartsWith("default") = False And password <> "" Then
 		If ImageTransShared.IsPasswordCorrect(displayName, password) = False Then
 			Dim pwResult As Map
 			pwResult.Initialize
@@ -79,7 +87,7 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 
 	If File.Exists(File.DirApp, "public") Then
 		If ImageTransShared.HasPassword(displayName) = False Then
-			If ImageTransShared.GetRequestCount(clientIP) > 10 Then
+			If ImageTransShared.GetRequestCount(clientIP) > freeTimes Then
 				Dim limitResult As Map
 				limitResult.Initialize
 				limitResult.Put("success",True)

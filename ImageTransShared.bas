@@ -128,7 +128,7 @@ End Sub
 
 
 Public Sub HasPassword(displayName As String) As Boolean
-	If displayName <> "" And displayName <> "default" Then
+	If displayName <> "" And displayName.StartsWith("default") = False Then
 		For Each it As ImageTrans In GetImageTransInstances
 			If it.getDisplayName == displayName Then
 				If it.getPassword <> "" Then
@@ -142,7 +142,7 @@ Public Sub HasPassword(displayName As String) As Boolean
 End Sub
 
 Public Sub IsPasswordCorrect(displayName As String, password As String) As Boolean
-    If displayName <> "" And displayName <> "default" Then
+    If displayName <> "" And displayName.StartsWith("default") = False Then
 		For Each it As ImageTrans In GetImageTransInstances
 			If it.getDisplayName == displayName Then
 				If password == it.getPassword Then
