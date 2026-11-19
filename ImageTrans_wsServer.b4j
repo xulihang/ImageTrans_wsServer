@@ -56,7 +56,7 @@ Sub Process_Globals
 	Public srvr As Server
 	Public translation As Map
 	Public autoCleanTimer As Timer
-	Public staticFolder as String
+	Public staticFolder As String
 End Sub
 
 Sub AppStart (Args() As String)
@@ -69,8 +69,8 @@ Sub AppStart (Args() As String)
 	ImageTransShared.Init
 	srvr.Port = 51042
 	srvr.StaticFilesFolder = staticFolder
-	If File.Exists(File.DirApp, "tmp") = False Then
-		File.MakeDir(File.DirApp, "tmp")
+	If File.Exists(staticFolder, "tmp") = False Then
+		File.MakeDir(staticFolder, "tmp")
 	End If
 	srvr.AddWebSocket("/imagetrans", "ImageTrans")
 	srvr.AddHandler("/list","ListHandler",False)
@@ -202,8 +202,8 @@ End Sub
 Sub AutoCleanTimer_Tick
 	translation.Clear
 	ImageTransShared.ClearRequestCounts
-	For Each filename As String In File.ListFiles(File.Combine(File.DirApp,"tmp"))
-		File.Delete(File.Combine(File.DirApp,"tmp"), filename)
+	For Each filename As String In File.ListFiles(File.Combine(staticFolder,"tmp"))
+		File.Delete(File.Combine(staticFolder,"tmp"), filename)
 	Next
 End Sub
 

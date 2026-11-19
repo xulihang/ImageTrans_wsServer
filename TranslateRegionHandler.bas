@@ -115,7 +115,7 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 	base64 = Regex.Replace("data:(.*?);base64,",base64,"")
 	Dim su As StringUtils
 	Dim filename As String = DateTime.Now
-	Dim path As String = File.Combine(File.Combine(File.DirApp,"tmp"),filename)
+	Dim path As String = File.Combine(File.Combine(Main.staticFolder,"tmp"),filename)
 	File.WriteBytes(path,"",su.DecodeBase64(base64))
 	uniqueKey = displayName & "_" & DateTime.Now & "_" & Rnd(0, 99999999)
 	Main.translation.Put(uniqueKey,CreateMap("translated":False))

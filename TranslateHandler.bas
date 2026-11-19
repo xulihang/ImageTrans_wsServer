@@ -114,7 +114,7 @@ Sub Handle(req As ServletRequest, resp As ServletResponse)
 		base64 = Regex.Replace("data:(.*?);base64,",src,"")
 		Dim su As StringUtils
 		filename = DateTime.Now
-		Dim path As String = File.Combine(File.Combine(File.DirApp,"tmp"),filename)
+		Dim path As String = File.Combine(File.Combine(Main.staticFolder,"tmp"),filename)
 		File.WriteBytes(path,"",su.DecodeBase64(base64))
 		src = path
 	End If
